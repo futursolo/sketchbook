@@ -1,2 +1,3 @@
-# sketchbook
+Sketchbook
+==========
 A template engine built for asyncio with async/await syntax.
