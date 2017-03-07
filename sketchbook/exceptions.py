@@ -19,4 +19,14 @@ __all__ = ["SketchException"]
 
 
 class SketchbookException(Exception):
+    """
+    Base class of exceptions from Sketchbook.
+    """
+    pass
+
+
+class TemplateNotFoundError(FileNotFoundError, SketchbookException):
+    """
+    Error when trying to load a template but the loader cannot find it.
+    """
     pass
