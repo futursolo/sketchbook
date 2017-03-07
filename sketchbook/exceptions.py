@@ -18,5 +18,5 @@
 __all__ = ["SketchException"]
 
 
-class SketchException(Exception):
+class SketchbookException(Exception):
     pass

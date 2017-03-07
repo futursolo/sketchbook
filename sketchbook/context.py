@@ -15,26 +15,31 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional
+from typing import Optional, Mapping, Callable
+
+from . import escaping
 
 import asyncio
+import types
 
 __all__ = ["TemplateContext"]
 
 
 class TemplateContext:
     def __init__(
-        self, *, cache_tpls: bool=True, default_escape: str="html",
-        source_encoding: str="utf-8", output_encoding: str="utf-8",
-        escape_url_with_plus: bool=True,
+        self, *, cache_tpls: bool=True,
+        source_encoding: str="utf-8",
+        override_escape_fns: Mapping[str, Callable[[str], str]]={},
             loop: Optional[asyncio.AbstractEventLoop]=None) -> None:
 
         self._loop = loop or asyncio.get_event_loop()
 
-        self._default_escape = default_escape
         self._source_encoding = source_encoding
-        self._output_encoding = output_encoding
-        self._escape_url_with_plus = escape_url_with_plus
+
+        escape_fns = escaping.builtin_escape_fns.copy()
+        if override_escape_fns:
+            escape_fns.update(override_escape_fns)  # type: ignore
+        self._escape_fns = types.MappingProxyType(escape_fns)
 
         self._cache_tpls = cache_tpls
 
@@ -43,20 +48,12 @@ class TemplateContext:
         return self._loop
 
     @property
-    def default_escape(self) -> str:
-        return self._default_escape
-
-    @property
     def source_encoding(self) -> str:
         return self._source_encoding
 
     @property
-    def output_encoding(self) -> str:
-        return self.output_encoding
-
-    @property
-    def escape_url_with_plus(self) -> bool:
-        return self._escape_url_with_plus
+    def escape_fns(self) -> Mapping[str, Callable[[str], str]]:
+        return self._escape_fns
 
     @property
     def cache_tpls(self) -> bool:
