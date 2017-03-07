@@ -27,7 +27,7 @@ import os
 import concurrent.futures
 import aiofiles
 
-__all__ = ["BaseLoader"]
+__all__ = ["BaseLoader", "AsyncFileSystemLoader"]
 
 
 class BaseLoader(abc.ABC):

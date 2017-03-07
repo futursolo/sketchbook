@@ -102,7 +102,7 @@ class CodePrinter:
         return self._compiled_code
 
     @classmethod
-    def print_tpl(Cls, tpl: template.Template) -> CodeType:
+    def print_tpl(Cls, tpl: "template.Template") -> CodeType:
         code_printer = Cls(path=tpl._path)
         tpl._root.print_code(code_printer)
         return code_printer.compiled_code

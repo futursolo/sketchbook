@@ -29,7 +29,7 @@ class TemplateContext:
     def __init__(
         self, *, cache_tpls: bool=True,
         source_encoding: str="utf-8",
-        override_escape_fns: Mapping[str, Callable[[str], str]]={},
+        custom_escape_fns: Mapping[str, Callable[[str], str]]={},
             loop: Optional[asyncio.AbstractEventLoop]=None) -> None:
 
         self._loop = loop or asyncio.get_event_loop()
@@ -37,8 +37,8 @@ class TemplateContext:
         self._source_encoding = source_encoding
 
         escape_fns = escaping.builtin_escape_fns.copy()
-        if override_escape_fns:
-            escape_fns.update(override_escape_fns)  # type: ignore
+        if custom_escape_fns:
+            escape_fns.update(custom_escape_fns)  # type: ignore
         self._escape_fns = types.MappingProxyType(escape_fns)
 
         self._cache_tpls = cache_tpls

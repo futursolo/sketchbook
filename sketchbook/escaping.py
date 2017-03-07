@@ -19,38 +19,41 @@ import html
 import urllib.parse
 import functools
 import json
+import collections
+
+__all__ = ["builtin_escape_fns"]
 
 
-def escape_html(unsafe_str: str) -> str:
+def _escape_html(unsafe_str: str) -> str:
     return html.escape(unsafe_str)
 
 
-def no_escape(unsafe_str: str) -> str:
+def _no_escape(unsafe_str: str) -> str:
     return unsafe_str
 
 
-def escape_url_with_plus(unsafe_str: str) -> str:
+def _escape_url_with_plus(unsafe_str: str) -> str:
     return urllib.parse.quote_plus(unsafe_str)
 
 
-def escape_url_without_plus(unsafe_str: str) -> str:
+def _escape_url_without_plus(unsafe_str: str) -> str:
     return urllib.parse.quote(unsafe_str)
 
 
-def escape_json(unsafe_str: str) -> str:
+def _escape_json(unsafe_str: str) -> str:
     return json.dumps(unsafe_str)
 
 
-builtin_escape_fns = {
-    "default": escape_html,
-    "html": escape_html,
-    "h": escape_html,
-    "raw": no_escape,
-    "r": no_escape,
-    "url_with_plus": escape_url_with_plus,
-    "url": escape_url_with_plus,
-    "u": escape_url_with_plus,
-    "url_without_plus": escape_url_without_plus,
-    "json": escape_json,
-    "j": escape_json
-}
+builtin_escape_fns = collections.OrderedDict([
+    ("default", _escape_html),
+    ("html", _escape_html),
+    ("h", _escape_html),
+    ("raw", _no_escape),
+    ("r", _no_escape),
+    ("url_with_plus", _escape_url_with_plus),
+    ("url", _escape_url_with_plus),
+    ("u", _escape_url_with_plus),
+    ("url_without_plus", _escape_url_without_plus),
+    ("json", _escape_json),
+    ("j", _escape_json)
+])
