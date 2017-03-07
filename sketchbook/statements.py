@@ -17,4 +17,18 @@
 
 from typing import List
 
-__all__: List[str] = []
+from . import printer
+
+import abc
+
+__all__ = ["Statement", "Root"]
+
+
+class Statement(abc.ABC):
+    @abc.abstractmethod
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        raise NotImplementedError
+
+
+class Root(Statement):
+    pass

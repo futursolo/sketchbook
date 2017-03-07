@@ -18,6 +18,8 @@
 from typing import Any
 from types import CodeType
 
+from . import template
+
 __all__ = ["CodePrinter"]
 
 
@@ -98,3 +100,9 @@ class CodePrinter:
                 self.plain_code, self._path, "exec", dont_inherit=True)
 
         return self._compiled_code
+
+    @classmethod
+    def print_tpl(Cls, tpl: template.Template) -> CodeType:
+        code_printer = Cls(path=tpl._path)
+        tpl._root.print_code(code_printer)
+        return code_printer.compiled_code

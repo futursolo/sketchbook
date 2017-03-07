@@ -15,13 +15,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from . import statements
-from . import template
-
-__all__ = ["TemplateParser"]
+__all__ = ["Namespace"]
 
 
-class TemplateParser:
-    @classmethod
-    def parse_tpl(self, tpl: "template.Template") -> statements.Root:
+class Namespace:
+    async def render(self) -> str:
         raise NotImplementedError
