@@ -30,3 +30,11 @@ class TemplateNotFoundError(FileNotFoundError, SketchbookException):
     Error when trying to load a template but the loader cannot find it.
     """
     pass
+
+
+class ParserError(SketchbookException):
+    pass
+
+
+class TemplateSyntaxError(SyntaxError, SketchbookException):
+    pass

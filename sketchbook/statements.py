@@ -15,20 +15,93 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import List
+from typing import List, Optional
 
 from . import printer
 
 import abc
 
-__all__ = ["Statement", "Root"]
+__all__ = ["Statement", "Root", "Block"]
 
 
 class Statement(abc.ABC):
+    @abc.abstractmethod
+    def append_stmt(self, stmt: "Statement") -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def should_indent(self) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def should_append(self) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def should_unindent(self) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def line_no(self) -> int:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
+
     @abc.abstractmethod
     def print_code(self, code_printer: printer.CodePrinter) -> None:
         raise NotImplementedError
 
 
 class Root(Statement):
+    def __init__(self, filepath: str) -> None:
+        self._filepath = filepath
+
+        self._stmts: List[Statement] = []
+
+    def append_stmt(self, stmt: Statement) -> None:
+        self._stmts.append(stmt)
+
+    def append_block(self, block: "Block") -> None:
+        raise NotImplementedError
+
+    @property
+    def should_indent(self) -> bool:
+        raise NotImplementedError("This does not apply to Root.")
+
+    @property
+    def should_append(self) -> bool:
+        raise NotImplementedError("This does not apply to Root.")
+
+    @property
+    def should_unindent(self) -> bool:
+        raise NotImplementedError("This does not apply to Root.")
+
+    @property
+    def line_no(self) -> int:
+        raise NotImplementedError("This does not apply to Root.")
+
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError("This does not apply to Root.")
+
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        raise NotImplementedError
+
+
+class Block(Statement):
+    pass
+
+
+class Plain(Statement):
     pass

@@ -48,20 +48,20 @@ class CodePrinter:
         final_line = self._indent_mark * self._indent_num + line + self._end
         self._committed_code += final_line
 
-    def indent_block(self, indent_line: str) -> "CodePrinter":
+    def indent_block(self) -> "CodePrinter":
         """
         Indent the code with `with` statement.
 
         Example:
         ..code-block:: python3
 
-            with printer.indent_block("def a()"):
+            printer.writeline("def a():")
+            with printer.indent_block():
                 printer.writeline("return \"Text from function a.\"")
 
             printer.writeline("a()")
         """
         assert not self._finished, "Code Generation has already been finished."
-        self.writeline(indent_line + ":")
         return self
 
     def _inc_indent_num(self) -> None:
