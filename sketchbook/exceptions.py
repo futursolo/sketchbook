@@ -32,9 +32,9 @@ class TemplateNotFoundError(FileNotFoundError, SketchbookException):
     pass
 
 
-class ParserError(SketchbookException):
+class TemplateSyntaxError(SyntaxError, SketchbookException):
     pass
 
 
-class TemplateSyntaxError(SyntaxError, SketchbookException):
+class UnknownStatementError(SketchbookException):
     pass

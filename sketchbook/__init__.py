@@ -30,10 +30,8 @@ from . import loaders
 from .runtime import *
 from . import runtime
 
-from .statements import Statement
-
 from .template import *
 from . import template
 
 __all__ = _version.__all__ + context.__all__ + exceptions.__all__ + \
-    loaders.__all__ + runtime.__all__ + ["Statement"] + template.__all__
+    loaders.__all__ + runtime.__all__ + template.__all__

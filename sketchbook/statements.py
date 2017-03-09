@@ -15,17 +15,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import List, Optional
+from typing import List, Optional, Sequence, Type
 
 from . import printer
 
 import abc
 
-__all__ = ["Statement", "Root", "Block"]
+__all__ = ["Statement", "Root", "Block", "builtin_stmt_classes"]
 
 
 class Statement(abc.ABC):
-    @abc.abstractmethod
     def append_stmt(self, stmt: "Statement") -> None:
         raise NotImplementedError
 
@@ -104,4 +103,37 @@ class Block(Statement):
 
 
 class Plain(Statement):
+    def __init__(self, stmt_str: str) -> None:
+        self._stmt_str = stmt_str
+
+    @property
+    def should_indent(self) -> bool:
+        return False
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @property
+    def line_no(self) -> int:
+        raise NotImplementedError("This does not apply to Plain.")
+
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError("This does not apply to Plain.")
+
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        raise NotImplementedError
+
+
+class _Include(Statement):
     pass
+
+
+builtin_stmt_classes: Sequence[Type[Statement]] = [Block, _Include]

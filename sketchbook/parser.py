@@ -22,7 +22,6 @@ from . import template
 from . import exceptions
 
 import io
-import re
 
 __all__ = ["TemplateParser"]
 
@@ -32,6 +31,9 @@ class _ReadFinished(Exception):
 
 
 class TemplateParser:
+    """
+    The one-time, non-reusable template parser.
+    """
     def __init__(self, tpl: "template.Template") -> None:
         self._tpl = tpl
         self._tpl_ctx = self._tpl._tpl_ctx
@@ -47,11 +49,10 @@ class TemplateParser:
         self._parse()
 
     def _move_to_next_line(self) -> None:
-        if self._current_line:
-            raise exceptions.ParserError(
-                ("Parsing of the last line is not completed "
-                 "in file {} at line {}.").format(
-                    self._tpl._path, self._current_line_no))
+        assert not self._current_line, \
+            ("Parsing of the last line is not completed "
+             "in file {} at line {}.").format(
+                self._tpl._path, self._current_line_no)
 
         new_line = self._io.readline()
 
@@ -65,11 +66,72 @@ class TemplateParser:
     def root(self) -> statements.Root:
         return self._root
 
-    def _parse_stmt(self, stmt_str: str) -> statements.Statement:
-        raise NotImplementedError
+    def _find_next_begin_mark(self) -> int:
+        start_pos = 0
+
+        while True:
+            pos = self._current_line.find("<%", start_pos)
+
+            if pos == -1:
+                return -1
+
+            elif self._current_line[pos + 2:].startswith("%"):
+                start_pos = pos + 2
+                end_pos = start_pos + 1
+
+                self._current_line = (
+                    self._current_line[:start_pos] +
+                    self._current_line[end_pos:])
+
+                continue
+
+            else:
+                return pos
+
+    def _find_next_end_mark(self) -> int:
+        start_pos = 0
+
+        while True:
+            pos = self._current_line.find("%>", start_pos)
+
+            if pos == -1:
+                return -1
+
+            elif pos == 0:
+                return 0
+
+            elif self._current_line[:pos].endswith("%"):
+                start_pos = pos - 1
+                end_pos = pos
+
+                self._current_line = (
+                    self._current_line[:start_pos] +
+                    self._current_line[end_pos:])
+
+                start_pos = pos + 1
+
+                continue
+
+            else:
+                return pos
+
+    def _parse_stmt(self, stmt_str: str, line_no: int) -> statements.Statement:
+        for StmtCls in statements.builtin_stmt_classes:
+            maybe_stmt = StmtCls.try_match(
+                stmt_str, filepath=self._tpl._path, line_no=line_no)
+
+            if maybe_stmt is None:
+                continue
+
+            return maybe_stmt
+
+        else:
+            raise exceptions.UnknownStatementError(
+                "Unknown Statement {} in file {} at line {}.".format(
+                    repr(stmt_str), self._tpl._path, line_no))
 
     def _find_next_stmt(self) -> statements.Statement:
-        stmt_str: List[str] = []
+        stmt_chunks: List[str] = []
         begin_mark_line_no = -1
 
         while True:
@@ -84,10 +146,45 @@ class TemplateParser:
                              "in file {} at line {}.").format(
                                 self._tpl._path, begin_mark_line_no))
 
-                    elif stmt_str:
-                        return statements.Plain(
-                            stmt_str, filepath=self._tpl._path,
-                            line_no=self._current_line_no)
+                    elif stmt_chunks:
+                        return statements.Plain("".join(stmt_chunks))
+
+                    else:
+                        raise
+
+            if begin_mark_line_no == -1:
+                begin_mark_pos = self._find_next_begin_mark()
+
+                if begin_mark_pos == -1:
+                    stmt_chunks.append(self._current_line)
+                    self._current_line = ""
+
+                    continue
+
+                elif begin_mark_pos > 0:
+                    stmt_chunks.append(self._current_line[:begin_mark_pos])
+                    self._current_line = self._current_line[begin_mark_pos:]
+
+                    return statements.Plain("".join(stmt_chunks))
+
+                elif stmt_chunks:
+                    return statements.Plain("".join(stmt_chunks))
+
+                begin_mark_line_no = self._current_line_no
+                self._current_line = self._current_line[2:]
+
+            end_mark_pos = self._find_next_end_mark()
+
+            if end_mark_pos == -1:
+                stmt_chunks.append(self._current_line)
+                self._current_line = ""
+
+                continue
+
+            stmt_chunks.append(self._current_line[:end_mark_pos])
+            self._current_line = self._current_line[end_mark_pos + 2:]
+
+            return self._parse_stmt("".join(stmt_chunks), begin_mark_line_no)
 
     def _append_to_current(self, stmt: statements.Statement) -> None:
         if self._indents:
