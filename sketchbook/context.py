@@ -15,9 +15,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional, Mapping, Callable
+from typing import Optional, Mapping, Callable, Sequence, Type
 
 from . import escaping
+from . import statements
 
 import asyncio
 import types
@@ -41,6 +42,13 @@ class TemplateContext:
             escape_fns.update(custom_escape_fns)  # type: ignore
         self._escape_fns = types.MappingProxyType(escape_fns)
 
+        self._stmt_classes = list(statements.builtin_stmt_classes)
+
+        class OutputStmt(statements.BaseOutput):
+            _filter_fn_names = list(self.escape_fns.keys())
+
+        self._stmt_classes.append(OutputStmt)
+
         self._cache_tpls = cache_tpls
 
     @property
@@ -54,6 +62,10 @@ class TemplateContext:
     @property
     def escape_fns(self) -> Mapping[str, Callable[[str], str]]:
         return self._escape_fns
+
+    @property
+    def stmt_classes(self) -> Sequence[Type[statements.Statement]]:
+        return self._stmt_classes
 
     @property
     def cache_tpls(self) -> bool:

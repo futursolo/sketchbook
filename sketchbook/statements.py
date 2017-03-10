@@ -18,10 +18,11 @@
 from typing import List, Optional, Sequence, Type
 
 from . import printer
+from . import exceptions
 
 import abc
 
-__all__ = ["Statement", "Root", "Block", "builtin_stmt_classes"]
+__all__ = ["Statement", "Root", "Block", "BaseOutput", "builtin_stmt_classes"]
 
 
 class Statement(abc.ABC):
@@ -99,7 +100,24 @@ class Root(Statement):
 
 
 class Block(Statement):
-    pass
+    @property
+    def should_indent(self) -> bool:
+        return True
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
 
 
 class Plain(Statement):
@@ -132,8 +150,235 @@ class Plain(Statement):
         raise NotImplementedError
 
 
+class BaseOutput(Statement):
+    _filter_fn_names: List[str] = []
+
+    def __init__(
+        self, output_filter: str, output_exp: str,
+            filepath: str, line_no: int) -> None:
+        self._output_filter = output_filter
+        self._output_exp = output_exp
+        self._filepath = filepath
+        self._line_no = line_no
+
+    @property
+    def should_indent(self) -> bool:
+        return False
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @property
+    def line_no(self) -> int:
+        return self._line_no
+
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        splitted_stmt = stmt_str.split(" ", 1)
+
+        stmt_keyword = splitted_stmt[0]
+
+        if not stmt_keyword.endswith("="):
+            return None
+
+        stmt_output_filter = stmt_keyword[:-1] or "default"
+
+        if stmt_output_filter not in Cls._filter_fn_names:
+            return None
+
+        if len(splitted_stmt) != 2:
+            raise exceptions.TemplateSyntaxError(
+                ("The expression to be output is empty "
+                 "in file {} at line {}.").format(filepath, line_no))
+
+        stmt_output_exp = splitted_stmt[1].strip()
+
+        if not stmt_output_exp:
+            raise exceptions.TemplateSyntaxError(
+                ("The expression to be output is empty "
+                 "in file {} at line {}.").format(filepath, line_no))
+
+        return Cls(
+            output_filter=stmt_output_filter,
+            output_exp=stmt_output_exp,
+            filepath=filepath, line_no=line_no)
+
+
 class _Include(Statement):
-    pass
+    @property
+    def should_indent(self) -> bool:
+        return False
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
 
 
-builtin_stmt_classes: Sequence[Type[Statement]] = [Block, _Include]
+class _Inherit(Statement):
+    @property
+    def should_indent(self) -> bool:
+        return False
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
+
+
+class _Indent(Statement):
+    @property
+    def should_indent(self) -> bool:
+        return True
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
+
+
+class _Unindent(Statement):
+    @property
+    def should_indent(self) -> bool:
+        return False
+
+    @property
+    def should_append(self) -> bool:
+        return False
+
+    @property
+    def should_unindent(self) -> bool:
+        return True
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
+
+
+class _HalfIndent(Statement):
+    @property
+    def should_indent(self) -> bool:
+        return True
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return True
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
+
+
+class _Inline(Statement):
+    @property
+    def should_indent(self) -> bool:
+        return False
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
+
+
+class _Comment(Statement):
+    @property
+    def should_indent(self) -> bool:
+        return False
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
+
+
+class _Code(Statement):
+    @property
+    def should_indent(self) -> bool:
+        return False
+
+    @property
+    def should_append(self) -> bool:
+        return True
+
+    @property
+    def should_unindent(self) -> bool:
+        return False
+
+    @abc.abstractmethod
+    @classmethod
+    def try_match(
+        Cls, stmt_str: str, filepath: str,
+            line_no: int) -> Optional["Statement"]:
+        raise NotImplementedError
+
+
+builtin_stmt_classes: Sequence[Type[Statement]] = [
+    Block, _Include, _Inherit, _Indent, _Unindent, _HalfIndent, _Inline,
+    _Comment, _Code]

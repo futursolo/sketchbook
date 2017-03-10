@@ -116,7 +116,9 @@ class TemplateParser:
                 return pos
 
     def _parse_stmt(self, stmt_str: str, line_no: int) -> statements.Statement:
-        for StmtCls in statements.builtin_stmt_classes:
+        stmt_str = stmt_str.strip()
+
+        for StmtCls in self._tpl_ctx.stmt_classes:
             maybe_stmt = StmtCls.try_match(
                 stmt_str, filepath=self._tpl._path, line_no=line_no)
 
