@@ -338,6 +338,11 @@ class _Inline(Statement):
 
 
 class _Comment(Statement):
+    def __init__(self, cmnt_str: str, filepath: str, line_no: int) -> None:
+        self._cmnt_str = cmnt_str
+        self._filepath = filepath
+        self._line_no = line_no
+
     @property
     def should_indent(self) -> bool:
         return False
@@ -350,12 +355,18 @@ class _Comment(Statement):
     def should_unindent(self) -> bool:
         return False
 
-    @abc.abstractmethod
+    @property
+    def line_no(self) -> int:
+        return self._line_no
+
     @classmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
             line_no: int) -> Optional["Statement"]:
-        raise NotImplementedError
+        if not stmt_str.startswith("#"):
+            return None
+
+        return Cls(cmnt_str=stmt_str[1:], filepath=filepath, line_no=line_no)
 
 
 class _Code(Statement):
