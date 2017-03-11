@@ -44,7 +44,7 @@ class TemplateParser:
         self._current_line = ""
 
         self._root = statements.Root(filepath=self._tpl._path)
-        self._indents: List[statements.Statement] = []
+        self._indents: List[statements.IndentMixIn] = []
 
         self._parse()
 
@@ -212,13 +212,13 @@ class TemplateParser:
             except _ReadFinished:
                 break
 
-            if stmt.should_unindent:
+            if isinstance(stmt, statements.UnindentMixIn):
                 self._unindent_current()
 
-            if stmt.should_append:
+            if isinstance(stmt, statements.AppendMixIn):
                 self._append_to_current(stmt)
 
-            if stmt.should_indent:
+            if isinstance(stmt, statements.IndentMixIn):
                 self._indents.append(stmt)
 
             if isinstance(stmt, statements.Block):

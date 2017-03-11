@@ -23,7 +23,9 @@ from . import exceptions
 import abc
 import re
 
-__all__ = ["Statement", "Root", "Block", "BaseOutput", "builtin_stmt_classes"]
+__all__ = [
+    "Statement", "Root", "Block", "BaseOutput", "builtin_stmt_classes",
+    "IndentMixIn", "AppendMixIn", "UnindentMixIn"]
 
 _VALID_FN_NAME_RE = re.compile(r"^[a-zA-Z]([a-zA-Z0-9\_]+)?$")
 
@@ -32,33 +34,29 @@ def _is_valid_fn_name(maybe_fn_name: str) -> bool:
     """
     Check if this is a valid function name.
     """
-    return (re.fullmatch(_VALID_FN_NAME_RE, name) is not None)
+    return (re.fullmatch(_VALID_FN_NAME_RE, maybe_fn_name) is not None)
 
 
-class Statement(abc.ABC):
-    def append_stmt(self, stmt: "Statement") -> None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    @property
-    def should_indent(self) -> bool:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    @property
-    def should_append(self) -> bool:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    @property
-    def should_unindent(self) -> bool:
-        raise NotImplementedError
-
+class IndentMixIn(abc.ABC):
     @abc.abstractmethod
     @property
     def line_no(self) -> int:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def append_stmt(self, stmt: "Statement") -> None:
+        raise NotImplementedError
+
+
+class AppendMixIn:
+    pass
+
+
+class UnindentMixIn:
+    pass
+
+
+class Statement(abc.ABC):
     @abc.abstractmethod
     @classmethod
     def try_match(
@@ -83,22 +81,6 @@ class Root(Statement):
     def append_block(self, block: "Block") -> None:
         raise NotImplementedError
 
-    @property
-    def should_indent(self) -> bool:
-        raise NotImplementedError("This does not apply to Root.")
-
-    @property
-    def should_append(self) -> bool:
-        raise NotImplementedError("This does not apply to Root.")
-
-    @property
-    def should_unindent(self) -> bool:
-        raise NotImplementedError("This does not apply to Root.")
-
-    @property
-    def line_no(self) -> int:
-        raise NotImplementedError("This does not apply to Root.")
-
     @classmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
@@ -109,27 +91,15 @@ class Root(Statement):
         raise NotImplementedError
 
 
-class Block(Statement):
+class Block(Statement, IndentMixIn, AppendMixIn):
     def __init__(self, block_name: str, filepath: str, line_no: int) -> None:
         self._block_name = block_name
         self._filepath = filepath
         self._line_no = line_no
 
     @property
-    def block_name(self):
+    def block_name(self) -> str:
         return self._block_name
-
-    @property
-    def should_indent(self) -> bool:
-        return True
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
 
     @property
     def line_no(self) -> int:
@@ -160,25 +130,9 @@ class Block(Statement):
             filepath=filepath, line_no=line_no)
 
 
-class Plain(Statement):
+class Plain(Statement, AppendMixIn):
     def __init__(self, stmt_str: str) -> None:
         self._stmt_str = stmt_str
-
-    @property
-    def should_indent(self) -> bool:
-        return False
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
-
-    @property
-    def line_no(self) -> int:
-        raise NotImplementedError("This does not apply to Plain.")
 
     @classmethod
     def try_match(
@@ -190,7 +144,7 @@ class Plain(Statement):
         raise NotImplementedError
 
 
-class BaseOutput(Statement):
+class BaseOutput(Statement, AppendMixIn):
     _filter_fn_names: List[str] = []
 
     def __init__(
@@ -200,22 +154,6 @@ class BaseOutput(Statement):
         self._output_exp = output_exp
         self._filepath = filepath
         self._line_no = line_no
-
-    @property
-    def should_indent(self) -> bool:
-        return False
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
-
-    @property
-    def line_no(self) -> int:
-        return self._line_no
 
     @classmethod
     def try_match(
@@ -251,27 +189,11 @@ class BaseOutput(Statement):
             filepath=filepath, line_no=line_no)
 
 
-class _Include(Statement):
+class _Include(Statement, AppendMixIn):
     def __init__(self, stmt_str: str, filepath: str, line_no: int) -> None:
         self._stmt_str = stmt_str
         self._filepath = filepath
         self._line_no = line_no
-
-    @property
-    def should_indent(self) -> bool:
-        return False
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
-
-    @property
-    def line_no(self) -> int:
-        return self._line_no
 
     @classmethod
     def try_match(
@@ -285,27 +207,11 @@ class _Include(Statement):
             filepath=filepath, line_no=line_no)
 
 
-class _Inherit(Statement):
+class _Inherit(Statement, AppendMixIn):
     def __init__(self, stmt_str: str, filepath: str, line_no: int) -> None:
         self._stmt_str = stmt_str
         self._filepath = filepath
         self._line_no = line_no
-
-    @property
-    def should_indent(self) -> bool:
-        return False
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
-
-    @property
-    def line_no(self) -> int:
-        return self._line_no
 
     @classmethod
     def try_match(
@@ -319,7 +225,7 @@ class _Inherit(Statement):
             filepath=filepath, line_no=line_no)
 
 
-class _Indent(Statement):
+class _Indent(Statement, IndentMixIn, AppendMixIn):
     def __init__(self, stmt_str: str, filepath: str, line_no: int) -> None:
         self._stmt_str = stmt_str
         self._filepath = filepath
@@ -329,18 +235,6 @@ class _Indent(Statement):
 
     def append_stmt(self, stmt: Statement) -> None:
         self._stmts.append(stmt)
-
-    @property
-    def should_indent(self) -> bool:
-        return True
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
 
     @property
     def line_no(self) -> int:
@@ -359,23 +253,7 @@ class _Indent(Statement):
             filepath=filepath, line_no=line_no)
 
 
-class _Unindent(Statement):
-    @property
-    def should_indent(self) -> bool:
-        return False
-
-    @property
-    def should_append(self) -> bool:
-        return False
-
-    @property
-    def should_unindent(self) -> bool:
-        return True
-
-    @property
-    def line_no(self) -> int:
-        raise NotImplementedError("This does not apply to _Unindent.")
-
+class _Unindent(Statement, UnindentMixIn):
     @classmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
@@ -386,23 +264,11 @@ class _Unindent(Statement):
         return Cls()
 
 
-class _HalfIndent(Statement):
+class _HalfIndent(Statement, IndentMixIn, AppendMixIn, UnindentMixIn):
     def __init__(self, stmt_str: str, filepath: str, line_no: int) -> None:
         self._stmt_str = stmt_str
         self._filepath = filepath
         self._line_no = line_no
-
-    @property
-    def should_indent(self) -> bool:
-        return True
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return True
 
     @property
     def line_no(self) -> int:
@@ -421,27 +287,11 @@ class _HalfIndent(Statement):
             filepath=filepath, line_no=line_no)
 
 
-class _Inline(Statement):
+class _Inline(Statement, AppendMixIn):
     def __init__(self, stmt_str: str, filepath: str, line_no: int) -> None:
         self._stmt_str = stmt_str
         self._filepath = filepath
         self._line_no = line_no
-
-    @property
-    def should_indent(self) -> bool:
-        return False
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
-
-    @property
-    def line_no(self) -> int:
-        return self._line_no
 
     @classmethod
     def try_match(
@@ -456,27 +306,11 @@ class _Inline(Statement):
             filepath=filepath, line_no=line_no)
 
 
-class _Comment(Statement):
+class _Comment(Statement, AppendMixIn):
     def __init__(self, cmnt_str: str, filepath: str, line_no: int) -> None:
         self._cmnt_str = cmnt_str
         self._filepath = filepath
         self._line_no = line_no
-
-    @property
-    def should_indent(self) -> bool:
-        return False
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
-
-    @property
-    def line_no(self) -> int:
-        return self._line_no
 
     @classmethod
     def try_match(
@@ -490,27 +324,11 @@ class _Comment(Statement):
             filepath=filepath, line_no=line_no)
 
 
-class _Code(Statement):
+class _Code(Statement, AppendMixIn):
     def __init__(self, code_exp: str, filepath: str, line_no: int) -> None:
         self._code_exp = code_exp
         self._filepath = filepath
         self._line_no = line_no
-
-    @property
-    def should_indent(self) -> bool:
-        return False
-
-    @property
-    def should_append(self) -> bool:
-        return True
-
-    @property
-    def should_unindent(self) -> bool:
-        return False
-
-    @property
-    def line_no(self) -> int:
-        return self._line_no
 
     @classmethod
     def try_match(

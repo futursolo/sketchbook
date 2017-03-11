@@ -51,12 +51,7 @@ class Template:
         else:
             self._tpl_content = tpl_content
 
-    @property
-    def _root(self) -> statements.Root:
-        if not hasattr(self, "_parsed_root"):
-            self._parsed_root = parser.TemplateParser.parse_tpl(self)
-
-        return self._parsed_root
+        self._root = parser.TemplateParser.parse_tpl(self)
 
     @property
     def _compiled_code(self) -> CodeType:
