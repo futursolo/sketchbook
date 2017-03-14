@@ -84,7 +84,7 @@ class BlockNamespace(_BaseNamespace):
         self._finished = False
 
     @property
-    def _tpl_ctx(self) -> "template.Template":
+    def _tpl(self) -> "template.Template":
         return self._tpl_namespace._tpl
 
     @property
