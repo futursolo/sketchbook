@@ -37,4 +37,14 @@ class TemplateSyntaxError(SyntaxError, SketchbookException):
 
 
 class UnknownStatementError(SketchbookException):
+    """
+    The statement string is not matched by any known Statement Classes.
+    """
+    pass
+
+
+class TemplateRenderError(SketchbookException):
+    """
+    Error during renderring the template.
+    """
     pass

@@ -74,4 +74,6 @@ class Template:
     async def render(self, **kwargs: Any) -> str:
         tpl_namespace = self._get_namespace(tpl_globals=kwargs)
 
-        return await tpl_namespace.render()
+        await tpl_namespace._render()
+
+        return tpl_namespace._tpl_result
