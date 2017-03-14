@@ -20,38 +20,87 @@ from typing import Dict, Any, Optional
 from . import template
 from . import exceptions
 from . import loaders
+from . import context
 
 import abc
 
-__all__ = ["Namespace"]
+__all__ = ["BlockNamespace", "TplNamespace"]
 
 
-class BlockNamespace(abc.ABC):
-    def __init__(self, tpl_namespace: "Namespace") -> None:
+class _BaseNamespace(abc.ABC):
+    @abc.abstractmethod
+    @property
+    def _loader(self) -> "loaders.BaseLoader":
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _get_globals(self) -> Dict[str, Any]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def _tpl_ctx(self) -> context.TemplateContext:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def body(self) -> str:
+        """
+        Return the body from the child template.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def parent(self) -> "TplNamespace":
+        """
+        Return the namespace of the parent template (if any).
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def _inherit_tpl(self) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def _add_parent(self, path: str) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def _include_tpl(self, path: str) -> str:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def _render(self) -> None:
+        raise NotImplementedError
+
+
+class BlockNamespace(_BaseNamespace):
+    def __init__(self, tpl_namespace: "TplNamespace") -> None:
         self._tpl_namespace = tpl_namespace
-
-        self._tpl = self._tpl_namespace._tpl
-        self._tpl_ctx = self._tpl_namespace._tpl_ctx
 
         self.__tpl_result__ = ""
 
         self._finished = False
 
     @property
-    def body(self) -> str:
-        return self._tpl_namespace.body
+    def _tpl_ctx(self) -> "template.Template":
+        return self._tpl_namespace._tpl
 
     @property
-    def parent(self) -> "Namespace":
-        return self._tpl_namespace.parent
+    def _loader(self) -> "loaders.BaseLoader":
+        if self._tpl._loader is None:
+            raise exceptions.TemplateRenderError(
+                "The loader is not set. "
+                "The inheritance and including is not available.")
+        return self._tpl._loader
 
-    @abc.abstractmethod
-    async def _render_block(self) -> None:  # pragma: no cover
-        raise NotImplementedError
+    def _get_globals(self) -> Dict[str, Any]:
+        return self._tpl_namespace._get_globals()
 
-    async def _add_parent(self, path: str) -> None:
-        raise exceptions.TemplateRenderError(
-            "Cannot Set Inheritance inside the block.")
+    @property
+    def _tpl_ctx(self) -> context.TemplateContext:
+        return self._tpl_namespace._tpl_ctx
 
     @property
     def _block_result(self) -> str:
@@ -61,22 +110,50 @@ class BlockNamespace(abc.ABC):
 
         return self.__tpl_result__
 
-    async def _render(self) -> str:
-        pass
+    @property
+    def body(self) -> str:
+        return self._tpl_namespace.body
+
+    @property
+    def parent(self) -> "TplNamespace":
+        return self._tpl_namespace.parent
+
+    async def _inherit_tpl(self) -> None:
+        raise exceptions.TemplateRenderError(
+            "Cannot inherit template(s) inside the block.")
+
+    async def _add_parent(self, path: str) -> None:
+        raise exceptions.TemplateRenderError(
+            "Cannot Set Inheritance inside the block.")
+
+    async def _include_tpl(self, path: str) -> str:
+        return await self._tpl_namespace._include_tpl(path)
+
+    async def _render(self) -> None:
+        if self._finished:
+            raise exceptions.TemplateRenderError(
+                "Renderring has already been finished.")
+
+        await self._render_block()
+
+        self._finished = True
+
+    @abc.abstractmethod
+    async def _render_block(self) -> None:  # pragma: no cover
+        raise NotImplementedError
 
 
-class Namespace(abc.ABC):
+class TplNamespace(_BaseNamespace):
     def __init__(
         self, tpl: "template.Template",
             tpl_globals: Dict[str, Any]) -> None:
         self._tpl = tpl
-        self._tpl_ctx = self._tpl._tpl_ctx
         self._tpl_globals = tpl_globals
 
         self.__tpl_result__ = ""
 
         self._body: Optional[str] = None
-        self._parent: Optional[Namespace] = None
+        self._parent: Optional[TplNamespace] = None
 
         self._finished = False
 
@@ -99,20 +176,26 @@ class Namespace(abc.ABC):
         return new_globals
 
     @property
+    def _tpl_result(self) -> str:
+        if not self._finished:
+            raise exceptions.TemplateRenderError(
+                "Renderring has not been finished yet.")
+
+        return self.__tpl_result__
+
+    @property
+    def _tpl_ctx(self) -> context.TemplateContext:
+        return self._tpl._tpl_ctx
+
+    @property
     def body(self) -> str:
-        """
-        Return the body from the child template.
-        """
         if self._body is None:
             raise AttributeError("Inheritance is not enabled.")
 
         return self._body
 
     @property
-    def parent(self) -> "Namespace":
-        """
-        Return the namespace of the parent template (if any).
-        """
+    def parent(self) -> "TplNamespace":
         if self._parent is None:
             raise AttributeError("Parent is not set.")
 
@@ -153,23 +236,16 @@ class Namespace(abc.ABC):
         await tpl_namespace._render()
         return tpl_namespace._tpl_result
 
-    @abc.abstractmethod
-    async def _render_body(self) -> None:  # pragma: no cover
-        raise NotImplementedError
-
-    @property
-    def _tpl_result(self) -> str:
-        if not self._finished:
-            raise exceptions.TemplateRenderError(
-                "Renderring has not been finished yet.")
-
-        return self.__tpl_result__
-
     async def _render(self) -> None:
         if self._finished:
             raise exceptions.TemplateRenderError(
                 "Renderring has already been finished.")
+
         await self._render_body()
 
         await self._inherit_tpl()
         self._finished = True
+
+    @abc.abstractmethod
+    async def _render_body(self) -> None:  # pragma: no cover
+        raise NotImplementedError

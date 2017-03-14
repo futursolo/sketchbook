@@ -61,7 +61,7 @@ class Template:
         return self._printed_tpl
 
     def _get_namespace(
-            self, tpl_globals: Mapping[str, Any]) -> runtime.Namespace:
+            self, tpl_globals: Mapping[str, Any]) -> runtime.TplNamespace:
         tpl_globals = tpl_globals
 
         exec(self._compiled_code, tpl_globals)  # type: ignore
