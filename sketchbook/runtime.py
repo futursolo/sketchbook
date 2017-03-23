@@ -41,7 +41,7 @@ class BlockStorage:
         self, name: str, _defined_here: bool=False) -> Callable[
             ..., Awaitable[str]]:
         if name not in self._blocks.keys():
-            raise KeyError("Unknown Block Name {}.".format(name))
+            raise KeyError(f"Unknown Block Name {name}.")
 
         SelectedBlockNamespace = self._blocks[name]
 

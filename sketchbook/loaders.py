@@ -144,7 +144,7 @@ class AsyncFileSystemLoader(BaseLoader):
             return final_tpl_path
 
         raise exceptions.TemplateNotFoundError(
-            "No such file {}.".format(final_tpl_path))
+            f"No such file {final_tpl_path}.")
 
     async def _load_tpl_content(self, tpl_path: str) -> bytes:
         async with aiofiles.open(

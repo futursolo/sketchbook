@@ -131,8 +131,8 @@ class Block(Statement, IndentMixIn, AppendMixIn):
 
         if not _is_valid_fn_name(block_name):
             raise exceptions.TemplateSyntaxError(
-                "Invalid Block Statement. Block name expected, got: {}."
-                .format(repr(block_name)))
+                "Invalid Block Statement. Block name expected, "
+                f"got: {repr(block_name)}.")
 
         return Cls(
             block_name=block_name,
@@ -183,14 +183,14 @@ class BaseOutput(Statement, AppendMixIn):
         if len(splitted_stmt) != 2:
             raise exceptions.TemplateSyntaxError(
                 ("The expression to be output is empty "
-                 "in file {} at line {}.").format(filepath, line_no))
+                 f"in file {filepath} at line {line_no}."))
 
         stmt_output_exp = splitted_stmt[1].strip()
 
         if not stmt_output_exp:
             raise exceptions.TemplateSyntaxError(
                 ("The expression to be output is empty "
-                 "in file {} at line {}.").format(filepath, line_no))
+                 f"in file {filepath} at line {line_no}."))
 
         return Cls(
             output_filter=stmt_output_filter,

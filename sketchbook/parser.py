@@ -51,8 +51,7 @@ class TemplateParser:
     def _move_to_next_line(self) -> None:
         assert not self._current_line, \
             ("Parsing of the last line is not completed "
-             "in file {} at line {}.").format(
-                self._tpl._path, self._current_line_no)
+             f"in file {self._tpl._path} at line {self._current_line_no}.")
 
         new_line = self._io.readline()
 
@@ -129,8 +128,8 @@ class TemplateParser:
 
         else:
             raise exceptions.UnknownStatementError(
-                "Unknown Statement {} in file {} at line {}.".format(
-                    repr(stmt_str), self._tpl._path, line_no))
+                f"Unknown Statement {repr(stmt_str)} "
+                f"in file {self._tpl._path} at line {line_no}.")
 
     def _find_next_stmt(self) -> statements.Statement:
         stmt_chunks: List[str] = []
@@ -145,8 +144,8 @@ class TemplateParser:
                     if begin_mark_line_no != -1:
                         raise exceptions.TemplateSyntaxError(
                             ("Cannot find end mark for begin mark "
-                             "in file {} at line {}.").format(
-                                self._tpl._path, begin_mark_line_no))
+                             f"in file {self._tpl._path} "
+                             f"at line {begin_mark_line_no}."))
 
                     elif stmt_chunks:
                         return statements.Plain("".join(stmt_chunks))
@@ -201,8 +200,8 @@ class TemplateParser:
 
         else:
             raise exceptions.TemplateSyntaxError(
-                "Redundant Unindent Statement in file {} at line {}.".format(
-                    self._tpl._path, self._current_line_no))
+                "Redundant Unindent Statement "
+                f"in file {self._tpl._path} at line {self._current_line_no}.")
 
     def _parse(self) -> None:
         while True:
@@ -226,8 +225,9 @@ class TemplateParser:
 
         if self._indents:
             raise exceptions.TemplateSyntaxError(
-                "Unindented Indent Statement in file {} at line {}.".format(
-                    self._tpl._path, self._indents[-1].line_no))
+                "Unindented Indent Statement "
+                f"in file {self._tpl._path} "
+                f"at line {self._indents[-1].line_no}.")
 
     @classmethod
     def parse_tpl(Cls, tpl: "template.Template") -> statements.Root:
