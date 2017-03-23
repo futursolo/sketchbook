@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import List, Optional, Sequence, Type
+from typing import List, Optional, Sequence, Type, Dict
 
 from . import printer
 from . import exceptions
@@ -74,12 +74,21 @@ class Root(Statement):
         self._filepath = filepath
 
         self._stmts: List[Statement] = []
+        self._block_stmts: Dict[str, Block] = {}
 
     def append_stmt(self, stmt: Statement) -> None:
         self._stmts.append(stmt)
 
-    def append_block(self, block: "Block") -> None:
-        raise NotImplementedError
+    def append_block(self, block_stmt: "Block") -> None:
+        if block_stmt.block_name in self._block_stmts.keys():
+            raise exceptions.BlockNameConflictError(
+                f"The name of the block at {block_stmt.line_no}"
+                "is conflict with the block at "
+                f"{self._block_stmts[block_stmt.block_name].line_no} "
+                f"in file {self._filepath}. You cannot define two block with "
+                "the same name in the one file.")
+
+        self._block_stmts[block_stmt.block_name] = block_stmt
 
     @classmethod
     def try_match(

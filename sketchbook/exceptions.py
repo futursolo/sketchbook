@@ -43,6 +43,10 @@ class UnknownStatementError(SketchbookException):
     pass
 
 
+class BlockNameConflictError(SketchbookException):
+    pass
+
+
 class TemplateRenderError(SketchbookException):
     """
     Error during renderring the template.
