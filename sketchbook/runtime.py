@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Awaitable, Callable, Type
 
 from . import template
 from . import exceptions
@@ -25,6 +25,54 @@ from . import context
 import abc
 
 __all__ = ["BlockNamespace", "TplNamespace"]
+
+
+class BlockStorage:
+    def __init__(self, tpl_namespace: "TplNamespace") -> None:
+        self._tpl_namespace: TplNamespace
+        self._blocks: Dict[str, Type[BlockNamespace]]
+        self.__dict__["_tpl_namespace"] = tpl_namespace
+        self.__dict__["_blocks"] = {}
+
+        self._blocks.update(  # type: ignore
+            **self._tpl_namespace._BLOCK_NAMESPACES)
+
+    def __getitem__(
+        self, name: str, _defined_here: bool=False) -> Callable[
+            ..., Awaitable[str]]:
+        if name not in self._blocks.keys():
+            raise KeyError("Unknown Block Name {}.".format(name))
+
+        SelectedBlockNamespace = self._blocks[name]
+
+        async def wrapper() -> str:
+            block_namespace = SelectedBlockNamespace(  # type: ignore
+                self._tpl_namespace, _defined_here=_defined_here)
+
+            await block_namespace._render()
+
+            return block_namespace._block_result
+
+        return wrapper
+
+    def __setitem__(self, name: str, value: Any) -> None:  # pragma: no cover
+        raise NotImplementedError
+
+    def __getattr__(self, name: str) -> Callable[..., Awaitable[str]]:
+        try:
+            return self[name]
+
+        except KeyError as e:
+            raise AttributeError from e
+
+    __setattr__ = __setitem__
+
+    def _update(self, child_store: "BlockStorage") -> None:
+        for k, v in child_store._blocks.items():
+            if k not in self._blocks.keys():
+                continue
+
+            self._blocks[k] = v
 
 
 class _BaseNamespace(abc.ABC):
@@ -40,6 +88,14 @@ class _BaseNamespace(abc.ABC):
     @abc.abstractmethod
     @property
     def _tpl_ctx(self) -> context.TemplateContext:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def blocks(self) -> BlockStorage:
+        """
+        Return an object to access blocks.
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -76,8 +132,10 @@ class _BaseNamespace(abc.ABC):
 
 
 class BlockNamespace(_BaseNamespace):
-    def __init__(self, tpl_namespace: "TplNamespace") -> None:
+    def __init__(
+            self, tpl_namespace: "TplNamespace", _defined_here: bool) -> None:
         self._tpl_namespace = tpl_namespace
+        self._defined_here = _defined_here
 
         self.__tpl_result__ = ""
 
@@ -111,6 +169,10 @@ class BlockNamespace(_BaseNamespace):
         return self.__tpl_result__
 
     @property
+    def blocks(self) -> BlockStorage:
+        return self._tpl_namespace.blocks
+
+    @property
     def body(self) -> str:
         return self._tpl_namespace.body
 
@@ -134,6 +196,11 @@ class BlockNamespace(_BaseNamespace):
             raise exceptions.TemplateRenderError(
                 "Renderring has already been finished.")
 
+        if self._defined_here and self._tpl_namespace._parent is not None:
+            self._finished = True
+
+            return
+
         await self._render_block()
 
         self._finished = True
@@ -144,6 +211,8 @@ class BlockNamespace(_BaseNamespace):
 
 
 class TplNamespace(_BaseNamespace):
+    _BLOCK_NAMESPACES: Dict[str, Type[BlockNamespace]] = {}
+
     def __init__(
         self, tpl: "template.Template",
             tpl_globals: Dict[str, Any]) -> None:
@@ -154,6 +223,8 @@ class TplNamespace(_BaseNamespace):
 
         self._body: Optional[str] = None
         self._parent: Optional[TplNamespace] = None
+
+        self._block_store = BlockStorage(self)
 
         self._finished = False
 
@@ -188,6 +259,10 @@ class TplNamespace(_BaseNamespace):
         return self._tpl._tpl_ctx
 
     @property
+    def blocks(self) -> BlockStorage:
+        return self._block_store
+
+    @property
     def body(self) -> str:
         if self._body is None:
             raise AttributeError("Inheritance is not enabled.")
@@ -201,8 +276,8 @@ class TplNamespace(_BaseNamespace):
 
         return self._parent
 
-    def _update_blocks(self, **kwargs: Any) -> None:
-        raise NotImplementedError
+    def _update_blocks(self, child_store: BlockStorage) -> None:
+        self._block_store._update(child_store)
 
     def _update_body(self, body: str) -> None:
         assert self._body is None, "There's already a child body."
@@ -213,6 +288,7 @@ class TplNamespace(_BaseNamespace):
             return
 
         self._parent._update_body(self.__tpl_result__)
+        self._parent._update_blocks(self._block_store)
 
         await self._parent._render()
 
