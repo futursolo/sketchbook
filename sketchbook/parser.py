@@ -62,7 +62,7 @@ class TemplateParser:
         self._current_line = new_line
 
     @property
-    def root(self) -> statements.Root:
+    def root(self) -> "statements.Root":
         return self._root
 
     def _find_next_begin_mark(self) -> int:
@@ -114,7 +114,8 @@ class TemplateParser:
             else:
                 return pos
 
-    def _parse_stmt(self, stmt_str: str, line_no: int) -> statements.Statement:
+    def _parse_stmt(
+            self, stmt_str: str, line_no: int) -> "statements.Statement":
         stmt_str = stmt_str.strip()
 
         for StmtCls in self._tpl_ctx.stmt_classes:
@@ -131,7 +132,7 @@ class TemplateParser:
                 f"Unknown Statement {repr(stmt_str)} "
                 f"in file {self._tpl._path} at line {line_no}.")
 
-    def _find_next_stmt(self) -> statements.Statement:
+    def _find_next_stmt(self) -> "statements.Statement":
         stmt_chunks: List[str] = []
         begin_mark_line_no = -1
 
@@ -187,7 +188,7 @@ class TemplateParser:
 
             return self._parse_stmt("".join(stmt_chunks), begin_mark_line_no)
 
-    def _append_to_current(self, stmt: statements.AppendMixIn) -> None:
+    def _append_to_current(self, stmt: "statements.AppendMixIn") -> None:
         if self._indents:
             self._indents[-1].append_stmt(stmt)
 
@@ -230,6 +231,6 @@ class TemplateParser:
                 f"at line {self._indents[-1].line_no}.")
 
     @classmethod
-    def parse_tpl(Cls, tpl: "template.Template") -> statements.Root:
+    def parse_tpl(Cls, tpl: "template.Template") -> "statements.Root":
         tpl_parser = Cls(tpl)
         return tpl_parser.root

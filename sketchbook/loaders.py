@@ -37,7 +37,8 @@ class BaseLoader(abc.ABC):
     All Loaders should be a subclass of this class.
     """
     def __init__(
-            self, *, tpl_ctx: Optional[context.TemplateContext]=None) -> None:
+        self, *,
+            tpl_ctx: Optional["context.TemplateContext"]=None) -> None:
         self._tpl_ctx = tpl_ctx or context.TemplateContext()
         self._tpl_cache: Dict[str, template.Template] = {}
 
@@ -65,7 +66,7 @@ class BaseLoader(abc.ABC):
 
     async def load_tpl(
         self, tpl_path: str,
-            origin_path: Optional[str]=None) -> template.Template:
+            origin_path: Optional[str]=None) -> "template.Template":
         """
         Load and parse the template asynchronously.
         """
@@ -95,7 +96,7 @@ class AsyncFileSystemLoader(BaseLoader):
     def __init__(
         self, root_path: str, *,
         executor: Optional[concurrent.futures.ThreadPoolExecutor]=None,
-            tpl_ctx: Optional[context.TemplateContext]=None) -> None:
+            tpl_ctx: Optional["context.TemplateContext"]=None) -> None:
         assert isinstance(root_path, str)
 
         self._root_path = os.path.abspath(root_path)

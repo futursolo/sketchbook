@@ -42,7 +42,7 @@ class CodePrinter:
 
     def writeline(
         self, line: str,
-            stmt: Optional[statements.AppendMixIn]=None) -> None:
+            stmt: Optional["statements.AppendMixIn"]=None) -> None:
         """
         Write a line with indent.
         """

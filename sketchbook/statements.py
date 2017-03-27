@@ -42,15 +42,15 @@ class IndentMixIn(abc.ABC):
     def append_stmt(self, stmt: "AppendMixIn") -> None:
         raise NotImplementedError
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def line_no(self) -> int:
         raise NotImplementedError
 
 
 class AppendMixIn(abc.ABC):
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def line_no(self) -> int:
         raise NotImplementedError
 
@@ -64,8 +64,8 @@ class UnindentMixIn(abc.ABC):
 
 
 class Statement(abc.ABC):
-    @abc.abstractmethod
     @classmethod
+    @abc.abstractmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
             line_no: int) -> Optional["Statement"]:
@@ -137,7 +137,6 @@ class Block(Statement, IndentMixIn, AppendMixIn):
     def line_no(self) -> int:
         return self._line_no
 
-    @abc.abstractmethod
     @classmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,

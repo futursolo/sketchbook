@@ -76,8 +76,8 @@ class BlockStorage:
 
 
 class _BaseNamespace(abc.ABC):
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def _loader(self) -> "loaders.BaseLoader":
         raise NotImplementedError
 
@@ -85,29 +85,29 @@ class _BaseNamespace(abc.ABC):
     def _get_globals(self) -> Dict[str, Any]:
         raise NotImplementedError
 
-    @abc.abstractmethod
     @property
-    def _tpl_ctx(self) -> context.TemplateContext:
+    @abc.abstractmethod
+    def _tpl_ctx(self) -> "context.TemplateContext":
         raise NotImplementedError
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def blocks(self) -> BlockStorage:
         """
         Return an object to access blocks.
         """
         raise NotImplementedError
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def body(self) -> str:
         """
         Return the body from the child template.
         """
         raise NotImplementedError
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def parent(self) -> "TplNamespace":
         """
         Return the namespace of the parent template (if any).
@@ -157,7 +157,7 @@ class BlockNamespace(_BaseNamespace):
         return self._tpl_namespace._get_globals()
 
     @property
-    def _tpl_ctx(self) -> context.TemplateContext:
+    def _tpl_ctx(self) -> "context.TemplateContext":
         return self._tpl_namespace._tpl_ctx
 
     @property
@@ -255,7 +255,7 @@ class TplNamespace(_BaseNamespace):
         return self.__tpl_result__
 
     @property
-    def _tpl_ctx(self) -> context.TemplateContext:
+    def _tpl_ctx(self) -> "context.TemplateContext":
         return self._tpl._tpl_ctx
 
     @property

@@ -36,7 +36,7 @@ class Template:
     def __init__(
         self, tpl_content: Union[str, bytes], *,
         path: str="<string>",
-        tpl_ctx: Optional[context.TemplateContext]=None,
+        tpl_ctx: Optional["context.TemplateContext"]=None,
             loader: Optional["loaders.BaseLoader"]=None) -> None:
         self._path = path
 
