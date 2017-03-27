@@ -187,7 +187,7 @@ class TemplateParser:
 
             return self._parse_stmt("".join(stmt_chunks), begin_mark_line_no)
 
-    def _append_to_current(self, stmt: statements.Statement) -> None:
+    def _append_to_current(self, stmt: statements.AppendMixIn) -> None:
         if self._indents:
             self._indents[-1].append_stmt(stmt)
 

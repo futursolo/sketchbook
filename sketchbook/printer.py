@@ -15,10 +15,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Any
+from typing import Any, Optional
 from types import CodeType
 
 from . import template
+from . import statements
 
 __all__ = ["CodePrinter"]
 
@@ -39,11 +40,16 @@ class CodePrinter:
 
         self._finished = False
 
-    def writeline(self, line: str) -> None:
+    def writeline(
+        self, line: str,
+            stmt: Optional[statements.AppendMixIn]=None) -> None:
         """
         Write a line with indent.
         """
         assert not self._finished, "Code Generation has already been finished."
+
+        if stmt:
+            line += f"  # in file {self._path} at line {stmt.line_no}."
 
         final_line = self._indent_mark * self._indent_num + line + self._end
         self._committed_code += final_line

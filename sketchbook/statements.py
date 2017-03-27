@@ -39,20 +39,27 @@ def _is_valid_fn_name(maybe_fn_name: str) -> bool:
 
 class IndentMixIn(abc.ABC):
     @abc.abstractmethod
+    def append_stmt(self, stmt: "AppendMixIn") -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    @property
+    def line_no(self) -> int:
+        raise NotImplementedError
+
+
+class AppendMixIn(abc.ABC):
+    @abc.abstractmethod
     @property
     def line_no(self) -> int:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def append_stmt(self, stmt: "Statement") -> None:
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
         raise NotImplementedError
 
 
-class AppendMixIn:
-    pass
-
-
-class UnindentMixIn:
+class UnindentMixIn(abc.ABC):
     pass
 
 
@@ -64,19 +71,19 @@ class Statement(abc.ABC):
             line_no: int) -> Optional["Statement"]:
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def print_code(self, code_printer: printer.CodePrinter) -> None:
-        raise NotImplementedError
 
-
-class Root(Statement):
+class Root(Statement, AppendMixIn):
     def __init__(self, filepath: str) -> None:
         self._filepath = filepath
 
-        self._stmts: List[Statement] = []
+        self._stmts: List[AppendMixIn] = []
         self._block_stmts: Dict[str, Block] = {}
 
-    def append_stmt(self, stmt: Statement) -> None:
+    @property
+    def line_no(self) -> int:
+        return 0
+
+    def append_stmt(self, stmt: AppendMixIn) -> None:
         self._stmts.append(stmt)
 
     def append_block(self, block_stmt: "Block") -> None:
@@ -97,7 +104,23 @@ class Root(Statement):
         raise NotImplementedError("This does not apply to Root.")
 
     def print_code(self, code_printer: printer.CodePrinter) -> None:
-        raise NotImplementedError
+        code_printer.writeline("import sketchbook")
+        code_printer.writeline("_TPL_BLOCK_NAMESPACES = {}")
+
+        for block_stmt in self._block_stmts.values():
+            block_stmt.print_block_code(code_printer)
+
+        code_printer.writeline(
+            "class _TplCurrentNamespace(sketchbook.TplNamespace):", self)
+        with code_printer.indent_block():
+            code_printer.writeline(
+                "_BLOCK_NAMESPACES = _TPL_BLOCK_NAMESPACES", self)
+
+            code_printer.writeline(
+                "async def _render_body(self) -> None:", self)
+            with code_printer.indent_block():
+                for stmt in self._stmts:
+                    stmt.print_code(code_printer)
 
 
 class Block(Statement, IndentMixIn, AppendMixIn):
@@ -138,10 +161,34 @@ class Block(Statement, IndentMixIn, AppendMixIn):
             block_name=block_name,
             filepath=filepath, line_no=line_no)
 
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(
+            "self.__tpl_result__ += "
+            f"await self.blocks[{repr(self.block_name)}, True]()", self)
+
+    def print_block_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(
+            "class _TplCurrentBlockNamespace(sketchbook.BlockNamespace):",
+            self)
+        with code_printer.indent_block():
+            code_printer.writeline(
+                "async def _render_block(self) -> None:", self)
+            with code_printer.indent_block():
+                for stmt in self._stmts:
+                    stmt.print_code(code_printer)
+
+        code_printer.writeline(
+            f"_TPL_BLOCK_NAMESPACES[{repr(self.block_name)}] = "
+            "_TplCurrentBlockNamespace")
+
 
 class Plain(Statement, AppendMixIn):
-    def __init__(self, stmt_str: str) -> None:
-        self._stmt_str = stmt_str
+    def __init__(self, plain_str: str) -> None:
+        self._plain_str = plain_str
+
+    @property
+    def line_no(self) -> int:
+        raise NotImplementedError("This does not apply to Plain.")
 
     @classmethod
     def try_match(
@@ -150,7 +197,8 @@ class Plain(Statement, AppendMixIn):
         raise NotImplementedError("This does not apply to Plain.")
 
     def print_code(self, code_printer: printer.CodePrinter) -> None:
-        raise NotImplementedError
+        code_printer.writeline(
+            f"self.__tpl_result__ += {repr(self._plain_str)}", self)
 
 
 class BaseOutput(Statement, AppendMixIn):
@@ -197,41 +245,83 @@ class BaseOutput(Statement, AppendMixIn):
             output_exp=stmt_output_exp,
             filepath=filepath, line_no=line_no)
 
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(
+            f"__tpl_output_raw_result__ = {self._output_exp}", self)
+        code_printer.writeline(
+            f"assert isinstance(__tpl_output_raw_result__, str), "
+            "'The result of output is not string.'", self)
+
+        code_printer.writeline(
+            "self.__tpl_result__ += "
+            f"self._tpl_ctx.escape_fns[{repr(self._output_filter)}]"
+            "(__tpl_output_raw_result__)")
+
 
 class _Include(Statement, AppendMixIn):
-    def __init__(self, stmt_str: str, filepath: str, line_no: int) -> None:
-        self._stmt_str = stmt_str
+    def __init__(self, target_path: str, filepath: str, line_no: int) -> None:
+        self._target_path = target_path
         self._filepath = filepath
         self._line_no = line_no
+
+    @property
+    def line_no(self) -> int:
+        return self._line_no
 
     @classmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
             line_no: int) -> Optional["Statement"]:
-        if stmt_str.split(" ", 1)[0] != "include":
+
+        splitted_stmt = stmt_str.split(" ", 1)
+        if splitted_stmt[0] != "include":
             return None
 
+        if len(splitted_stmt) < 2:
+            raise exceptions.TemplateSyntaxError(
+                f"In file {filepath} at line {line_no}, "
+                "invalid syntax, you must provide the path to be included.")
+
         return Cls(
-            stmt_str=stmt_str,
+            target_path=splitted_stmt[1],
             filepath=filepath, line_no=line_no)
+
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(
+            "self.__tpl_result__ += await "
+            f"self._include_tpl({self._target_path})", self)
 
 
 class _Inherit(Statement, AppendMixIn):
-    def __init__(self, stmt_str: str, filepath: str, line_no: int) -> None:
-        self._stmt_str = stmt_str
+    def __init__(self, target_path: str, filepath: str, line_no: int) -> None:
+        self._target_path = target_path
         self._filepath = filepath
         self._line_no = line_no
+
+    @property
+    def line_no(self) -> int:
+        return self._line_no
 
     @classmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
             line_no: int) -> Optional["Statement"]:
-        if stmt_str.split(" ", 1)[0] != "inherit":
+        splitted_stmt = stmt_str.split(" ", 1)
+        if splitted_stmt[0] != "inherit":
             return None
 
+        if len(splitted_stmt) < 2:
+            raise exceptions.TemplateSyntaxError(
+                f"In file {filepath} at line {line_no}, "
+                "invalid syntax, you must provide the path to be inherited.")
+
         return Cls(
-            stmt_str=stmt_str,
+            target_path=splitted_stmt[1],
             filepath=filepath, line_no=line_no)
+
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(
+            f"await self._add_parent({self._target_path})", self)
 
 
 class _Indent(Statement, IndentMixIn, AppendMixIn):
@@ -240,9 +330,9 @@ class _Indent(Statement, IndentMixIn, AppendMixIn):
         self._filepath = filepath
         self._line_no = line_no
 
-        self._stmts: List[Statement] = []
+        self._stmts: List[AppendMixIn] = []
 
-    def append_stmt(self, stmt: Statement) -> None:
+    def append_stmt(self, stmt: AppendMixIn) -> None:
         self._stmts.append(stmt)
 
     @property
@@ -258,8 +348,17 @@ class _Indent(Statement, IndentMixIn, AppendMixIn):
             return None
 
         return Cls(
-            stmt_str=stmt_str,
+            stmt_str=stmt_str.strip(),
             filepath=filepath, line_no=line_no)
+
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(f"{self._stmt_str}:", self)
+
+        with code_printer.indent_block():
+            for stmt in self._stmts:
+                stmt.print_code(code_printer)
+
+            code_printer.writeline("pass", self)
 
 
 class _Unindent(Statement, UnindentMixIn):
@@ -279,6 +378,11 @@ class _HalfIndent(Statement, IndentMixIn, AppendMixIn, UnindentMixIn):
         self._filepath = filepath
         self._line_no = line_no
 
+        self._stmts: List[AppendMixIn] = []
+
+    def append_stmt(self, stmt: AppendMixIn) -> None:
+        self._stmts.append(stmt)
+
     @property
     def line_no(self) -> int:
         return self._line_no
@@ -292,8 +396,17 @@ class _HalfIndent(Statement, IndentMixIn, AppendMixIn, UnindentMixIn):
             return None
 
         return Cls(
-            stmt_str=stmt_str,
+            stmt_str=stmt_str.strip(),
             filepath=filepath, line_no=line_no)
+
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(f"{self._stmt_str}:", self)
+
+        with code_printer.indent_block():
+            for stmt in self._stmts:
+                stmt.print_code(code_printer)
+
+            code_printer.writeline("pass", self)
 
 
 class _Inline(Statement, AppendMixIn):
@@ -301,6 +414,10 @@ class _Inline(Statement, AppendMixIn):
         self._stmt_str = stmt_str
         self._filepath = filepath
         self._line_no = line_no
+
+    @property
+    def line_no(self) -> int:
+        return self._line_no
 
     @classmethod
     def try_match(
@@ -311,8 +428,11 @@ class _Inline(Statement, AppendMixIn):
             return None
 
         return Cls(
-            stmt_str=stmt_str,
+            stmt_str=stmt_str.strip(),
             filepath=filepath, line_no=line_no)
+
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(self._stmt_str, self)
 
 
 class _Comment(Statement, AppendMixIn):
@@ -320,6 +440,10 @@ class _Comment(Statement, AppendMixIn):
         self._cmnt_str = cmnt_str
         self._filepath = filepath
         self._line_no = line_no
+
+    @property
+    def line_no(self) -> int:
+        return self._line_no
 
     @classmethod
     def try_match(
@@ -332,12 +456,20 @@ class _Comment(Statement, AppendMixIn):
             cmnt_str=stmt_str[1:].strip(),
             filepath=filepath, line_no=line_no)
 
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        for cmnt_line in self._cmnt_str.splitlines():
+            code_printer.writeline(f"# {cmnt_line}", self)
+
 
 class _Code(Statement, AppendMixIn):
     def __init__(self, code_exp: str, filepath: str, line_no: int) -> None:
         self._code_exp = code_exp
         self._filepath = filepath
         self._line_no = line_no
+
+    @property
+    def line_no(self) -> int:
+        return self._line_no
 
     @classmethod
     def try_match(
@@ -349,6 +481,9 @@ class _Code(Statement, AppendMixIn):
         return Cls(
             code_exp=stmt_str[1:].strip(),
             filepath=filepath, line_no=line_no)
+
+    def print_code(self, code_printer: printer.CodePrinter) -> None:
+        code_printer.writeline(self._code_exp, self)
 
 
 builtin_stmt_classes: Sequence[Type[Statement]] = [
