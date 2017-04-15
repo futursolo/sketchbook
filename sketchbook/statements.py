@@ -197,7 +197,7 @@ class Plain(Statement, AppendMixIn):
 
     def print_code(self, code_printer: printer.CodePrinter) -> None:
         code_printer.writeline(
-            f"self.__tpl_result__ += {repr(self._plain_str)}", self)
+            f"self.__tpl_result__ += {repr(self._plain_str)}")
 
 
 class BaseOutput(Statement, AppendMixIn):
@@ -210,6 +210,10 @@ class BaseOutput(Statement, AppendMixIn):
         self._output_exp = output_exp
         self._filepath = filepath
         self._line_no = line_no
+
+    @property
+    def line_no(self) -> int:
+        return self._line_no
 
     @classmethod
     def try_match(
