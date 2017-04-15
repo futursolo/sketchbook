@@ -129,6 +129,11 @@ class Block(Statement, IndentMixIn, AppendMixIn):
         self._filepath = filepath
         self._line_no = line_no
 
+        self._stmts: List[AppendMixIn] = []
+
+    def append_stmt(self, stmt: AppendMixIn) -> None:
+        self._stmts.append(stmt)
+
     @property
     def block_name(self) -> str:
         return self._block_name

@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Dict, Any, Optional, Awaitable, Callable, Type
+from typing import Dict, Any, Optional, Awaitable, Callable, Type, Union, Tuple
 
 from . import template
 from . import exceptions
@@ -24,7 +24,7 @@ from . import context
 
 import abc
 
-__all__ = ["BlockNamespace", "TplNamespace"]
+__all__ = ["BlockStorage", "BlockNamespace", "TplNamespace"]
 
 
 class BlockStorage:
@@ -38,16 +38,23 @@ class BlockStorage:
             **self._tpl_namespace._BLOCK_NAMESPACES)
 
     def __getitem__(
-        self, name: str, _defined_here: bool=False) -> Callable[
+        self, name: Union[str, Tuple[str, bool]]) -> Callable[
             ..., Awaitable[str]]:
-        if name not in self._blocks.keys():
-            raise KeyError(f"Unknown Block Name {name}.")
+        if isinstance(name, tuple):
+            block_name, defined_here = name
 
-        SelectedBlockNamespace = self._blocks[name]
+        else:
+            block_name = name
+            defined_here = False
+
+        if block_name not in self._blocks.keys():
+            raise KeyError(f"Unknown Block Name {block_name}.")
+
+        SelectedBlockNamespace = self._blocks[block_name]
 
         async def wrapper() -> str:
             block_namespace = SelectedBlockNamespace(  # type: ignore
-                self._tpl_namespace, _defined_here=_defined_here)
+                self._tpl_namespace, _defined_here=defined_here)
 
             await block_namespace._render()
 
