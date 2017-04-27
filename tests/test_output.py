@@ -23,7 +23,18 @@ helper = TestHelper(__file__)
 
 class OutputTestCase:
     @helper.force_sync
-    async def test_default_escape(self):
-        tpl = Template("Hello, <%= a %>!")
+    async def test_html_escape(self) -> None:
+        tpl = Template("Hello, <%html= a %>!")
 
-        assert await tpl.render(a="world") == "Hello, world!"
+        assert await tpl.render(a="<h1>world</h1>") == \
+            "Hello, &lt;h1&gt;world&lt;/h1&gt;!"
+
+    @helper.force_sync
+    async def test_no_escape(self) -> None:
+        tpl = Template("Hello, <%r= a %>!")
+
+        assert await tpl.render(a="<h1>world</h1>") == "Hello, <h1>world</h1>!"
+
+    @helper.force_sync
+    async def test_json_escape(self) -> None:
+        tpl = Template("")
