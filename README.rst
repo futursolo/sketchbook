@@ -1,7 +1,10 @@
 Sketchbook
 ==========
+.. image:: https://travis-ci.org/futursolo/sketchbook.svg?branch=master
+  :target: https://travis-ci.org/futursolo/sketchbook
+
 .. image:: https://coveralls.io/repos/github/futursolo/sketchbook/badge.svg?branch=master
-:target: https://coveralls.io/github/futursolo/sketchbook?branch=master
+  :target: https://coveralls.io/github/futursolo/sketchbook?branch=master
 
 
 A template engine built for asyncio with async/await syntax support.

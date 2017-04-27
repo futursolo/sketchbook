@@ -25,7 +25,7 @@ helper = TestHelper(__file__)
 
 
 class AsyncFileSystemLoaderTestCase:
-    def test_init(self):
+    def test_init(self) -> None:
         loader = AsyncFileSystemLoader(helper.abspath("tpls"))
 
         assert loader._root_path == helper.abspath("tpls") + "/"
@@ -34,7 +34,7 @@ class AsyncFileSystemLoaderTestCase:
             AsyncFileSystemLoader(-1)
 
     @helper.force_sync
-    async def test_load_tpl(self):
+    async def test_load_tpl(self) -> None:
         loader = AsyncFileSystemLoader(helper.abspath("tpls"))
 
         with pytest.raises(TemplateNotFoundError):
@@ -49,7 +49,7 @@ class AsyncFileSystemLoaderTestCase:
         assert loaded_tpl is sec_loaded_tpl  # Test Template Cache.
 
     @helper.force_sync
-    async def test_load_tpl_no_cache(self):
+    async def test_load_tpl_no_cache(self) -> None:
         tpl_ctx = TemplateContext(cache_tpls=False)
         loader = AsyncFileSystemLoader(helper.abspath("tpls"), tpl_ctx=tpl_ctx)
 
@@ -61,3 +61,48 @@ class AsyncFileSystemLoaderTestCase:
 
         # Test Template Cache Disabled.
         assert loaded_tpl is not sec_loaded_tpl
+
+
+class InheritanceTestCase:
+    @helper.force_sync
+    async def test_inherit(self) -> None:
+        loader = AsyncFileSystemLoader(helper.abspath("tpls"))
+
+        tpl = await loader.load_tpl("index.html")
+
+        assert await tpl.render() == """\
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Index Title</title>
+    </head>
+    <body>
+        \n
+This is body. The old title is Old Title.
+
+    </body>
+</html>
+"""
+
+
+class IncludeTestCase:
+    @helper.force_sync
+    async def test_include(self) -> None:
+        loader = AsyncFileSystemLoader(helper.abspath("tpls"))
+
+        tpl = await loader.load_tpl("main.html")
+
+        assert await tpl.render() == """\
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Main Page</title>
+    </head>
+
+    <body>
+
+        \n<nav>This will be included into other files.</nav>
+
+    </body>
+</html>
+"""
