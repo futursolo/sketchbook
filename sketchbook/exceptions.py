@@ -15,7 +15,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-__all__ = ["SketchbookException", "TemplateNotFoundError"]
+__all__ = [
+    "SketchbookException", "TemplateNotFoundError", "TemplateSyntaxError",
+    "UnknownStatementError", "BlockNameConflictError", "TemplateRenderError"]
 
 
 class SketchbookException(Exception):

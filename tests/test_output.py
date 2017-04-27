@@ -65,15 +65,3 @@ class OutputTestCase:
         tpl = Template("The result is <% number= a %>.", tpl_ctx=tpl_ctx)
 
         assert await tpl.render(a=12345) == "The result is 12346."
-
-    @helper.force_sync
-    async def test_statement_escape(self):
-        tpl = Template(
-            "<%% is the begin mark, and <%r= \"%%> is the end mark. \" %>"
-            "<%r= \"<% and\" %> %> only need to be escaped whenever they "
-            "have ambiguity of the templating system.")
-
-        assert await tpl.render() == (
-            "<% is the begin mark, and %> is the end mark. "
-            "<% and %> only need to be escaped whenever they "
-            "have ambiguity of the templating system.")
