@@ -19,4 +19,9 @@ __all__ = ["version", "__version__"]
 
 __version__ = (0, 1, 0, -1000)
 
-version = "0.1.0.dev0"
+_version_fragments = [str(i) for i in __version__[:3]]
+
+if __version__[3] < 0:
+    _version_fragments.append("dev0")
+
+version = ".".join(_version_fragments)

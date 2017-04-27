@@ -39,8 +39,10 @@ def load_version(module_name):
 setup_requires = ["setuptools", "pytest-runner>=2.11.1,<3"]
 
 install_requires = ["aiofiles>=0.3.1,<1"]
+install_requires.extend(setup_requires)
 
 tests_require = ["pytest>=3.0.7,<4"]
+tests_require.extend(install_requires)
 
 if __name__ == "__main__":
     setup(
