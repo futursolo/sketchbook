@@ -50,6 +50,13 @@ class OutputTestCase:
              "www.example2.com%2F")
 
     @helper.force_sync
+    async def test_url_without_plus_escape(self) -> None:
+        tpl = Template("https://www.example.com/?user=<%url_without_plus= name %>")
+        assert await tpl.render(name="John Smith") == \
+            "https://www.example.com/?user=John%20Smith"
+
+
+    @helper.force_sync
     async def test_custom_escape_fn(self) -> None:
         def _number_fn(i: int) -> str:
             return str(i + 1)
