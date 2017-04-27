@@ -22,7 +22,7 @@ install:
 script:
   - mypy --fast-parser --python-version 3.6 --disallow-untyped-calls --disallow-untyped-defs --warn-unused-ignores --show-traceback --strict-optional --ignore-missing-imports --follow-imports=skip --show-error-context --show-traceback -p sketchbook
   - pycodestyle --show-source sketchbook
-  - python setup.py test
+  - coverage run --source=sketchbook setup.py test
 
 after_success:
   - coveralls
