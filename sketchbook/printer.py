@@ -85,7 +85,7 @@ class CodePrinter:
         self._dec_indent_num()
 
     @property
-    def finished(self) -> bool:  #pragma: no cover
+    def finished(self) -> bool:  # pragma: no cover
         return self._finished
 
     @property
