@@ -37,14 +37,14 @@ class TestHelper:
 
         return self._loop
 
-    def abspath(self, sub_path: str) -> None:
+    def abspath(self, sub_path: str) -> str:
         return os.path.abspath(
             os.path.realpath(
                 os.path.join(self._root_path, sub_path)))
 
     def force_sync(self, fn: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(fn)
-        def wrapper(_self, *args: Any, **kwargs: Any) -> Any:
+        def wrapper(_self: Any, *args: Any, **kwargs: Any) -> Any:
             return self.loop.run_until_complete(
                 asyncio.wait_for(
                     fn(_self, *args, **kwargs), 10))
