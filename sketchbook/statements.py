@@ -256,9 +256,6 @@ class BaseOutput(Statement, AppendMixIn):
     def print_code(self, code_printer: printer.CodePrinter) -> None:
         code_printer.writeline(
             f"__tpl_output_raw_result__ = {self._output_exp}", self)
-        code_printer.writeline(
-            f"assert isinstance(__tpl_output_raw_result__, str), "
-            "'The result of output is not string.'", self)
 
         code_printer.writeline(
             "self.__tpl_result__ += "

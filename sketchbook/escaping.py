@@ -15,6 +15,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from typing import Any
+
 import html
 import urllib.parse
 import functools
@@ -25,23 +27,34 @@ __all__ = ["builtin_escape_fns"]
 
 
 def _escape_html(unsafe_str: str) -> str:
+    assert isinstance(unsafe_str, str), \
+            (f"The content({unsafe_str:r}) subject for html "
+             f"escaping is not string.")
     return html.escape(unsafe_str)
 
 
 def _no_escape(unsafe_str: str) -> str:
+    assert isinstance(unsafe_str, str), \
+            f"The variable({unsafe_str:r}) subject for output is not string."
     return unsafe_str
 
 
 def _escape_url_with_plus(unsafe_str: str) -> str:
+    assert isinstance(unsafe_str, str), \
+            (f"The content({unsafe_str:r}) subject for url "
+             f"escaping is not string.")
     return urllib.parse.quote_plus(unsafe_str)
 
 
 def _escape_url_without_plus(unsafe_str: str) -> str:
+    assert isinstance(unsafe_str, str), \
+            (f"The content({unsafe_str:r}) subject for url "
+             f"escaping is not string.")
     return urllib.parse.quote(unsafe_str)
 
 
-def _escape_json(unsafe_str: str) -> str:
-    return json.dumps(unsafe_str)
+def _escape_json(unsafe_var: Any) -> str:
+    return json.dumps(unsafe_var)
 
 
 builtin_escape_fns = collections.OrderedDict([

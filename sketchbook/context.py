@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional, Mapping, Callable, Sequence, Type
+from typing import Optional, Mapping, Callable, Sequence, Type, Any
 
 from . import escaping
 from . import statements
@@ -30,7 +30,7 @@ class TemplateContext:
     def __init__(
         self, *, cache_tpls: bool=True,
         source_encoding: str="utf-8",
-        custom_escape_fns: Mapping[str, Callable[[str], str]]={},
+        custom_escape_fns: Mapping[str, Callable[[Any], str]]={},
             loop: Optional[asyncio.AbstractEventLoop]=None) -> None:
 
         self._loop = loop or asyncio.get_event_loop()

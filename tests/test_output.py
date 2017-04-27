@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sketchbook import Template
+from sketchbook import Template, TemplateContext
 from sketchbook.testutils import TestHelper
 
 helper = TestHelper(__file__)
@@ -48,3 +48,25 @@ class OutputTestCase:
         assert await tpl.render(name="a&redirect=https://www.example2.com/") == \
             ("https://www.example.com/?user=a%26redirect%3Dhttps%3A%2F%2F"
              "www.example2.com%2F")
+
+    @helper.force_sync
+    async def test_custom_escape_fn(self) -> None:
+        def _number_fn(i: int) -> str:
+            return str(i + 1)
+
+        tpl_ctx = TemplateContext(custom_escape_fns={"number": _number_fn})
+        tpl = Template("The result is <% number= a %>.", tpl_ctx=tpl_ctx)
+
+        assert await tpl.render(a=12345) == "The result is 12346."
+
+    @helper.force_sync
+    async def test_statement_escape(self):
+        tpl = Template(
+            "<%% is the begin mark, and <%r= \"%%> is the end mark. \" %>"
+            "<%r= \"<% and\" %> %> only need to be escaped whenever they "
+            "have ambiguity of the templating system.")
+
+        assert await tpl.render() == (
+            "<% is the begin mark, and %> is the end mark. "
+            "<% and %> only need to be escaped whenever they "
+            "have ambiguity of the templating system.")
