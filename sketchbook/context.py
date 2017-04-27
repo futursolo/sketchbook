@@ -39,7 +39,7 @@ class TemplateContext:
 
         escape_fns = escaping.builtin_escape_fns.copy()
         if custom_escape_fns:
-            escape_fns.update(custom_escape_fns)  # type: ignore
+            escape_fns.update(custom_escape_fns)
         self._escape_fns = types.MappingProxyType(escape_fns)
 
         self._stmt_classes = list(statements.builtin_stmt_classes)
@@ -60,8 +60,8 @@ class TemplateContext:
         return self._source_encoding
 
     @property
-    def escape_fns(self) -> Mapping[str, Callable[[str], str]]:
-        return self._escape_fns
+    def escape_fns(self) -> Mapping[str, Callable[[Any], str]]:
+        return self._escape_fns  # type: ignore
 
     @property
     def stmt_classes(self) -> Sequence[Type[statements.Statement]]:
