@@ -37,4 +37,14 @@ class OutputTestCase:
 
     @helper.force_sync
     async def test_json_escape(self) -> None:
-        tpl = Template("")
+        tpl = Template('{"name": <%json= name %>}')
+
+        assert await tpl.render(name="{\"name\": \"admin\"}") == \
+            '{\"name\": \"{\\"name\\": \\"admin\\"}\"}'
+
+    @helper.force_sync
+    async def test_url_escape(self) -> None:
+        tpl = Template("https://www.example.com/?user=<%u= name %>")
+        assert await tpl.render(name="a&redirect=https://www.example2.com/") == \
+            ("https://www.example.com/?user=a%26redirect%3Dhttps%3A%2F%2F"
+             "www.example2.com%2F")
