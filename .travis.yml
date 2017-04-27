@@ -1,0 +1,24 @@
+sudo: false
+
+matrix:
+  allow_failures:
+    - python: nightly
+
+  include:
+    - os: linux
+      python: 3.6
+
+    - os: linux
+      python: nightly
+
+language: python
+
+install:
+  - pip install pip setuptools --upgrade
+  - pip install .[test]
+  - pip install -U pycodestyle mypy
+
+script:
+  - mypy --fast-parser --python-version 3.6 --disallow-untyped-calls --disallow-untyped-defs --warn-unused-ignores --show-traceback --strict-optional --ignore-missing-imports --follow-imports=skip --show-error-context --show-traceback -p sketchbook
+  - pycodestyle --show-source sketchbook
+  - python setup.py test
