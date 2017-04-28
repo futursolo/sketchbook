@@ -38,7 +38,7 @@ class TemplateSyntaxError(SyntaxError, SketchbookException):
     pass
 
 
-class UnknownStatementError(SketchbookException):
+class UnknownStatementError(TemplateSyntaxError, SketchbookException):
     """
     The statement string is not matched by any known Statement Classes.
     """

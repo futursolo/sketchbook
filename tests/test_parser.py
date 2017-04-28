@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sketchbook import Template, TemplateSyntaxError
+from sketchbook import Template, TemplateSyntaxError, UnknownStatementError
 from sketchbook.testutils import TestHelper
 
 import pytest
@@ -39,7 +39,8 @@ class StatementEscapeTestCase:
     async def test_multiline_stmts(self) -> None:
         tpl = Template("""\
 <% if a == \
-            True %>
+            True
+%>
 Hello, it's me!
 <% else %>
 No, it's not me!
@@ -61,3 +62,7 @@ class MalformedTemplateTestCase:
     def test_redundant_end_mark(self) -> None:
         with pytest.raises(TemplateSyntaxError):
             Template("<% if False %><% end %><% end %>")
+
+    def test_unknown_stmt(self) -> None:
+        with pytest.raises(UnknownStatementError):
+            Template("<% if anyways %><% fi %>")

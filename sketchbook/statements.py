@@ -39,23 +39,25 @@ def _is_valid_fn_name(maybe_fn_name: str) -> bool:
 
 class IndentMixIn(abc.ABC):
     @abc.abstractmethod
-    def append_stmt(self, stmt: "AppendMixIn") -> None:
+    def append_stmt(self, stmt: "AppendMixIn") -> None:  # pragma: no cover
         raise NotImplementedError
 
     @property
     @abc.abstractmethod
-    def line_no(self) -> int:
+    def line_no(self) -> int:  # pragma: no cover
         raise NotImplementedError
 
 
 class AppendMixIn(abc.ABC):
     @property
     @abc.abstractmethod
-    def line_no(self) -> int:
+    def line_no(self) -> int:  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
-    def print_code(self, code_printer: printer.CodePrinter) -> None:
+    def print_code(
+        self, code_printer: printer.CodePrinter) -> \
+            None:  # pragma: no cover
         raise NotImplementedError
 
 
