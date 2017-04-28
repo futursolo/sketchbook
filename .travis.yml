@@ -48,6 +48,6 @@ deploy:
   bucket: "sketchbook-docs"
   skip_cleanup: true
   on:
-    branch: release
+    branch: master
     condition: "$DEPLOY_DOCS = 1"
   region: eu-west-2
