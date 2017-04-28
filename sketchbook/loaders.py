@@ -114,38 +114,36 @@ class AsyncFileSystemLoader(BaseLoader):
     async def _find_abs_path(
         self, tpl_path: str,
             origin_path: Optional[str]=None) -> str:
+        tpl_path = tpl_path.replace("\\", "/")
+        # Replace Windows Style Path to UNIX Style.
+
         if origin_path is not None and (not os.path.isabs(tpl_path)):
             origin_dir = os.path.join(
                 self._root_path, os.path.dirname(origin_path))
-
-            if not origin_dir.endswith("/"):
-                origin_dir += "/"
-
-            if not origin_dir.startswith(self._root_path):
-                raise exceptions.TemplateNotFoundError(
-                    "To prevent potential directory traversal attack, "
-                    "this path is not acceptable.")
 
         else:
             origin_dir = self._root_path
 
         if os.path.isabs(tpl_path):
-            if tpl_path.find(":") != -1:
-                _, tpl_path = tpl_path.split(":", 1)
+            _, tpl_path = tpl_path.split("/", 1)
+            # Take out the root identifier.
 
-                if tpl_path[0] in ("/", "\\"):
-                    tpl_path = tpl_path[1:]
+        final_tpl_path = os.path.abspath(os.path.join(origin_dir, tpl_path))
+        final_tpl_dir = os.path.dirname(final_tpl_path)
 
-            else:
-                _, tpl_path = tpl_path.split("/", 1)
+        if not final_tpl_dir.endswith("/"):
+            final_tpl_dir += "/"
 
-        final_tpl_path = os.path.join(origin_dir, tpl_path)
+        if not final_tpl_path.startswith(self._root_path):
+            raise exceptions.TemplateNotFoundError(
+                "To prevent potential directory traversal attack, "
+                "this path is not acceptable.")
 
-        if os.path.exists(final_tpl_path):
-            return final_tpl_path
+        if not os.path.exists(final_tpl_path):
+            raise exceptions.TemplateNotFoundError(
+                f"No such file {final_tpl_path}.")
 
-        raise exceptions.TemplateNotFoundError(
-            f"No such file {final_tpl_path}.")
+        return final_tpl_path
 
     async def _load_tpl_content(self, tpl_path: str) -> bytes:
         async with aiofiles.open(

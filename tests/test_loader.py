@@ -106,3 +106,13 @@ class IncludeTestCase:
     </body>
 </html>
 """
+
+
+class TemplateDiscoveryTestCase:
+    @helper.force_sync
+    async def test_traversal_prevention(self) -> None:
+        loader = AsyncFileSystemLoader(helper.abspath("tpls"))
+
+        with pytest.raises(TemplateNotFoundError):
+            await loader._find_abs_path(
+                "../hijack.html", helper.abspath("tpls/main.html"))
