@@ -70,7 +70,7 @@ class Statement(abc.ABC):
     @abc.abstractmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
-            line_no: int) -> Optional["Statement"]:
+            line_no: int) -> Optional["Statement"]:  # pragma: no cover
         raise NotImplementedError
 
 
@@ -102,7 +102,7 @@ class Root(Statement, AppendMixIn):
     @classmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
-            line_no: int) -> Optional["Statement"]:
+            line_no: int) -> Optional["Statement"]:  # pragma: no cover
         raise NotImplementedError("This does not apply to Root.")
 
     def print_code(self, code_printer: printer.CodePrinter) -> None:
@@ -193,13 +193,13 @@ class Plain(Statement, AppendMixIn):
         self._plain_str = plain_str
 
     @property
-    def line_no(self) -> int:
+    def line_no(self) -> int:  # pragma: no cover
         raise NotImplementedError("This does not apply to Plain.")
 
     @classmethod
     def try_match(
         Cls, stmt_str: str, filepath: str,
-            line_no: int) -> Optional["Statement"]:
+            line_no: int) -> Optional["Statement"]:  # pragma: no cover
         raise NotImplementedError("This does not apply to Plain.")
 
     def print_code(self, code_printer: printer.CodePrinter) -> None:

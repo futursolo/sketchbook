@@ -85,21 +85,21 @@ class BlockStorage:
 class _BaseNamespace(abc.ABC):
     @property
     @abc.abstractmethod
-    def _loader(self) -> "loaders.BaseLoader":
+    def _loader(self) -> "loaders.BaseLoader":  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get_globals(self) -> Dict[str, Any]:
-        raise NotImplementedError
-
-    @property
-    @abc.abstractmethod
-    def _tpl_ctx(self) -> "context.TemplateContext":
+    def _get_globals(self) -> Dict[str, Any]:  # pragma: no cover
         raise NotImplementedError
 
     @property
     @abc.abstractmethod
-    def blocks(self) -> BlockStorage:
+    def _tpl_ctx(self) -> "context.TemplateContext":  # pragma: no cover
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def blocks(self) -> BlockStorage:  # pragma: no cover
         """
         Return an object to access blocks.
         """
@@ -107,7 +107,7 @@ class _BaseNamespace(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def body(self) -> str:
+    def body(self) -> str:  # pragma: no cover
         """
         Return the body from the child template.
         """
@@ -115,26 +115,26 @@ class _BaseNamespace(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def parent(self) -> "TplNamespace":
+    def parent(self) -> "TplNamespace":  # pragma: no cover
         """
         Return the namespace of the parent template (if any).
         """
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _inherit_tpl(self) -> None:
+    async def _inherit_tpl(self) -> None:  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _add_parent(self, path: str) -> None:
+    async def _add_parent(self, path: str) -> None:  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _include_tpl(self, path: str) -> str:
+    async def _include_tpl(self, path: str) -> str:  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _render(self) -> None:
+    async def _render(self) -> None:  # pragma: no cover
         raise NotImplementedError
 
 
