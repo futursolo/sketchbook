@@ -66,3 +66,7 @@ class MalformedTemplateTestCase:
     def test_unknown_stmt(self) -> None:
         with pytest.raises(UnknownStatementError):
             Template("<% if anyways %><% fi %>")
+
+    def test_bad_assignment(self) -> None:
+        with pytest.raises(TemplateSyntaxError):
+            Template("<% let a = b = c = d %>")

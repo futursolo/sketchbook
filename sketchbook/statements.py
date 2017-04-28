@@ -468,9 +468,13 @@ class _Comment(Statement, AppendMixIn):
             code_printer.writeline(f"# {cmnt_line}", self)
 
 
-class _Code(Statement, AppendMixIn):
-    def __init__(self, code_exp: str, filepath: str, line_no: int) -> None:
-        self._code_exp = code_exp
+class _Assign(Statement, AppendMixIn):
+    def __init__(
+        self, target_lst: str, exp: str, filepath: str,
+            line_no: int) -> None:
+        self._target_lst = target_lst
+        self._exp = exp
+
         self._filepath = filepath
         self._line_no = line_no
 
@@ -482,17 +486,29 @@ class _Code(Statement, AppendMixIn):
     def try_match(
         Cls, stmt_str: str, filepath: str,
             line_no: int) -> Optional["Statement"]:
-        if not stmt_str.startswith("@ "):
+        stmt_str = stmt_str.strip()
+        if not stmt_str.startswith("let "):
             return None
 
+        assign_stmt = stmt_str[4:]
+
+        try:
+            target_lst, exp = assign_stmt.split("=")
+
+        except (ValueError, TypeError):
+            raise exceptions.TemplateSyntaxError(
+                f"Invaild assignment statment at line {line_no} "
+                f"in file {filepath}.")
+
         return Cls(
-            code_exp=stmt_str[1:].strip(),
+            target_lst=target_lst.strip(),
+            exp=exp.strip(),
             filepath=filepath, line_no=line_no)
 
     def print_code(self, code_printer: printer.CodePrinter) -> None:
-        code_printer.writeline(self._code_exp, self)
+        code_printer.writeline(f"{self._target_lst} = {self._exp}", self)
 
 
 builtin_stmt_classes: Sequence[Type[Statement]] = [
     Block, _Include, _Inherit, _Indent, _Unindent, _HalfIndent, _Inline,
-    _Comment, _Code]
+    _Comment, _Assign]

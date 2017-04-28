@@ -85,3 +85,10 @@ class RaiseErrorTestCase:
         tpl = Template("<% raise RuntimeError %>")
         with pytest.raises(RuntimeError):
             await tpl.render()
+
+class VariableAssignmentTestCase:
+    @helper.force_sync
+    async def test_assign_var(self):
+        tpl = Template("<% let a = b %><%= a %>")
+
+        assert await tpl.render(b="I am b!") == "I am b!"
