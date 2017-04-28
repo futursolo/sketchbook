@@ -38,7 +38,7 @@ after_success:
   - coveralls
 
 before_deploy:
-  - cd docs
+  - cd docs/_build/html
 
 deploy:
   provider: s3
