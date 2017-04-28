@@ -44,6 +44,12 @@ install_requires.extend(setup_requires)
 tests_require = ["pytest>=3.0.7,<4"]
 tests_require.extend(install_requires)
 
+dev_requires = [
+    "sphinx>=1.5.5,<2",
+    "sphinxcontrib-versioning>=2.2.1,<3",
+    "sphinx_rtd_theme>=0.2.4,<3"]
+dev_requires.extend(tests_require)
+
 if __name__ == "__main__":
     setup(
         name="sketchbook",
@@ -60,7 +66,8 @@ if __name__ == "__main__":
         install_requires=install_requires,
         tests_require=tests_require,
         extras_require={
-            "test": tests_require
+            "test": tests_require,
+            "dev": dev_requires,
         },
         zip_safe=False,
         classifiers=[
