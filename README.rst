@@ -6,13 +6,12 @@ Sketchbook
 .. image:: https://coveralls.io/repos/github/futursolo/sketchbook/badge.svg?branch=master
   :target: https://coveralls.io/github/futursolo/sketchbook?branch=master
 
-
 A template engine built for asyncio with async/await syntax support.
 
 Project Status
 --------------
-The library itself works, though there may be bugs.
-Unit tests and documentation are missing.
+The library itself works and is well tested.
+Though, the documentation is missing.
 
 License
 -------
