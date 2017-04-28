@@ -10,6 +10,7 @@ matrix:
 
     - os: linux
       python: 3.6.1
+      env: DEPLOY_DOCS=1
 
     - os: linux
       python: 3.6
@@ -21,14 +22,32 @@ language: python
 
 install:
   - pip install pip setuptools --upgrade
-  - pip install .[test]
+  - pip install .[dev]
   - pip install -U pycodestyle mypy
   - pip install coveralls
 
 script:
-  - mypy --fast-parser --python-version 3.6 --disallow-untyped-calls --disallow-untyped-defs --warn-unused-ignores --show-traceback --strict-optional --ignore-missing-imports --follow-imports=skip --show-error-context --show-traceback -p sketchbook
+  - mypy --fast-parser --python-version 3.6 --disallow-untyped-calls --disallow-untyped-defs
+    --warn-unused-ignores --show-traceback --strict-optional --ignore-missing-imports
+    --follow-imports=skip --show-error-context --show-traceback -p sketchbook
   - pycodestyle --show-source sketchbook
   - coverage run --source=sketchbook setup.py test
+  - sphinx-versioning build -r master docs docs/_build/html
 
 after_success:
   - coveralls
+
+before_deploy:
+  - cd docs
+
+deploy:
+  provider: s3
+  access_key_id: AKIAJZCHREESPHTWY5LA
+  secret_access_key:
+    secure: 2xpx+YLg6LOXb0FAK044/umsjGZyTMffE0gCHW+QGBGIEZeffUeaiIjHQ3svX4WpccDYRslVhMp71qnrptRTZk0Y32sWHHieY384eFhcV251YI+rL7Xpa+P1J8k7FANWe3RPO2KJj0D3TXHeX+myWU7WniLMg9rppa5vYdXGnryTf86+Z2nTapuZRtv2bLcm10nQa1aOqH72dfv5Z2tCWM8MoyBiRYGXts6ke+Xrl0gkGU1Rfb9Lu2EczX3mwEsdbEYSXMSC/L++bXy1NUTaSnbueb0lAWU2NdxWoFRKDqDp9Bp1v6cCB0dZmbvsrvq8wu/5eHJoeKCOUt2FogeCTiEPQga/37tNJfIL9lBDYOP3z79b4jFp5/MDH3aHHe0VjUK9FSZacHl1/gzLxB4EFZATCeTZIXw3qAmymj00f/UdrPlFB/NFsOcdv22u6AeAgq4uKD8U0tw8JA/i/eoqQFxCtbxmQ/uQ2Q4vL/EioCJ+o4v4PO4rF9Ddg3aRVZ7s06KFFuXtKamYX4WStA74Kudoq7XNQ+t6V1WJgcuH4nFipKdm7KojBafGZA38YT2CPh4NDdZf8QidS5aP17oxs02Uab6j/XsjLv012V72glF1RKx4BfqqnpuBlcFuOsE04MU8tsg+0OWVl3HEqILRoi1SN7J4UBZTGJz8pKGDxs8=
+  bucket: "sketchbook-docs"
+  skip_cleanup: true
+  on:
+    branch: release
+    condition: "$DEPLOY_DOCS = 1"
+  region: eu-west-2
