@@ -23,12 +23,12 @@ from . import statements
 import asyncio
 import types
 
-__all__ = ["TemplateContext"]
+__all__ = ["SketchContext"]
 
 
-class TemplateContext:
+class SketchContext:
     def __init__(
-        self, *, cache_tpls: bool=True,
+        self, *, cache_sketches: bool=True,
         source_encoding: str="utf-8",
         custom_escape_fns: Mapping[str, Callable[[Any], str]]={},
             loop: Optional[asyncio.AbstractEventLoop]=None) -> None:
@@ -49,7 +49,7 @@ class TemplateContext:
 
         self._stmt_classes.append(OutputStmt)
 
-        self._cache_tpls = cache_tpls
+        self._cache_sketches = cache_sketches
 
     @property
     def loop(self) -> asyncio.AbstractEventLoop:
@@ -68,5 +68,5 @@ class TemplateContext:
         return self._stmt_classes
 
     @property
-    def cache_tpls(self) -> bool:
-        return self._cache_tpls
+    def cache_sketches(self) -> bool:
+        return self._cache_sketches

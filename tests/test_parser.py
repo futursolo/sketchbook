@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sketchbook import Template, TemplateSyntaxError, UnknownStatementError
+from sketchbook import Sketch, SketchSyntaxError, UnknownStatementError
 from sketchbook.testutils import TestHelper
 
 import pytest
@@ -25,19 +25,19 @@ helper = TestHelper(__file__)
 class StatementEscapeTestCase:
     @helper.force_sync
     async def test_stmts_escape(self) -> None:
-        tpl = Template(
+        skt = Sketch(
             "<%% is the begin mark, and <%r= \"%%> is the end mark. \" %>"
             "<%r= \"<% and\" %> %> only need to be escaped whenever they "
             "have ambiguity of the templating system.")
 
-        assert await tpl.render() == (
+        assert await skt.draw() == (
             "<% is the begin mark, and %> is the end mark. "
             "<% and %> only need to be escaped whenever they "
             "have ambiguity of the templating system.")
 
     @helper.force_sync
     async def test_multiline_stmts(self) -> None:
-        tpl = Template("""\
+        skt = Sketch("""\
 <% if a == \
             True
 %>
@@ -46,27 +46,27 @@ Hello, it's me!
 No, it's not me!
 <% end %>""")
 
-        assert await tpl.render(a=True) == "\nHello, it's me!\n"
-        assert await tpl.render(a=False) == "\nNo, it's not me!\n"
+        assert await skt.draw(a=True) == "\nHello, it's me!\n"
+        assert await skt.draw(a=False) == "\nNo, it's not me!\n"
 
 
-class MalformedTemplateTestCase:
+class MalformedSketchTestCase:
     def test_malformed_stmts(self) -> None:
-        with pytest.raises(TemplateSyntaxError):
-            Template("<% <%")
+        with pytest.raises(SketchSyntaxError):
+            Sketch("<% <%")
 
     def test_missing_end_mark(self) -> None:
-        with pytest.raises(TemplateSyntaxError):
-            Template("<% while True %>")
+        with pytest.raises(SketchSyntaxError):
+            Sketch("<% while True %>")
 
     def test_redundant_end_mark(self) -> None:
-        with pytest.raises(TemplateSyntaxError):
-            Template("<% if False %><% end %><% end %>")
+        with pytest.raises(SketchSyntaxError):
+            Sketch("<% if False %><% end %><% end %>")
 
     def test_unknown_stmt(self) -> None:
         with pytest.raises(UnknownStatementError):
-            Template("<% if anyways %><% fi %>")
+            Sketch("<% if anyways %><% fi %>")
 
     def test_bad_assignment(self) -> None:
-        with pytest.raises(TemplateSyntaxError):
-            Template("<% let a = b = c = d %>")
+        with pytest.raises(SketchSyntaxError):
+            Sketch("<% let a = b = c = d %>")

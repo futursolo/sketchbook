@@ -47,7 +47,9 @@ tests_require.extend(install_requires)
 dev_requires = [
     "sphinx>=1.5.5,<2",
     "sphinxcontrib-versioning>=2.2.1,<3",
-    "sphinx_rtd_theme>=0.2.4,<3"]
+    "sphinx_rtd_theme>=0.2.4,<3",
+    "mypy>=0.501,<1",
+    "pycodestyle>=2.3.1,<3"]
 dev_requires.extend(tests_require)
 
 if __name__ == "__main__":

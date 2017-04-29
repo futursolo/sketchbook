@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sketchbook import Template, TemplateContext
+from sketchbook import Sketch, SketchContext
 from sketchbook.testutils import TestHelper
 
 helper = TestHelper(__file__)
@@ -24,35 +24,35 @@ helper = TestHelper(__file__)
 class OutputTestCase:
     @helper.force_sync
     async def test_html_escape(self) -> None:
-        tpl = Template("Hello, <%html= a %>!")
+        skt = Sketch("Hello, <%html= a %>!")
 
-        assert await tpl.render(a="<h1>world</h1>") == \
+        assert await skt.draw(a="<h1>world</h1>") == \
             "Hello, &lt;h1&gt;world&lt;/h1&gt;!"
 
     @helper.force_sync
     async def test_no_escape(self) -> None:
-        tpl = Template("Hello, <%r= a %>!")
+        skt = Sketch("Hello, <%r= a %>!")
 
-        assert await tpl.render(a="<h1>world</h1>") == "Hello, <h1>world</h1>!"
+        assert await skt.draw(a="<h1>world</h1>") == "Hello, <h1>world</h1>!"
 
     @helper.force_sync
     async def test_json_escape(self) -> None:
-        tpl = Template('{"name": <%json= name %>}')
+        skt = Sketch('{"name": <%json= name %>}')
 
-        assert await tpl.render(name="{\"name\": \"admin\"}") == \
+        assert await skt.draw(name="{\"name\": \"admin\"}") == \
             '{\"name\": \"{\\"name\\": \\"admin\\"}\"}'
 
     @helper.force_sync
     async def test_url_escape(self) -> None:
-        tpl = Template("https://www.example.com/?user=<%u= name %>")
-        assert await tpl.render(name="a&redirect=https://www.example2.com/") == \
+        skt = Sketch("https://www.example.com/?user=<%u= name %>")
+        assert await skt.draw(name="a&redirect=https://www.example2.com/") == \
             ("https://www.example.com/?user=a%26redirect%3Dhttps%3A%2F%2F"
              "www.example2.com%2F")
 
     @helper.force_sync
     async def test_url_without_plus_escape(self) -> None:
-        tpl = Template("https://www.example.com/?user=<%url_without_plus= name %>")
-        assert await tpl.render(name="John Smith") == \
+        skt = Sketch("https://www.example.com/?user=<%url_without_plus= name %>")
+        assert await skt.draw(name="John Smith") == \
             "https://www.example.com/?user=John%20Smith"
 
 
@@ -61,7 +61,7 @@ class OutputTestCase:
         def _number_fn(i: int) -> str:
             return str(i + 1)
 
-        tpl_ctx = TemplateContext(custom_escape_fns={"number": _number_fn})
-        tpl = Template("The result is <% number= a %>.", tpl_ctx=tpl_ctx)
+        skt_ctx = SketchContext(custom_escape_fns={"number": _number_fn})
+        skt = Sketch("The result is <% number= a %>.", skt_ctx=skt_ctx)
 
-        assert await tpl.render(a=12345) == "The result is 12346."
+        assert await skt.draw(a=12345) == "The result is 12346."

@@ -16,8 +16,8 @@
 #   limitations under the License.
 
 __all__ = [
-    "SketchbookException", "TemplateNotFoundError", "TemplateSyntaxError",
-    "UnknownStatementError", "BlockNameConflictError", "TemplateRenderError"]
+    "SketchbookException", "SketchNotFoundError", "SketchSyntaxError",
+    "UnknownStatementError", "BlockNameConflictError", "SketchDrawingError"]
 
 
 class SketchbookException(Exception):
@@ -27,18 +27,18 @@ class SketchbookException(Exception):
     pass
 
 
-class TemplateNotFoundError(FileNotFoundError, SketchbookException):
+class SketchNotFoundError(FileNotFoundError, SketchbookException):
     """
-    Error when trying to load a template but the loader cannot find it.
+    Error when trying to load a sketch but the finder cannot find it.
     """
     pass
 
 
-class TemplateSyntaxError(SyntaxError, SketchbookException):
+class SketchSyntaxError(SyntaxError, SketchbookException):
     pass
 
 
-class UnknownStatementError(TemplateSyntaxError, SketchbookException):
+class UnknownStatementError(SketchSyntaxError):
     """
     The statement string is not matched by any known Statement Classes.
     """
@@ -49,8 +49,8 @@ class BlockNameConflictError(SketchbookException):
     pass
 
 
-class TemplateRenderError(SketchbookException):
+class SketchDrawingError(SketchbookException):
     """
-    Error during renderring the template.
+    Error when drawing the sketch.
     """
     pass

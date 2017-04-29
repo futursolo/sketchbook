@@ -24,14 +24,14 @@ from . import context
 from .exceptions import *
 from . import exceptions
 
-from .loaders import *
-from . import loaders
+from .finders import *
+from . import finders
 
 from .runtime import *
 from . import runtime
 
-from .template import *
-from . import template
+from .sketch import *
+from . import sketch
 
 __all__ = _version.__all__ + context.__all__ + exceptions.__all__ + \
-    loaders.__all__ + runtime.__all__ + template.__all__
+    finders.__all__ + runtime.__all__ + sketch.__all__

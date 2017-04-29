@@ -17,7 +17,7 @@
 
 from typing import AsyncIterator
 
-from sketchbook import Template
+from sketchbook import Sketch
 from sketchbook.testutils import TestHelper
 
 helper = TestHelper(__file__)
@@ -57,38 +57,38 @@ class _AsyncTimeIterator(AsyncIterator[float]):
 class IfElifElseTestCase:
     @helper.force_sync
     async def test_if_elif_else(self) -> None:
-        tpl = Template(
+        skt = Sketch(
             "<% if cond %>cond_str<% elif sub_cond %>sub_cond_str"
             "<% else %>else_str<% end %>")
 
-        assert await tpl.render(cond=True, sub_cond=True) == "cond_str"
+        assert await skt.draw(cond=True, sub_cond=True) == "cond_str"
 
-        assert await tpl.render(cond=False, sub_cond=True) == "sub_cond_str"
+        assert await skt.draw(cond=False, sub_cond=True) == "sub_cond_str"
 
-        assert await tpl.render(cond=False, sub_cond=False) == "else_str"
+        assert await skt.draw(cond=False, sub_cond=False) == "else_str"
 
 
 class AsyncForTestCase:
     @helper.force_sync
     async def test_async_for(self) -> None:
         time_iter = _AsyncTimeIterator()
-        tpl = Template(
+        skt = Sketch(
             "<% async for i in time_iter %><%r= str(i) %>, <% end %>")
 
-        assert await tpl.render(time_iter=time_iter) == \
+        assert await skt.draw(time_iter=time_iter) == \
             str(time_iter._iterated_time)[1:-1] + ", "
 
 
 class RaiseErrorTestCase:
     @helper.force_sync
     async def test_raise_error(self):
-        tpl = Template("<% raise RuntimeError %>")
+        skt = Sketch("<% raise RuntimeError %>")
         with pytest.raises(RuntimeError):
-            await tpl.render()
+            await skt.draw()
 
 class VariableAssignmentTestCase:
     @helper.force_sync
     async def test_assign_var(self):
-        tpl = Template("<% let a = b %><%= a %>")
+        skt = Sketch("<% let a = b %><%= a %>")
 
-        assert await tpl.render(b="I am b!") == "I am b!"
+        assert await skt.draw(b="I am b!") == "I am b!"

@@ -18,13 +18,13 @@
 from typing import Any, Optional
 from types import CodeType
 
-from . import template
+from . import sketch
 from . import statements
 
-__all__ = ["CodePrinter"]
+__all__ = ["PythonPrinter"]
 
 
-class CodePrinter:
+class PythonPrinter:
     """
     Print Python code with indentation gracefully.
     """
@@ -54,7 +54,7 @@ class CodePrinter:
         final_line = self._indent_mark * self._indent_num + line + self._end
         self._committed_code += final_line
 
-    def indent_block(self) -> "CodePrinter":
+    def indent_block(self) -> "PythonPrinter":
         """
         Indent the code with `with` statement.
 
@@ -108,7 +108,7 @@ class CodePrinter:
         return self._compiled_code
 
     @classmethod
-    def print_tpl(Cls, tpl: "template.Template") -> CodeType:
-        code_printer = Cls(path=tpl._path)
-        tpl._root.print_code(code_printer)
-        return code_printer.compiled_code
+    def print_sketch(Cls, skt: "sketch.Sketch") -> CodeType:
+        py_printer = Cls(path=skt._path)
+        skt._root.print_code(py_printer)
+        return py_printer.compiled_code

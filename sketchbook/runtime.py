@@ -17,25 +17,25 @@
 
 from typing import Dict, Any, Optional, Awaitable, Callable, Type, Union, Tuple
 
-from . import template
+from . import sketch
 from . import exceptions
-from . import loaders
+from . import finders
 from . import context
 
 import abc
 
-__all__ = ["BlockStorage", "BlockNamespace", "TplNamespace"]
+__all__ = ["BlockStorage", "BlockRuntime", "SketchRuntime"]
 
 
 class BlockStorage:
-    def __init__(self, tpl_namespace: "TplNamespace") -> None:
-        self._tpl_namespace: TplNamespace
-        self._blocks: Dict[str, Type[BlockNamespace]]
-        self.__dict__["_tpl_namespace"] = tpl_namespace
+    def __init__(self, skt_rt: "SketchRuntime") -> None:
+        self._skt_rt: SketchRuntime
+        self._blocks: Dict[str, Type[BlockRuntime]]
+        self.__dict__["_skt_rt"] = skt_rt
         self.__dict__["_blocks"] = {}
 
         self._blocks.update(  # type: ignore
-            **self._tpl_namespace._BLOCK_NAMESPACES)
+            **self._skt_rt._BLOCK_RUNTIMES)
 
     def __getitem__(
         self, name: Union[str, Tuple[str, bool]]) -> Callable[
@@ -50,15 +50,15 @@ class BlockStorage:
         if block_name not in self._blocks.keys():
             raise KeyError(f"Unknown Block Name {block_name}.")
 
-        SelectedBlockNamespace = self._blocks[block_name]
+        SelectedBlockRuntime = self._blocks[block_name]
 
         async def wrapper() -> str:
-            block_namespace = SelectedBlockNamespace(  # type: ignore
-                self._tpl_namespace, _defined_here=defined_here)
+            block_rt = SelectedBlockRuntime(  # type: ignore
+                self._skt_rt, _defined_here=defined_here)
 
-            await block_namespace._render()
+            await block_rt._draw()
 
-            return block_namespace._block_result
+            return block_rt._block_result
 
         return wrapper
 
@@ -82,10 +82,10 @@ class BlockStorage:
             self._blocks[k] = v
 
 
-class _BaseNamespace(abc.ABC):
+class _BaseRuntime(abc.ABC):
     @property
     @abc.abstractmethod
-    def _loader(self) -> "loaders.BaseLoader":  # pragma: no cover
+    def _finder(self) -> "finders.BaseSketchFinder":  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -94,7 +94,7 @@ class _BaseNamespace(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def _tpl_ctx(self) -> "context.TemplateContext":  # pragma: no cover
+    def _ctx(self) -> "context.SketchContext":  # pragma: no cover
         raise NotImplementedError
 
     @property
@@ -109,20 +109,26 @@ class _BaseNamespace(abc.ABC):
     @abc.abstractmethod
     def body(self) -> str:  # pragma: no cover
         """
-        Return the body from the child template.
+        Return the body from the child.
         """
         raise NotImplementedError
 
     @property
     @abc.abstractmethod
-    def parent(self) -> "TplNamespace":  # pragma: no cover
+    def parent(self) -> "SketchRuntime":  # pragma: no cover
         """
-        Return the namespace of the parent template (if any).
+        Return the runtime of the parent(if any).
         """
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _inherit_tpl(self) -> None:  # pragma: no cover
+    def write(
+        self, __content: Any,
+            escape: str="default") -> None:  # pragma: no cover
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def _inherit_sketch(self) -> None:  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -130,144 +136,158 @@ class _BaseNamespace(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _include_tpl(self, path: str) -> str:  # pragma: no cover
+    async def _include_sketch(self, path: str) -> str:  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def _render(self) -> None:  # pragma: no cover
+    async def _draw(self) -> None:  # pragma: no cover
         raise NotImplementedError
 
 
-class BlockNamespace(_BaseNamespace):
+class BlockRuntime(_BaseRuntime):
     def __init__(
-            self, tpl_namespace: "TplNamespace", _defined_here: bool) -> None:
-        self._tpl_namespace = tpl_namespace
+            self, __skt_rt: "SketchRuntime", _defined_here: bool) -> None:
+        self._skt_rt = __skt_rt
         self._defined_here = _defined_here
 
-        self.__tpl_result__ = ""
+        self.__skt_result__ = ""
 
         self._finished = False
 
     @property
-    def _tpl(self) -> "template.Template":
-        return self._tpl_namespace._tpl
+    def _skt(self) -> "sketch.Sketch":
+        return self._skt_rt._skt
 
     @property
-    def _loader(self) -> "loaders.BaseLoader":
-        if self._tpl._loader is None:
-            raise exceptions.TemplateRenderError(
-                "The loader is not set. "
+    def _finder(self) -> "finders.BaseSketchFinder":
+        if self._skt._finder is None:
+            raise exceptions.SketchDrawingError(
+                "The finder is not set. "
                 "The inheritance and including is not available.")
-        return self._tpl._loader
+        return self._skt._finder
 
     def _get_globals(self) -> Dict[str, Any]:
-        return self._tpl_namespace._get_globals()
+        return self._skt_rt._get_globals()
 
     @property
-    def _tpl_ctx(self) -> "context.TemplateContext":
-        return self._tpl_namespace._tpl_ctx
+    def _ctx(self) -> "context.SketchContext":
+        return self._skt_rt._ctx
 
     @property
     def _block_result(self) -> str:
         if not self._finished:
-            raise exceptions.TemplateRenderError(
-                "Renderring has not been finished yet.")
+            raise exceptions.SketchDrawingError(
+                "Drawing has not been finished yet.")
 
-        return self.__tpl_result__
+        return self.__skt_result__
 
     @property
     def blocks(self) -> BlockStorage:
-        return self._tpl_namespace.blocks
+        return self._skt_rt.blocks
+
+    def write(self, __content: Any, escape: str="default") -> None:
+        if self._finished:
+            raise exceptions.SketchDrawingError(
+                "Drawing has been finished.")
+
+        self.__skt_result__ += self._ctx.escape_fns[escape](__content)
 
     @property
     def body(self) -> str:
-        return self._tpl_namespace.body
+        return self._skt_rt.body
 
     @property
-    def parent(self) -> "TplNamespace":
-        return self._tpl_namespace.parent
+    def parent(self) -> "SketchRuntime":
+        return self._skt_rt.parent
 
-    async def _inherit_tpl(self) -> None:
-        raise exceptions.TemplateRenderError(
-            "Cannot inherit template(s) inside the block.")
+    async def _inherit_sketch(self) -> None:
+        raise exceptions.SketchDrawingError(
+            "Cannot inherit sketch(es) inside the block.")
 
     async def _add_parent(self, path: str) -> None:
-        raise exceptions.TemplateRenderError(
+        raise exceptions.SketchDrawingError(
             "Cannot Set Inheritance inside the block.")
 
-    async def _include_tpl(self, path: str) -> str:
-        return await self._tpl_namespace._include_tpl(path)
+    async def _include_sketch(self, path: str) -> str:
+        return await self._skt_rt._include_sketch(path)
 
-    async def _render(self) -> None:
+    async def _draw(self) -> None:
         if self._finished:
-            raise exceptions.TemplateRenderError(
-                "Renderring has already been finished.")
+            raise exceptions.SketchDrawingError(
+                "Drawing has already been finished.")
 
-        if self._defined_here and self._tpl_namespace._parent is not None:
+        if self._defined_here and self._skt_rt._parent is not None:
             self._finished = True
 
             return
 
-        await self._render_block()
+        await self._draw_block()
 
         self._finished = True
 
     @abc.abstractmethod
-    async def _render_block(self) -> None:  # pragma: no cover
+    async def _draw_block(self) -> None:  # pragma: no cover
         raise NotImplementedError
 
 
-class TplNamespace(_BaseNamespace):
-    _BLOCK_NAMESPACES: Dict[str, Type[BlockNamespace]] = {}
+class SketchRuntime(_BaseRuntime):
+    _BLOCK_RUNTIMES: Dict[str, Type[BlockRuntime]] = {}
 
     def __init__(
-        self, tpl: "template.Template",
-            tpl_globals: Dict[str, Any]) -> None:
-        self._tpl = tpl
-        self._tpl_globals = tpl_globals
+        self, skt: "sketch.Sketch",
+            skt_globals: Dict[str, Any]) -> None:
+        self._skt = skt
+        self._skt_globals = skt_globals
 
-        self.__tpl_result__ = ""
+        self.__skt_result__ = ""
 
         self._body: Optional[str] = None
-        self._parent: Optional[TplNamespace] = None
+        self._parent: Optional[SketchRuntime] = None
 
         self._block_store = BlockStorage(self)
 
         self._finished = False
 
     @property
-    def _loader(self) -> "loaders.BaseLoader":
-        if self._tpl._loader is None:
-            raise exceptions.TemplateRenderError(
-                "The loader is not set. "
+    def _finder(self) -> "finders.BaseSketchFinder":
+        if self._skt._finder is None:
+            raise exceptions.SketchDrawingError(
+                "The finder is not set. "
                 "The inheritance and including is not available.")
-        return self._tpl._loader
+        return self._skt._finder
 
     def _get_globals(self) -> Dict[str, Any]:
         new_globals = {}
 
-        new_globals.update(self._tpl_globals)
+        new_globals.update(self._skt_globals)
 
-        if "_TplCurrentNamespace" in new_globals.keys():
-            del new_globals["_TplCurrentNamespace"]
+        if "_SktCurrentRuntime" in new_globals.keys():
+            del new_globals["_SktCurrentRuntime"]
 
         return new_globals
 
     @property
-    def _tpl_result(self) -> str:
+    def _skt_result(self) -> str:
         if not self._finished:
-            raise exceptions.TemplateRenderError(
-                "Renderring has not been finished yet.")
+            raise exceptions.SketchDrawingError(
+                "Drawing has not been finished yet.")
 
-        return self.__tpl_result__
+        return self.__skt_result__
 
     @property
-    def _tpl_ctx(self) -> "context.TemplateContext":
-        return self._tpl._tpl_ctx
+    def _ctx(self) -> "context.SketchContext":
+        return self._skt._ctx
 
     @property
     def blocks(self) -> BlockStorage:
         return self._block_store
+
+    def write(self, __content: Any, escape: str="default") -> None:
+        if self._finished:
+            raise exceptions.SketchDrawingError(
+                "Drawing has been finished.")
+
+        self.__skt_result__ += self._ctx.escape_fns[escape](__content)
 
     @property
     def body(self) -> str:
@@ -277,7 +297,7 @@ class TplNamespace(_BaseNamespace):
         return self._body
 
     @property
-    def parent(self) -> "TplNamespace":
+    def parent(self) -> "SketchRuntime":
         if self._parent is None:
             raise AttributeError("Parent is not set.")
 
@@ -290,45 +310,45 @@ class TplNamespace(_BaseNamespace):
         assert self._body is None, "There's already a child body."
         self._body = body
 
-    async def _inherit_tpl(self) -> None:
+    async def _inherit_sketch(self) -> None:
         if self._parent is None:
             return
 
-        self._parent._update_body(self.__tpl_result__)
+        self._parent._update_body(self.__skt_result__)
         self._parent._update_blocks(self._block_store)
 
-        await self._parent._render()
+        await self._parent._draw()
 
-        self.__tpl_result__ = self._parent._tpl_result
+        self.__skt_result__ = self._parent._skt_result
 
     async def _add_parent(self, path: str) -> None:
         assert self._parent is None, \
-            "A template can only set the inheritance once."
+            "A sketch can only set the inheritance once."
 
-        parent_tpl = await self._loader.load_tpl(
-            path, origin_path=self._tpl._path)
+        parent_skt = await self._finder._find(
+            path, origin_path=self._skt._path)
 
-        self._parent = parent_tpl._get_namespace(
-            tpl_globals=self._get_globals())
+        self._parent = parent_skt._get_runtime(
+            skt_globals=self._get_globals())
 
-    async def _include_tpl(self, path: str) -> str:
-        tpl = await self._loader.load_tpl(path, origin_path=self._tpl._path)
+    async def _include_sketch(self, path: str) -> str:
+        skt = await self._finder._find(path, origin_path=self._skt._path)
 
-        tpl_namespace = tpl._get_namespace(self._get_globals())
+        skt_rt = skt._get_runtime(self._get_globals())
 
-        await tpl_namespace._render()
-        return tpl_namespace._tpl_result
+        await skt_rt._draw()
+        return skt_rt._skt_result
 
-    async def _render(self) -> None:
+    async def _draw(self) -> None:
         if self._finished:
-            raise exceptions.TemplateRenderError(
-                "Renderring has already been finished.")
+            raise exceptions.SketchDrawingError(
+                "Drawing has already been finished.")
 
-        await self._render_body()
+        await self._draw_body()
 
-        await self._inherit_tpl()
+        await self._inherit_sketch()
         self._finished = True
 
     @abc.abstractmethod
-    async def _render_body(self) -> None:  # pragma: no cover
+    async def _draw_body(self) -> None:  # pragma: no cover
         raise NotImplementedError

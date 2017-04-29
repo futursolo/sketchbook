@@ -30,7 +30,7 @@ Features
   Developers are able to use :code:`async for`, :code:`async with` and :code:`await`
   fearlessly.
 - Fast Execution: Like `Mako <http://www.makotemplates.org>`_ and
-  `Jinja2 <http://http://jinja.pocoo.org>`_, Sketchbook compiles the template
+  `Jinja2 <http://jinja.pocoo.org>`_, Sketchbook compiles the template
   into Python bytecode before execution, it should be as fast as running other
   Python code.
 - Dynamic Template Inheritance and Including: The template can inherit from and
@@ -46,7 +46,7 @@ Intallation
 Requirements
 ------------
 - Python 3.6+
-- aiofiles>=0.3.1,<1(For :class:`.AsyncFileSystemLoader`)
+- aiofiles>=0.3.1,<1(For :class:`.SketchFinder`)
 
 Why?
 ----
@@ -62,7 +62,6 @@ There's quite a few template engines for Python, why reinvent the wheel?
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
 
 
 Indices and tables

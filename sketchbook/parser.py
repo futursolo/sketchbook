@@ -18,32 +18,32 @@
 from typing import Optional, List
 
 from . import statements
-from . import template
+from . import sketch
 from . import exceptions
 
 import io
 
-__all__ = ["TemplateParser"]
+__all__ = ["SketchParser"]
 
 
 class _ReadFinished(Exception):
     pass
 
 
-class TemplateParser:
+class SketchParser:
     """
-    The one-time, non-reusable template parser.
+    The one-time, non-reusable sketch parser.
     """
-    def __init__(self, tpl: "template.Template") -> None:
-        self._tpl = tpl
-        self._tpl_ctx = self._tpl._tpl_ctx
+    def __init__(self, __skt: "sketch.Sketch") -> None:
+        self._skt = __skt
+        self._ctx = self._skt._ctx
 
-        self._io = io.StringIO(self._tpl._tpl_content)
+        self._io = io.StringIO(self._skt._content)
 
         self._current_line_no = 0
         self._current_line = ""
 
-        self._root = statements.Root(filepath=self._tpl._path)
+        self._root = statements.Root(skt=self._skt)
         self._indents: List[statements.IndentMixIn] = []
 
         self._parse()
@@ -51,7 +51,7 @@ class TemplateParser:
     def _move_to_next_line(self) -> None:
         assert not self._current_line, \
             ("Parsing of the last line is not completed "
-             f"in file {self._tpl._path} at line {self._current_line_no}.")
+             f"in file {self._skt._path} at line {self._current_line_no}.")
 
         new_line = self._io.readline()
 
@@ -118,9 +118,9 @@ class TemplateParser:
             self, stmt_str: str, line_no: int) -> "statements.Statement":
         stmt_str = stmt_str.strip()
 
-        for StmtCls in self._tpl_ctx.stmt_classes:
+        for StmtCls in self._ctx.stmt_classes:
             maybe_stmt = StmtCls.try_match(
-                stmt_str, filepath=self._tpl._path, line_no=line_no)
+                stmt_str, skt=self._skt, line_no=line_no)
 
             if maybe_stmt is None:
                 continue
@@ -130,7 +130,7 @@ class TemplateParser:
         else:
             raise exceptions.UnknownStatementError(
                 f"Unknown Statement {repr(stmt_str)} "
-                f"in file {self._tpl._path} at line {line_no}.")
+                f"in file {self._skt._path} at line {line_no}.")
 
     def _find_next_stmt(self) -> "statements.Statement":
         stmt_chunks: List[str] = []
@@ -143,9 +143,9 @@ class TemplateParser:
 
                 except _ReadFinished:
                     if begin_mark_line_no != -1:
-                        raise exceptions.TemplateSyntaxError(
+                        raise exceptions.SketchSyntaxError(
                             ("Cannot find end mark for begin mark "
-                             f"in file {self._tpl._path} "
+                             f"in file {self._skt._path} "
                              f"at line {begin_mark_line_no}."))
 
                     elif stmt_chunks:
@@ -200,9 +200,9 @@ class TemplateParser:
             self._indents.pop()
 
         else:
-            raise exceptions.TemplateSyntaxError(
+            raise exceptions.SketchSyntaxError(
                 "Redundant Unindent Statement "
-                f"in file {self._tpl._path} at line {self._current_line_no}.")
+                f"in file {self._skt._path} at line {self._current_line_no}.")
 
     def _parse(self) -> None:
         while True:
@@ -225,12 +225,12 @@ class TemplateParser:
                 self._root.append_block(stmt)
 
         if self._indents:
-            raise exceptions.TemplateSyntaxError(
+            raise exceptions.SketchSyntaxError(
                 "Unindented Indent Statement "
-                f"in file {self._tpl._path} "
+                f"in file {self._skt._path} "
                 f"at line {self._indents[-1].line_no}.")
 
     @classmethod
-    def parse_tpl(Cls, tpl: "template.Template") -> "statements.Root":
-        tpl_parser = Cls(tpl)
-        return tpl_parser.root
+    def parse_sketch(Cls, skt: "sketch.Sketch") -> "statements.Root":
+        skt_parser = Cls(skt)
+        return skt_parser.root
