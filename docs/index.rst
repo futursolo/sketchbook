@@ -6,6 +6,59 @@
 Sketchbook |version|
 ====================
 
+.. code-block:: python3
+
+    <% async for blank_page in sketchbook %>
+        <% let sketch = await blank_page.draw() %>
+    <% end %>
+
+Sketchbook is a brand new template engine for asyncio. It takes advantage of
+Python 3's unicode, :code:`asyncio` (`PEP 3156 <https://www.python.org/dev/peps/pep-3156/>`_) and
+the new :code:`async`/:code:`await` syntax(`PEP 492 <https://www.python.org/dev/peps/pep-0492>`_),
+with a syntax inspired by `ERB <https://en.wikipedia.org/wiki/ERuby>`_ and
+`Django Templates <https://docs.djangoproject.com/en/stable/ref/templates/language/>`_.
+
+Features
+--------
+- Super Simple Syntax: The syntax of Sketchbook is super easy to learn. It mixes
+  the Python syntax with the ERB style tag marker while keeping a big picture from Python.
+- Safe: The output is escaped by default unless manually overridden.
+- Unicode Support: Unicode is baked into the whole system, never worry about dealing with
+  the bytestring.
+- Fully :code:`asyncio` and :code:`async`/:code:`await` ready: Sketchbook is designed
+  from the ground up for :code:`asyncio` module and :code:`async`/:code:`await` syntax.
+  Developers are able to use :code:`async for`, :code:`async with` and :code:`await`
+  fearlessly.
+- Fast Execution: Like `Mako <http://www.makotemplates.org>`_ and
+  `Jinja2 <http://http://jinja.pocoo.org>`_, Sketchbook compiles the template
+  into Python bytecode before execution, it should be as fast as running other
+  Python code.
+- Dynamic Template Inheritance and Including: The template can inherit from and
+  include the other templates at the runtime, which significantly improves
+  the reusability and flexibility.
+
+Intallation
+-----------
+.. code-block:: shell
+
+    $ pip install git+https://github.com/futursolo/sketchbook.git
+
+Requirements
+------------
+- Python 3.6+
+- aiofiles>=0.3.1,<1(For :class:`.AsyncFileSystemLoader`)
+
+Why?
+----
+There's quite a few template engines for Python, why reinvent the wheel?
+
+- Most template engines are the relic from `Python 2.x`, thus they suck when dealing
+  with unicode.
+- The coroutine is now a first class citizen in the Python language, but not in
+  these template engines.
+- None of them support the new type hints system introduced in `Python 3.5`.
+- It's fun!
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -13,8 +66,7 @@ Sketchbook |version|
 
 
 Indices and tables
-==================
-
+------------------
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

@@ -58,14 +58,14 @@ class CodePrinter:
         """
         Indent the code with `with` statement.
 
-        Example:
-        ..code-block:: python3
+        Example::
 
-            printer.writeline("def a():")
-            with printer.indent_block():
-                printer.writeline("return \"Text from function a.\"")
+              printer.writeline("def a():")
+              with printer.indent_block():
+                  printer.writeline("return \"Text from function a.\"")
 
-            printer.writeline("a()")
+              printer.writeline("a()")
+
         """
         assert not self._finished, "Code Generation has already been finished."
         return self

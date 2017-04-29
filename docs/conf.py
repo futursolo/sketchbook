@@ -17,6 +17,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+
 import os
 import sys
 
@@ -62,7 +63,7 @@ author = 'Kaede Hoshikawa'
 # built documents.
 #
 # The short X.Y version.
-version = sketchbook.version
+version = sketchbook.version.rsplit(".", 1)[0]
 # The full version, including alpha/beta/rc tags.
 release = sketchbook.version
 
