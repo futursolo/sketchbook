@@ -8,10 +8,19 @@ Sketchbook
 
 A template engine built for asyncio with async/await syntax support.
 
+Installation
+------------
+.. code-block:: shell
+    $ pip install git+https://github.com/futursolo/sketchbook.git
+
+Documentation
+-------------
+The Documentation is hosted on `here <https://sketchbook.futures.moe/>`_.
+
 Project Status
 --------------
 The library itself works and is well tested.
-Though, the documentation is missing.
+Though, the documentation is incomplete.
 
 License
 -------

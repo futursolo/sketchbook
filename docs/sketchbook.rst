@@ -1,10 +1,9 @@
-sketchbook package
-==================
+.. _sketchbook:
 
-Module contents
----------------
+=============
+API Reference
+=============
 
 .. automodule:: sketchbook
     :members:
     :undoc-members:
-    :show-inheritance:

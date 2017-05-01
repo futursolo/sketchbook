@@ -171,8 +171,9 @@ class Block(Statement, IndentMixIn, AppendMixIn):
 
     def print_code(self, py_printer: printer.PythonPrinter) -> None:
         py_printer.writeline(
-            "self.__skt_result__ += "
-            f"await self.blocks[{repr(self.block_name)}, True]()", self)
+            f"self.write(await self.blocks[{repr(self.block_name)}, True](), "
+            "escape=\"raw\")",
+            self)
 
     def print_block_code(self, py_printer: printer.PythonPrinter) -> None:
         py_printer.writeline(
@@ -186,7 +187,7 @@ class Block(Statement, IndentMixIn, AppendMixIn):
                     stmt.print_code(py_printer)
 
         py_printer.writeline(
-            f"_SKT_BLOCK_RUNTIMES[{repr(self.block_name)}] = "
+            f"_SKT_BLOCK_RUNTIMES[{self.block_name!r}] = "
             "_SktCurrentBlockRuntime")
 
 
@@ -206,7 +207,7 @@ class Plain(Statement, AppendMixIn):
 
     def print_code(self, py_printer: printer.PythonPrinter) -> None:
         py_printer.writeline(
-            f"self.__skt_result__ += {repr(self._plain_str)}")
+            f"self.write({repr(self._plain_str)}, escape=\"raw\")")
 
 
 class BaseOutput(Statement, AppendMixIn):
@@ -259,12 +260,8 @@ class BaseOutput(Statement, AppendMixIn):
 
     def print_code(self, py_printer: printer.PythonPrinter) -> None:
         py_printer.writeline(
-            f"__skt_output_raw_result__ = {self._output_exp}", self)
-
-        py_printer.writeline(
-            "self.__skt_result__ += "
-            f"self._ctx.escape_fns[{repr(self._output_filter)}]"
-            "(__skt_output_raw_result__)")
+            f"self.write({self._output_exp}, "
+            f"escape={self._output_filter!r})")
 
 
 class _Include(Statement, AppendMixIn):
@@ -298,8 +295,9 @@ class _Include(Statement, AppendMixIn):
 
     def print_code(self, py_printer: printer.PythonPrinter) -> None:
         py_printer.writeline(
-            "self.__skt_result__ += await "
-            f"self._include_sketch({self._target_path})", self)
+            "self.write(await "
+            f"self._include_sketch({self._target_path}), escape=\"raw\")",
+            self)
 
 
 class _Inherit(Statement, AppendMixIn):

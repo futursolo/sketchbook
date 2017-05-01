@@ -3,6 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. _index:
+
+====================
 Sketchbook |version|
 ====================
 
@@ -19,7 +22,7 @@ with a syntax inspired by `ERB <https://en.wikipedia.org/wiki/ERuby>`_ and
 `Django Templates <https://docs.djangoproject.com/en/stable/ref/templates/language/>`_.
 
 Features
---------
+========
 - Super Simple Syntax: The syntax of Sketchbook is super easy to learn. It mixes
   the Python syntax with the ERB style tag marker while keeping a big picture from Python.
 - Safe: The output is escaped by default unless manually overridden.
@@ -38,34 +41,44 @@ Features
   the reusability and flexibility.
 
 Intallation
------------
+===========
 .. code-block:: shell
 
     $ pip install git+https://github.com/futursolo/sketchbook.git
 
 Requirements
-------------
+============
 - Python 3.6+
 - aiofiles>=0.3.1,<1(For :class:`.SketchFinder`)
 
+Usage
+=====
+- For how to integrate sketchbook into your project, see :ref:`integration`.
+
+- For the Language Reference , please refer to :ref:`language`.
+
 Why?
-----
+====
 There's quite a few template engines for Python, why reinvent the wheel?
 
-- Most template engines are the relic from `Python 2.x`, thus they suck when dealing
+- Most template engines are the relic from :code:`Python 2.x`, thus they suck when dealing
   with unicode.
 - The coroutine is now a first class citizen in the Python language, but not in
   these template engines.
-- None of them support the new type hints system introduced in `Python 3.5`.
+- None of them support the new type hints system introduced in :code:`Python 3.5`.
 - It's fun!
 
+See also
+========
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
 
+   integration
+   language
+   sketchbook
 
 Indices and tables
-------------------
+==================
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

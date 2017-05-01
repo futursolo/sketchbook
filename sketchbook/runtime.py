@@ -200,11 +200,11 @@ class BlockRuntime(_BaseRuntime):
     def parent(self) -> "SketchRuntime":
         return self._skt_rt.parent
 
-    async def _inherit_sketch(self) -> None:
+    async def _inherit_sketch(self) -> None:  # pragma: no cover
         raise exceptions.SketchDrawingError(
             "Cannot inherit sketch(es) inside the block.")
 
-    async def _add_parent(self, path: str) -> None:
+    async def _add_parent(self, path: str) -> None:  # pragma: no cover
         raise exceptions.SketchDrawingError(
             "Cannot Set Inheritance inside the block.")
 
