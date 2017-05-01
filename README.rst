@@ -15,7 +15,7 @@ Installation
 
 Documentation
 -------------
-The Documentation is hosted on `here <https://sketchbook.futures.moe/>`_.
+The Documentation is hosted `here <https://sketchbook.futures.moe/>`_.
 
 Project Status
 --------------
