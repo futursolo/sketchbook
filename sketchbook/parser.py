@@ -118,6 +118,12 @@ class SketchParser:
             self, stmt_str: str, line_no: int) -> "statements.Statement":
         stmt_str = stmt_str.strip()
 
+        if stmt_str.endswith(":"):
+            raise exceptions.SketchSyntaxError(
+                    "A Statement Cannot be Finished with `:`, "
+                    "use `<% end %>` instead. For detailed information, please "
+                    "see the documation.")
+
         for StmtCls in self._ctx.stmt_classes:
             maybe_stmt = StmtCls.try_match(
                 stmt_str, skt=self._skt, line_no=line_no)

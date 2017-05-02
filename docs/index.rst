@@ -16,8 +16,8 @@ Sketchbook |version|
     <% end %>
 
 Sketchbook is a brand new template engine for asyncio. It takes advantage of
-Python 3's unicode, :code:`asyncio` (`PEP 3156 <https://www.python.org/dev/peps/pep-3156/>`_) and
-the new :code:`async`/:code:`await` syntax(`PEP 492 <https://www.python.org/dev/peps/pep-0492>`_),
+Python 3's unicode, :code:`asyncio` (:pep:`3156`) and
+the new :code:`async`/:code:`await` syntax(:pep:`492`),
 with a syntax inspired by `ERB <https://en.wikipedia.org/wiki/ERuby>`_ and
 `Django Templates <https://docs.djangoproject.com/en/stable/ref/templates/language/>`_.
 
