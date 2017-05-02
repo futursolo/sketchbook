@@ -121,8 +121,8 @@ class SketchParser:
         if stmt_str.endswith(":"):
             raise exceptions.SketchSyntaxError(
                     "A Statement Cannot be Finished with `:`, "
-                    "use `<% end %>` instead. For detailed information, please "
-                    "see the documation.")
+                    "use `<% end %>` instead. For detailed information, "
+                    "please see the documation.")
 
         for StmtCls in self._ctx.stmt_classes:
             maybe_stmt = StmtCls.try_match(
