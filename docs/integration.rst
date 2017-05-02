@@ -3,9 +3,6 @@
 =======================================
 Integrate sketchbook into your projects
 =======================================
-
-Sketch
-======
 For simple integration, Only the :class:`.Sketch` class is needed::
 
     from sketchbook import Sketch
@@ -22,8 +19,8 @@ For simple integration, Only the :class:`.Sketch` class is needed::
 This is suitable for most simple cases, but you cannot modify behaviours of
 sketchbook. Also, it cannot include or inherit from other templates.
 
-SketchContext
-=============
+Alter Default Behaviours
+========================
 To alter the default behaviours of :class:`.Sketch`,
 you need to create a :class:`.SketchContext`.
 For example, you want to use a custom event loop for :code:`sketchbook`::
@@ -43,8 +40,8 @@ For example, you want to use a custom event loop for :code:`sketchbook`::
 
     assert loop.run_until_complete(draw_sketch("John Smith")) == "Hello, John Smith."
 
-SketchFinder
-============
+Inheritance and Including
+=========================
 To enable the including and inheritance, you need a :class:`.SketchFinder` to
 help sketches find the other sketches. You can use the one provided by :code:`sketchbook`
 which delegates the file system operations to `aiofiles <https://github.com/Tinche/aiofiles>`_
