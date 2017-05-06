@@ -36,8 +36,12 @@ class BaseSketchFinder(abc.ABC):
 
     All Finders should be a subclass of this class.
 
-    To create a custom Sketch Finder, inherit from this class and override
+    To create a custom sketch finder, inherit from this class and override
     corresponding methods.
+
+    :arg skt_ctx: The :class:`.SketchContext` to be used by the
+        :class:`.BaseSketchFinder` and :class:`.Sketch`. Default: :code:`None`
+        (Create a new :class:`.SketchContext` upon initialization).
     """
     def __init__(
         self, *,
@@ -63,8 +67,10 @@ class BaseSketchFinder(abc.ABC):
         Solve the absolute path of the sketch from the skt_path based on the
         origin_path(if applicable).
 
-        If no matched file found, it should raise a
-        :class:`..SketchNotFoundError`.
+        .. important::
+
+            If no matched file found, it should raise a
+            :class:`..SketchNotFoundError`.
         """
         raise NotImplementedError
 
@@ -93,15 +99,26 @@ class BaseSketchFinder(abc.ABC):
 
     async def find(self, skt_path: str) -> "sketch.Sketch":
         """
-        Find the sketch.
+        Find the sketch corresponding to the given :code:`skt_path`.
         """
         return await self._find(skt_path)
 
 
 class SketchFinder(BaseSketchFinder):
     """
-    An implementation of :class:`.BaseSketchFinder` loads sketches from the
-    file system asynchronously.
+    An implementation of :class:`.BaseSketchFinder` using
+    `aiofiles <https://github.com/Tinche/aiofiles>`_ to
+    load sketches from the local file system asynchronously.
+
+    :arg __root_path: The root path of the finder. Use :code:`/` in including
+        and inheritance to indicate this folder. This argument must be passed
+        positionally and must be the first argument.
+    :arg executor: The thread executor used by :code:`aiofiles` to load the
+        file content.
+    :arg skt_ctx: The :class:`.SketchContext` to be used by the
+        :class:`.SketchFinder` and :class:`.Sketch`. Default: :code:`None`
+        (Create a new :class:`.SketchContext` upon initialization).
+
     """
     def __init__(
         self, __root_path: str, *,

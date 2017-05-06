@@ -11,6 +11,7 @@ A template engine built for asyncio with async/await syntax support.
 Installation
 ------------
 .. code-block:: shell
+
     $ pip install git+https://github.com/futursolo/sketchbook.git
 
 Documentation
