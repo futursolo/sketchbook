@@ -32,6 +32,22 @@ __all__ = ["Sketch"]
 class Sketch:
     """
     A compiled, reusable template object.
+
+    :class:`.Sketch` can be initialized directly with arguments, or initialized
+    by a subclass of :class:`.BaseSketchFinder`.
+
+    :arg __content: The content of this sketch. This can be a string or a
+        bytestring. If a bytestring
+        is passed, the content will be decoded with :code:`source_encoding`
+        option from :class:`.SketchContext`. This argument must be passed
+        positionally and must be the first argument.
+    :arg path: The path of the sketch, used by :class:`.SketchFinder` to
+        resolve the file relationship. Default: :code:`<string>`.
+    :arg skt_ctx: The :class:`.SketchContext` to be used by the
+        :class:`.Sketch` Default: :code:`None`
+        (Create a new :class:`.SketchContext` upon initialization).
+    :arg finder: The finder used by the current sketch to include or inherit
+        from other sketches. Default: :code:`None`.
     """
     def __init__(
         self, __content: Union[str, bytes], *,
@@ -69,6 +85,16 @@ class Sketch:
             self, skt_globals=skt_globals)
 
     async def draw(self, **kwargs: Any) -> str:
+        """
+        Draw the sketch to :code:`str`.
+
+        :arg \*\*kwargs: All the keyword arguments will become global variables
+            in the runtime.
+
+        .. warning::
+
+            The exceptions raised in the runtime will pop up from this method.
+        """
         runtime = self._get_runtime(skt_globals=kwargs)
 
         await runtime._draw()

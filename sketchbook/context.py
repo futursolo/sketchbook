@@ -27,6 +27,39 @@ __all__ = ["SketchContext"]
 
 
 class SketchContext:
+    """
+    :class:`.SketchContext` is used to hold options for :class:`.Sketch` and
+    :class:`.BaseSketchFinder`, in order to alter the default behaviours of
+    them.
+
+    This is class should be immutable after initialization.
+
+    :arg cache_sketches: If :code:`True`, :class:`.BaseSketchFinder` will
+        cache the sketches. Default: :code:`True`.
+    :arg source_encoding: The encoding of the source of the sketches if passed
+        as bytestring. Default: :code:`utf-8`.
+    :arg custom_escape_fns: Mapping of custom escape functions. Functions in
+        this mapping will override the one with the same name in the built-in
+        escape functions. Default: :code:`{}`.
+    :arg loop: The event loop used by :class:`.Sketch` and
+        :class:`.BaseSketchFinder`, must be a subclass of
+        :class:`asyncio.AbstractEventLoop` or :code:`None`.
+        Default: :code:`None`
+        (Use the value of :func:`asyncio.get_event_loop`).
+
+    Built-in Escape Functions:
+
+    - :code:`default`, :code:`h`, and :code:`html`:
+        Short hand for :func:`html.escape`.
+    - :code:`r` and :code:`raw`:
+        Output the input with no modification.
+    - :code:`j` and :code:`json`:
+        Short hand for :func:`json.dumps`.
+    - :code:`u`, :code:`url` and :code:`url_with_plus`:
+        Short hand for :func:`urllib.parse.quote_plus`.
+    - :code:`url_without_plus`:
+        Short hand for :func:`urllib.parse.quote`.
+    """
     def __init__(
         self, *, cache_sketches: bool=True,
         source_encoding: str="utf-8",

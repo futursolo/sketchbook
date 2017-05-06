@@ -13,8 +13,6 @@ Sketch
 Context
 =======
 .. autoclass:: sketchbook.SketchContext
-    :members:
-    :undoc-members:
 
 Finders
 =======
