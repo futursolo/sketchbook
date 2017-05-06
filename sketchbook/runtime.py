@@ -53,7 +53,7 @@ class BlockStorage:
         SelectedBlockRuntime = self._blocks[block_name]
 
         async def wrapper() -> str:
-            block_rt = SelectedBlockRuntime(  # type: ignore
+            block_rt = SelectedBlockRuntime(
                 self._skt_rt, _defined_here=defined_here)
 
             await block_rt._draw()

@@ -61,7 +61,7 @@ class SketchContext:
 
     @property
     def escape_fns(self) -> Mapping[str, Callable[[Any], str]]:
-        return self._escape_fns  # type: ignore
+        return self._escape_fns
 
     @property
     def stmt_classes(self) -> Sequence[Type[statements.Statement]]:

@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Any
+from typing import Any, Callable
 
 import html
 import urllib.parse
@@ -57,16 +57,17 @@ def _escape_json(unsafe_var: Any) -> str:
     return json.dumps(unsafe_var)
 
 
-builtin_escape_fns = collections.OrderedDict([
-    ("default", _escape_html),
-    ("html", _escape_html),
-    ("h", _escape_html),
-    ("raw", _no_escape),
-    ("r", _no_escape),
-    ("url_with_plus", _escape_url_with_plus),
-    ("url", _escape_url_with_plus),
-    ("u", _escape_url_with_plus),
-    ("url_without_plus", _escape_url_without_plus),
-    ("json", _escape_json),
-    ("j", _escape_json)
-])
+builtin_escape_fns: "collections.OrderedDict[str, Callable[[Any], str]]" = \
+    collections.OrderedDict([
+        ("default", _escape_html),
+        ("html", _escape_html),
+        ("h", _escape_html),
+        ("raw", _no_escape),
+        ("r", _no_escape),
+        ("url_with_plus", _escape_url_with_plus),
+        ("url", _escape_url_with_plus),
+        ("u", _escape_url_with_plus),
+        ("url_without_plus", _escape_url_without_plus),
+        ("json", _escape_json),
+        ("j", _escape_json)
+    ])

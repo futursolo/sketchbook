@@ -1,8 +1,0 @@
-conda:
-  file: .conda.yml
-
-python:
-  version: 3
-  pip_install: true
-  extra_requirements:
-    - all
