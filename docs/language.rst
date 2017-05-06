@@ -153,7 +153,8 @@ This example will output time stamps until a positive value is selected by rando
 .. note::
 
     The keywords of inline statements are :code:`break`, :code:`continue`,
-    :code:`import`, :code:`raise`, :code:`nonlocal`, and :code:`global`.
+    :code:`import`, :code:`from`, :code:`raise`, :code:`assert`,
+    :code:`nonlocal`, and :code:`global`.
 
 Assignment
 ==========
@@ -308,7 +309,7 @@ Strings that will be removed from the result.
     This is the content.
     <%# This is the comment. %>
 
-When the sketch is being drawn, the comment will not be drawn.
+When the sketch is being drawn, the comment will be excluded.
 
 The result of the example above is:
 

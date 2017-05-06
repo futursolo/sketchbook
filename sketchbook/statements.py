@@ -437,7 +437,7 @@ class _Inline(Statement, AppendMixIn):
             line_no: int) -> Optional["Statement"]:
         if stmt_str.split(" ", 1)[0] not in (
             "break", "continue", "import", "raise", "from",
-                "nonlocal", "global"):
+                "nonlocal", "global", "assert"):
             return None
 
         return Cls(
