@@ -31,7 +31,7 @@ For example, you want to use a custom event loop for :code:`sketchbook`::
 
     loop = uvloop.Loop()
     # This is not the recommended way to use uvloop,
-    # please for their documentation to set the event loop policy.
+    # please refer to their documentation to set the event loop policy.
 
     skt_ctx = SketchContent(loop=loop)
 

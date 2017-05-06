@@ -436,7 +436,8 @@ class _Inline(Statement, AppendMixIn):
         Cls, stmt_str: str, skt: sketch.Sketch,
             line_no: int) -> Optional["Statement"]:
         if stmt_str.split(" ", 1)[0] not in (
-                "break", "continue", "import", "raise", "from"):
+            "break", "continue", "import", "raise", "from",
+                "nonlocal", "global"):
             return None
 
         return Cls(
