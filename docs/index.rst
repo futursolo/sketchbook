@@ -44,12 +44,13 @@ Intallation
 ===========
 .. code-block:: shell
 
-    $ pip install git+https://github.com/futursolo/sketchbook.git
+    $ pip install -U git+https://github.com/futursolo/sketchbook.git
 
 Source Code
 ===========
-:code:`sketchbook` is open sourced under `Apache License 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_ and its source code is hosted on `GitHub <https://github.com/futursolo/sketchbook/>`_.
-
+:code:`sketchbook` is open sourced under
+`Apache License 2.0 <http://www.apache.org/licenses/LICENSE-2.0>`_ and its
+source code is hosted on `GitHub <https://github.com/futursolo/sketchbook/>`_.
 
 Requirements
 ============
