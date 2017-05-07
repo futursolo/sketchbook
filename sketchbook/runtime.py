@@ -29,8 +29,10 @@ __all__ = ["BlockStorage", "BlockRuntime", "SketchRuntime"]
 
 class BlockStorage:
     """
-    The Read-only mapping-like object for :class:`.SketchRuntime` to read
+    A read-only, mapping-like object for :class:`.SketchRuntime` to access
     blocks.
+
+    This class can be accessd using :code:`self.blocks` inside a sketch.
 
     Example:
 
@@ -101,7 +103,7 @@ class BlockStorage:
             self._blocks[k] = v
 
 
-class _BaseRuntime(abc.ABC):
+class _AbstractRuntime(abc.ABC):
     @property
     @abc.abstractmethod
     def _finder(self) -> "finders.BaseSketchFinder":  # pragma: no cover
@@ -163,7 +165,14 @@ class _BaseRuntime(abc.ABC):
         raise NotImplementedError
 
 
-class BlockRuntime(_BaseRuntime):
+class BlockRuntime(_AbstractRuntime):
+    """
+    The runtime for a block. It shares the same methods and properties with the
+    :class:`.SketchRuntime`.
+
+    The content inside a block has a different local bound than the
+    other parts of the sketch.
+    """
     def __init__(
             self, __skt_rt: "SketchRuntime", _defined_here: bool) -> None:
         self._skt_rt = __skt_rt
@@ -249,7 +258,13 @@ class BlockRuntime(_BaseRuntime):
         raise NotImplementedError
 
 
-class SketchRuntime(_BaseRuntime):
+class SketchRuntime(_AbstractRuntime):
+    """
+    The Sketch Runtime -- the :code:`self` inside sketches.
+
+    The runtime provides a series of methods and properties and to help
+    developers when drawing the sketch.
+    """
     _BLOCK_RUNTIMES: Dict[str, Type[BlockRuntime]] = {}
 
     def __init__(
@@ -299,9 +314,15 @@ class SketchRuntime(_BaseRuntime):
 
     @property
     def blocks(self) -> BlockStorage:
+        """
+        Return an :class:`.BlockStorage` to help developers to access blocks.
+        """
         return self._block_store
 
     def write(self, __content: Any, escape: str="default") -> None:
+        """
+        Write the content to the buffer.
+        """
         if self._finished:
             raise exceptions.SketchDrawingError(
                 "Drawing has been finished.")
@@ -310,6 +331,14 @@ class SketchRuntime(_BaseRuntime):
 
     @property
     def body(self) -> str:
+        """
+        The body of the child sketch(if any).
+
+        .. warning::
+
+            If the inheritance is not enabled, it will raise an
+            :class:`AttributeError`.
+        """
         if self._body is None:
             raise AttributeError("Inheritance is not enabled.")
 
@@ -317,6 +346,14 @@ class SketchRuntime(_BaseRuntime):
 
     @property
     def parent(self) -> "SketchRuntime":
+        """
+        The runtime of the parent sketch(if any).
+
+        .. warning::
+
+            If the inheritance is not enabled, it will raise an
+            :class:`AttributeError`.
+        """
         if self._parent is None:
             raise AttributeError("Parent is not set.")
 

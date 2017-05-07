@@ -32,12 +32,8 @@ Runtime
     :undoc-members:
 
 .. autoclass:: sketchbook.BlockStorage
-    :members:
-    :undoc-members:
 
 .. autoclass:: sketchbook.BlockRuntime
-    :members:
-    :undoc-members:
 
 Exceptions
 ==========
