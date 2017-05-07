@@ -32,7 +32,7 @@ class BlockStorage:
     The Read-only mapping-like object for :class:`.SketchRuntime` to read
     blocks.
 
-    ..code-block:: text
+    .. code-block:: text
 
         <% block a %>
             233
@@ -42,6 +42,7 @@ class BlockStorage:
         <%r= await self.blocks["a"]() %><%# outputs 233 %>
         <%r= await self.blocks.b() %><%# raises AttributeError %>
         <%r= await self.blocks["b"]() %><%# raises KeyError %>
+
     """
     def __init__(self, skt_rt: "SketchRuntime") -> None:
         self._skt_rt: SketchRuntime
