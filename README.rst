@@ -23,7 +23,7 @@ source code is hosted on `GitHub <https://github.com/futursolo/sketchbook/>`_.
 Requirements
 ============
 - Python 3.6+
-- aiofiles>=0.3.1,<1(For :class:`.SketchFinder`)
+- aiofiles>=0.3.1,<1(For :code:`sketchbook.SketchFinder`)
 
 Documentation
 -------------
