@@ -64,6 +64,7 @@ deploy:
     password:
       secure: "ePs6694cNLF5WMlMsiJjK4/P4DkiFJspmcpaNE+yQflrQEw15XKN1UJUc0VOyBFz7w7aFvyd4urOfalVYkB+VLfNRuXSg2D7A+DoHw8TeX0ZHtUdG+X7mNdBC3lKMXl1E8r2OizMO9g6Ac+3/Iz9GaTyYuIiZUEjA6fNdaCaOnKVJrybU3IGFrqfvC3NvrfXGiMrrV1+xlHFxku5Wypcv8Pv0eVH/6qbpoXoqxMaibq4Oeg64jIbr7fOhHS/wNgVb81gH1rHd7lCpj6pTwbObrO3J/GALH6W6D5BtXwcKnTIp9HH7QBm9XRC1aQRlJmpdoy4FR9PuSa9HZUrRjO2pZ6FmxgjEFzo0LtHj0Bdqmxvfn4HNrSqaWtwID1QzCNbkTrmGwEK4vhiAjRWeUdC38ysSIXc2rVSFyduefKpb5iAO5mXeq/bnCE5+yprbY0xn36EfGvrRDp5qmIMUmM7nhcv5vj6ftJmVz7+vzGbcOhUP8UnUJ+VDdFe6Waxk0PqKZ0Ho+221Fp2fo94JDvDCwlxsfN61jOQ2dvTfgEZ7jVAaLzdRKRiV+Cl+flMEdJYiYmLdtSu1T3ioodim5FoQlFzEZyFuXNtCyFDalWFv9t9Cgohk6xk4l6AoAlooi4944owryic+gGmxj9/r0umFbxYm6Y1xMgeCGK8nhoJVUg="
     skip_cleanup: true
+    skip_upload_docs: true
     on:
       branch: master
       tags: false
@@ -75,6 +76,7 @@ deploy:
     password:
       secure: "24RecZs9nFgSuhueAYulIMSQ5XHQd8UQN9Gx0KX6VUMw/2spuJgMuEOnRNc/sOJg4Pmw/FG5RykxnC6EWFU70cb9c3n2sdtqxOpHVA7Lqs6I47a90Ce6viiRm4yBW93M0yJzKQ8lDmC5FMLQvd8RWNgr3DPxHGoh69/+/eTFa3f/1QI3dZNcXIJr24LWmTTg2z3nwhf4eqrDRi23mEis/Rm/+ItVWe++0Qp1cSER+Fer7Saotibk4SKO1d5UzkuCBz1KUP3iQ/Y439QimQDxe1J1QoAncb0JaOdN2zANeoFZUrqdUdKWRlWDl4+CHRYbqJXOXD5siMo7f3+6q9Ys0Pg11l4s/fEO0r2XQ14zhV0OQOoYD4F3iJmKxLrBxU9XLr2Fq77xYXR3Vp4jGw7sYpId27ugZXBe/hT++nqFvKtbpCiam56CvNwGAtSfmKwRN3Wdqi9t/IOyXWk1b2Rg4PaMVbBYmtyonu2onzpNlCwWPQGX/dDv6Xy20FrVvGQR2aotPhdeqE08O3vkDaRdFZphb2EGY/jl3mN+aKPY8xygOGWQm43vt9eJzo21C55yTxP4qGZzTi7bqaeVCkbNP/FnlJVHzZgHktbupvWYE3W9LUpm/ltnRVgvB9dfLiIym9Kwl6fKsTyutzE9ue5+Nh2WwKImLFPSMmzWex9SXR0="
     skip_cleanup: true
+    skip_upload_docs: true
     on:
       branch: master
       tags: true
