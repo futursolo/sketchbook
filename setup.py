@@ -60,7 +60,8 @@ if __name__ == "__main__":
         author_email="futursolo@icloud.com",
         url="https://github.com/futursolo/sketchbook",
         license="Apache License 2.0",
-        description="An ordered, one-to-many mapping.",
+        description=("A template engine built for asyncio with "
+                     "async/await syntax support."),
         long_description=open("README.rst", "r").read(),
         packages=find_packages(),
         include_package_data=True,
