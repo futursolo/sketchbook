@@ -17,24 +17,23 @@
 
 from setuptools import setup, find_packages
 
-import importlib
 import os
 import sys
 
 if not sys.version_info[:3] >= (3, 6, 0):
     raise RuntimeError("Sketchbook requires Python 3.6.0 or higher.")
 
+else:
+    try:
+        import _modify_version
 
-def load_version(module_name):
-    _version_spec = importlib.util.spec_from_file_location(
-        "{}._version".format(module_name),
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "{}/_version.py".format(module_name)))
-    _version = importlib.util.module_from_spec(_version_spec)
-    _version_spec.loader.exec_module(_version)
-    return _version.version
+    except ImportError:
+        pass
 
+    else:
+        _modify_version.modify("sketchbook")
+
+    import sketchbook
 
 setup_requires = ["setuptools", "pytest-runner>=2.11.1,<3"]
 
@@ -56,7 +55,7 @@ dev_requires.extend(tests_require)
 if __name__ == "__main__":
     setup(
         name="sketchbook",
-        version=load_version("sketchbook"),
+        version=sketchbook.__version__,
         author="Kaede Hoshikawa",
         author_email="futursolo@icloud.com",
         url="https://github.com/futursolo/sketchbook",

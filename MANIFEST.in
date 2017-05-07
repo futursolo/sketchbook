@@ -10,3 +10,4 @@ global-exclude *.pyo
 global-exclude *.pyc
 prune docs/_build
 prune tests/.cache
+exclude ./_modify_version.py

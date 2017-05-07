@@ -15,15 +15,26 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-__all__ = ["__version__"]
+import os
+import re
 
-_tag_version = (0, 1, 0)
+_DEV_RE = re.compile(r"_dev\s*?=\s*?.*", flags=re.M)
 
-_dev = 0
 
-_version_fragments = [str(i) for i in _tag_version[:3]]
+def modify(project_folder: str) -> None:
+    tag = os.environ.get("TRAVIS_TAG", None)
 
-if _dev is not None:
-    _version_fragments.append(f"dev{_dev}")
+    if tag:
+        dev_no = "None"
 
-__version__ = ".".join(_version_fragments)
+    else:
+        dev_no = str(os.environ.get("TRAVIS_BUILD_NUMBER", "0"))
+
+    with open(f"{project_folder}/_version.py", "r+") as f:
+        f_str = f.read()
+        f_str = re.sub(_DEV_RE, f"_dev = {dev_no}", f_str)
+
+        f.seek(0)
+        f.truncate()
+        f.write(f_str)
+        f.flush()
