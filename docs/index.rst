@@ -6,7 +6,7 @@
 .. _index:
 
 ====================
-Sketchbook |version|
+Sketchbook |current_version|
 ====================
 
 .. code-block:: python3
