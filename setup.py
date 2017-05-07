@@ -17,7 +17,6 @@
 
 from setuptools import setup, find_packages
 
-import os
 import sys
 
 if not sys.version_info[:3] >= (3, 6, 0):
@@ -33,7 +32,8 @@ else:
     else:
         _modify_version.modify("sketchbook")
 
-    import sketchbook
+    import _load_version
+
 
 setup_requires = ["setuptools", "pytest-runner>=2.11.1,<3"]
 
@@ -55,7 +55,7 @@ dev_requires.extend(tests_require)
 if __name__ == "__main__":
     setup(
         name="sketchbook",
-        version=sketchbook.__version__,
+        version=_load_version.load("sketchbook"),
         author="Kaede Hoshikawa",
         author_email="futursolo@icloud.com",
         url="https://github.com/futursolo/sketchbook",
