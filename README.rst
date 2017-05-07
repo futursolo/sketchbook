@@ -29,11 +29,6 @@ Documentation
 -------------
 The Documentation is hosted `here <https://sketchbook.futures.moe/>`_.
 
-Project Status
---------------
-The library itself works and is well tested.
-Though, the documentation is incomplete.
-
 License
 -------
 Copyright 2017 Kaede Hoshikawa
