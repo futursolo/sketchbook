@@ -18,7 +18,8 @@ Finders
 =======
 .. autoclass:: sketchbook.BaseSketchFinder
     :members:
-    :undoc-members:
+    :special-members:
+    :private-members:
 
 .. autoclass:: sketchbook.SketchFinder
     :members:

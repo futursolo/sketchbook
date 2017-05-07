@@ -34,9 +34,7 @@ class BaseSketchFinder(abc.ABC):
     """
     Base Sketch Finder.
 
-    All Finders should be a subclass of this class.
-
-    To create a custom sketch finder, inherit from this class and override
+    To create a custom sketch finder, subclass this class and override
     corresponding methods.
 
     :arg skt_ctx: The :class:`.SketchContext` to be used by the
@@ -55,7 +53,16 @@ class BaseSketchFinder(abc.ABC):
     async def _load_sketch_content(
             self, skt_path: str) -> Union[str, bytes]:  # pragma: no cover
         """
-        Load the sketch content asynchronously.
+        This is an :func:`abc.abstractmethod`.
+
+        Override this class to customize sketch loading.
+
+        Load the sketch content as string or bytestring.
+
+        .. important::
+
+            If no matched file is found, it should raise a
+            :class:`.SketchNotFoundError`.
         """
         raise NotImplementedError
 
@@ -64,13 +71,17 @@ class BaseSketchFinder(abc.ABC):
         self, skt_path: str,
             origin_path: Optional[str]=None) -> str:  # pragma: no cover
         """
-        Solve the absolute path of the sketch from the skt_path based on the
-        origin_path(if applicable).
+        This is an :func:`abc.abstractmethod`.
+
+        Override this class to customize sketch discovery.
+
+        Solve the absolute path(starting with :code:`/`) of the sketch from
+        the skt_path based on the origin_path(if applicable).
 
         .. important::
 
-            If no matched file found, it should raise a
-            :class:`..SketchNotFoundError`.
+            If no matched file is found, it should raise a
+            :class:`.SketchNotFoundError`.
         """
         raise NotImplementedError
 
@@ -99,7 +110,13 @@ class BaseSketchFinder(abc.ABC):
 
     async def find(self, skt_path: str) -> "sketch.Sketch":
         """
-        Find the sketch corresponding to the given :code:`skt_path`.
+        Find the sketch corresponding to the given :code:`skt_path` and
+        initialize them with the given :code:`skt_ctx`.
+
+        .. warning::
+
+            If no sketch is matched, this method will raise a
+            :class:`.SketchNotFoundError`.
         """
         return await self._find(skt_path)
 
@@ -113,8 +130,8 @@ class SketchFinder(BaseSketchFinder):
     :arg __root_path: The root path of the finder. Use :code:`/` in including
         and inheritance to indicate this folder. This argument must be passed
         positionally and must be the first argument.
-    :arg executor: The thread executor used by :code:`aiofiles` to load the
-        file content.
+    :arg executor: The executor used by :code:`aiofiles` to load files.
+        Default: :code:`None` (Create a new executor upon initialization).
     :arg skt_ctx: The :class:`.SketchContext` to be used by the
         :class:`.SketchFinder` and :class:`.Sketch`. Default: :code:`None`
         (Create a new :class:`.SketchContext` upon initialization).

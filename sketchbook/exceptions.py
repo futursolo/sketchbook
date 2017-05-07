@@ -35,6 +35,9 @@ class SketchNotFoundError(FileNotFoundError, SketchbookException):
 
 
 class SketchSyntaxError(SyntaxError, SketchbookException):
+    """
+    Syntax error in the current sketch.
+    """
     pass
 
 
@@ -46,6 +49,9 @@ class UnknownStatementError(SketchSyntaxError):
 
 
 class BlockNameConflictError(SketchbookException):
+    """
+    There's more than one block with the same name in one sketch.
+    """
     pass
 
 
