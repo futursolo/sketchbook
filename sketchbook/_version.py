@@ -17,7 +17,7 @@
 
 __all__ = ["__version__"]
 
-_tag_version = (0, 1, 1)
+_tag_version = (0, 1, 2)
 
 _dev = 0
 
