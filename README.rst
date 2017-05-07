@@ -12,7 +12,7 @@ Intallation
 ===========
 .. code-block:: shell
 
-    $ pip install -U git+https://github.com/futursolo/sketchbook.git
+    $ pip install -U sketchbook
 
 Source Code
 ===========

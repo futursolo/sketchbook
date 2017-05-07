@@ -37,14 +37,14 @@ Features
   into Python bytecode before execution, it should be as fast as running other
   Python code.
 - Dynamic Template Inheritance and Including: The template can inherit from and
-  include the other templates at the runtime, which significantly improves
+  include the other templates **at the runtime**, which significantly improves
   the reusability and flexibility.
 
 Intallation
 ===========
 .. code-block:: shell
 
-    $ pip install -U git+https://github.com/futursolo/sketchbook.git
+    $ pip install -U sketchbook
 
 Source Code
 ===========
@@ -67,9 +67,9 @@ Why?
 ====
 There's quite a few template engines for Python, why reinvent the wheel?
 
-- Most template engines are the relic from :code:`Python 2.x`, thus they suck when dealing
+- Most template engines are relics from :code:`Python 2.x`, thus they suck when dealing
   with unicode.
-- The coroutine is now a first class citizen in the Python language, but not in
+- The coroutine is now one of the first class citizens in the Python language, but not in
   these template engines.
 - None of them support the new type hints system introduced in :code:`Python 3.5`.
 - It's fun!

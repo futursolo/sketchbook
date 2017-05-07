@@ -31,7 +31,7 @@ Example
     </html>
 
 The contents between :code:`<%` and :code:`%>` look quite similar to the Python
-syntax. Actually, Sketchbook rewrites the sketch into Python code and asks the
+syntax. Actually, Sketchbook rewrites sketches into Python code and asks the
 Python interpreter to "compile" the plain Python code into Python byte code.
 
 Hence, You can use (almost) any Python syntax in your sketches but with some

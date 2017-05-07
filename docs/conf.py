@@ -65,7 +65,12 @@ author = 'Kaede Hoshikawa'
 # built documents.
 #
 # The short X.Y version.
-version = sketchbook.__version__.rsplit(".", 1)[0]
+if sketchbook.__version__.count(".") > 2:
+    version = sketchbook.__version__.rsplit(".", 1)[0]
+
+else:
+    version = sketchbook.__version__
+
 # The full version, including alpha/beta/rc tags.
 release = sketchbook.__version__
 

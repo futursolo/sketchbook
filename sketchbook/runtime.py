@@ -170,8 +170,10 @@ class BlockRuntime(_AbstractRuntime):
     The runtime for a block. It shares the same methods and properties with the
     :class:`.SketchRuntime`.
 
-    The content inside a block has a different local bound than the
-    other parts of the sketch.
+    .. important::
+
+        The content inside a block has a different local bound than the
+        other parts of the sketch.
     """
     def __init__(
             self, __skt_rt: "SketchRuntime", _defined_here: bool) -> None:
@@ -322,6 +324,13 @@ class SketchRuntime(_AbstractRuntime):
     def write(self, __content: Any, escape: str="default") -> None:
         """
         Write the content to the buffer.
+
+        :arg __content: The content to write. This must be str, must be passed
+            as a positional argument, and must be the first argument of the
+            function call.
+        :arg escape: The name of the escape function to use.
+            For more information, see: :class:`.SketchContext`.
+            Default: :code:`default`.
         """
         if self._finished:
             raise exceptions.SketchDrawingError(
@@ -336,8 +345,8 @@ class SketchRuntime(_AbstractRuntime):
 
         .. warning::
 
-            If the inheritance is not enabled, it will raise an
-            :class:`AttributeError`.
+            If the current sketch is not the parent of another sketch,
+            it will raise an :class:`AttributeError`.
         """
         if self._body is None:
             raise AttributeError("Inheritance is not enabled.")
@@ -351,8 +360,8 @@ class SketchRuntime(_AbstractRuntime):
 
         .. warning::
 
-            If the inheritance is not enabled, it will raise an
-            :class:`AttributeError`.
+            If the current sketch is not the child of another sketch,
+            it will raise an :class:`AttributeError`.
         """
         if self._parent is None:
             raise AttributeError("Parent is not set.")
