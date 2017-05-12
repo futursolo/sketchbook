@@ -37,11 +37,14 @@ else:
 
 setup_requires = ["setuptools", "pytest-runner>=2.11.1,<3"]
 
-install_requires = ["aiofiles>=0.3.1,<1"]
-install_requires.extend(setup_requires)
+aiofiles_requires = ["aiofiles>=0.3.1,<1"]
+
+curio_requires = ["curio>=0.7.0,<1"]
+
+full_requires = aiofiles_requires + curio_requires
 
 tests_require = ["pytest>=3.0.7,<4"]
-tests_require.extend(install_requires)
+tests_require.extend(full_requires)
 
 dev_requires = [
     "sphinx>=1.5.5,<2",
@@ -66,9 +69,12 @@ if __name__ == "__main__":
         packages=find_packages(),
         include_package_data=True,
         setup_requires=setup_requires,
-        install_requires=install_requires,
+        install_requires=[],
         tests_require=tests_require,
         extras_require={
+            "aiofiles": aiofiles_requires,
+            "curio": curio_requires,
+            "full": full_requires,
             "test": tests_require,
             "dev": dev_requires,
         },
