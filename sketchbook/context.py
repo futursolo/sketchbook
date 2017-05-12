@@ -25,8 +25,7 @@ import types
 import abc
 
 __all__ = [
-    "BaseSketchContext", "CurioSketchContext", "AsyncioSketchContext",
-    "SketchContext"]
+    "BaseSketchContext", "AsyncioSketchContext", "SketchContext"]
 
 
 class BaseSketchContext(abc.ABC):
@@ -130,12 +129,21 @@ class AsyncioSketchContext(BaseSketchContext):
         return self._loop
 
 
-class CurioSketchContext(BaseSketchContext):
-    """
-    This is a subclass of :class:`.BaseSketchContext` intended to be used with
-    the `concurrent I/O <https://curio.readthedocs.io/en/latest/>`_ library.
-    """
+SketchContext = AsyncioSketchContext
+
+try:
+    import curio
+
+except ImportError:
     pass
 
+else:
+    class CurioSketchContext(BaseSketchContext):
+        """
+        This is a subclass of :class:`.BaseSketchContext` intended to be used
+        with the `concurrent I/O <https://curio.readthedocs.io/en/latest/>`_
+        library.
+        """
+        pass
 
-SketchContext = AsyncioSketchContext
+    __all__.append("CurioSketchContext")

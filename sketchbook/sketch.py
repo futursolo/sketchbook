@@ -52,7 +52,7 @@ class Sketch:
     def __init__(
         self, __content: Union[str, bytes], *,
         path: str="<string>",
-        skt_ctx: Optional["context.SketchContext"]=None,
+        skt_ctx: Optional["context.BaseSketchContext"]=None,
             finder: Optional["finders.BaseSketchFinder"]=None) -> None:
         self._path = path
 

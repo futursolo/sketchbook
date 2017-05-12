@@ -115,7 +115,7 @@ class _AbstractRuntime(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def _ctx(self) -> "context.SketchContext":  # pragma: no cover
+    def _ctx(self) -> "context.BaseSketchContext":  # pragma: no cover
         raise NotImplementedError
 
     @property
@@ -200,7 +200,7 @@ class BlockRuntime(_AbstractRuntime):
         return self._skt_rt._get_globals()
 
     @property
-    def _ctx(self) -> "context.SketchContext":
+    def _ctx(self) -> "context.BaseSketchContext":
         return self._skt_rt._ctx
 
     @property
@@ -311,7 +311,7 @@ class SketchRuntime(_AbstractRuntime):
         return self.__skt_result__
 
     @property
-    def _ctx(self) -> "context.SketchContext":
+    def _ctx(self) -> "context.BaseSketchContext":
         return self._skt._ctx
 
     @property

@@ -15,7 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional, Union, Dict
+from typing import Optional, Union, Dict, Any
 
 from . import context
 from . import sketch
@@ -25,7 +25,6 @@ import asyncio
 import abc
 import os
 import concurrent.futures
-import aiofiles
 
 __all__ = ["BaseSketchFinder", "SketchFinder"]
 
@@ -37,14 +36,14 @@ class BaseSketchFinder(abc.ABC):
     To create a custom sketch finder, subclass this class and override
     corresponding methods.
 
-    :arg skt_ctx: The :class:`.SketchContext` to be used by the
+    :arg skt_ctx: The :class:`.AsyncioSketchContext` to be used by the
         :class:`.BaseSketchFinder` and :class:`.Sketch`. Default: :code:`None`
         (Create a new :class:`.SketchContext` upon initialization).
     """
     def __init__(
         self, *,
-            skt_ctx: Optional["context.SketchContext"]=None) -> None:
-        self._ctx = skt_ctx or context.SketchContext()
+            skt_ctx: Optional["context.BaseSketchContext"]=None) -> None:
+        self._ctx = skt_ctx or context.AsyncioSketchContext()
         self._skt_cache: Dict[str, sketch.Sketch] = {}
 
         self._find_skt_lock = asyncio.Lock()
@@ -121,76 +120,101 @@ class BaseSketchFinder(abc.ABC):
         return await self._find(skt_path)
 
 
-class SketchFinder(BaseSketchFinder):
-    """
-    An implementation of :class:`.BaseSketchFinder` using
-    `aiofiles <https://github.com/Tinche/aiofiles>`_ to
-    load sketches from the local file system asynchronously.
+try:
+    import aiofiles
 
-    :arg __root_path: The root path of the finder. Use :code:`/` in including
-        and inheritance to indicate this folder. This argument must be passed
-        positionally and must be the first argument.
-    :arg executor: The executor used by :code:`aiofiles` to load files.
-        Default: :code:`None` (Create a new executor upon initialization).
-    :arg skt_ctx: The :class:`.SketchContext` to be used by the
-        :class:`.SketchFinder` and :class:`.Sketch`. Default: :code:`None`
-        (Create a new :class:`.SketchContext` upon initialization).
+except ImportError:  # pragma: no cover
+    class SketchFinder:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            raise RuntimeError(
+                "Aiofiles is not installed. "
+                "Please install aiofiles before using AsyncSketchFinder.")
 
-    """
-    def __init__(
-        self, __root_path: str, *,
-        executor: Optional[concurrent.futures.ThreadPoolExecutor]=None,
-            skt_ctx: Optional["context.SketchContext"]=None) -> None:
-        assert isinstance(__root_path, str)
+else:
+    class AsyncSketchFinder(BaseSketchFinder):
+        """
+        An implementation of :class:`.BaseSketchFinder` using
+        `aiofiles <https://github.com/Tinche/aiofiles>`_ to
+        load sketches from the local file system asynchronously.
 
-        self._root_path = os.path.abspath(__root_path)
-        if not self._root_path.endswith("/"):
-            self._root_path += "/"
+        :arg __root_path: The root path of the finder. Use :code:`/` in
+            including and inheritance to indicate this folder. This argument
+            must be passed positionally and must be the first argument.
+        :arg executor: The executor used by :code:`aiofiles` to load files.
+            Default: :code:`None` (Create a new executor upon initialization).
+        :arg skt_ctx: The :class:`.SketchContext` to be used by the
+            :class:`.AsyncSketchFinder` and :class:`.Sketch`.
+            Default: :code:`None` (Create a new :class:`.AsyncSketchContext`
+            upon initialization).
 
-        super().__init__(skt_ctx=skt_ctx)
+        """
+        def __init__(
+            self, __root_path: str, *,
+            executor: Optional[concurrent.futures.ThreadPoolExecutor]=None,
+                skt_ctx: Optional["context.BaseSketchContext"]=None) -> None:
+            assert isinstance(__root_path, str)
 
-        self._executor = executor or concurrent.futures.ThreadPoolExecutor()
+            super().__init__(skt_ctx=skt_ctx)
 
-    @property
-    def _loop(self) -> asyncio.AbstractEventLoop:
-        return self._ctx.loop
+            if not isinstance(self._ctx, context.AsyncioSketchContext):
+                raise RuntimeError(
+                    "AsyncSketchFinder can only be used with "
+                    "AsyncioSketchContext.")
 
-    async def _find_abs_path(
-        self, skt_path: str,
-            origin_path: Optional[str]=None) -> str:
-        skt_path = skt_path.replace("\\", "/")
-        # Replace Windows Style Path to UNIX Style.
+            self._root_path = os.path.abspath(__root_path)
+            if not self._root_path.endswith("/"):
+                self._root_path += "/"
 
-        if origin_path is not None and (not os.path.isabs(skt_path)):
-            origin_dir = os.path.join(
-                self._root_path, os.path.dirname(origin_path))
+            self._executor = \
+                executor or concurrent.futures.ThreadPoolExecutor()
 
-        else:
-            origin_dir = self._root_path
+        @property
+        def _loop(self) -> asyncio.AbstractEventLoop:
+            assert isinstance(self._ctx, context.AsyncioSketchContext)
 
-        if os.path.isabs(skt_path):
-            _, skt_path = skt_path.split("/", 1)
-            # Take out the root identifier.
+            return self._ctx.loop
 
-        final_skt_path = os.path.abspath(os.path.join(origin_dir, skt_path))
-        final_skt_dir = os.path.dirname(final_skt_path)
+        async def _find_abs_path(
+            self, skt_path: str,
+                origin_path: Optional[str]=None) -> str:
+            skt_path = skt_path.replace("\\", "/")
+            # Replace Windows Style Path to UNIX Style.
 
-        if not final_skt_dir.endswith("/"):
-            final_skt_dir += "/"
+            if origin_path is not None and (not os.path.isabs(skt_path)):
+                origin_dir = os.path.join(
+                    self._root_path, os.path.dirname(origin_path))
 
-        if not final_skt_path.startswith(self._root_path):
-            raise exceptions.SketchNotFoundError(
-                "To prevent potential directory traversal attack, "
-                "this path is not acceptable.")
+            else:
+                origin_dir = self._root_path
 
-        if not os.path.exists(final_skt_path):
-            raise exceptions.SketchNotFoundError(
-                f"No such file {final_skt_path}.")
+            if os.path.isabs(skt_path):
+                _, skt_path = skt_path.split("/", 1)
+                # Take out the root identifier.
 
-        return final_skt_path
+            final_skt_path = os.path.abspath(
+                os.path.join(origin_dir, skt_path))
+            final_skt_dir = os.path.dirname(final_skt_path)
 
-    async def _load_sketch_content(self, skt_path: str) -> bytes:
-        async with aiofiles.open(
-            skt_path, mode="rb", executor=self._executor,
-                loop=self._loop) as skt_fp:
-            return await skt_fp.read()
+            if not final_skt_dir.endswith("/"):
+                final_skt_dir += "/"
+
+            if not final_skt_path.startswith(self._root_path):
+                raise exceptions.SketchNotFoundError(
+                    "To prevent potential directory traversal attack, "
+                    "this path is not acceptable.")
+
+            if not os.path.exists(final_skt_path):
+                raise exceptions.SketchNotFoundError(
+                    f"No such file {final_skt_path}.")
+
+            return final_skt_path
+
+        async def _load_sketch_content(self, skt_path: str) -> bytes:
+            async with aiofiles.open(
+                skt_path, mode="rb", executor=self._executor,
+                    loop=self._loop) as skt_fp:
+                return await skt_fp.read()
+
+    SketchFinder = AsyncSketchFinder  # type: ignore
+
+    __all__.append("AsyncSketchFinder")
