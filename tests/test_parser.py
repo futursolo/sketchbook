@@ -32,6 +32,7 @@ if _TEST_CURIO:
 
 else:
     from sketchbook.testutils import AsyncioTestHelper
+    from sketchbook import AsyncioSketchContext
 
     helper = AsyncioTestHelper(__file__)
 
