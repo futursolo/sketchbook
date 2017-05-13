@@ -26,7 +26,13 @@ import abc
 import os
 import concurrent.futures
 
-__all__ = ["BaseSketchFinder", "SketchFinder"]
+try:
+    import curio
+
+except ImportError:
+    pass
+
+__all__ = ["BaseSketchFinder", "SketchFinder", "SyncSketchFinder"]
 
 
 class BaseSketchFinder(abc.ABC):
@@ -46,7 +52,14 @@ class BaseSketchFinder(abc.ABC):
         self._ctx = skt_ctx or context.AsyncioSketchContext()
         self._skt_cache: Dict[str, sketch.Sketch] = {}
 
-        self._find_skt_lock = asyncio.Lock()
+        if isinstance(self._ctx, context.AsyncioSketchContext):
+            self._find_skt_lock = asyncio.Lock()
+
+        elif isinstance(self._ctx, context.CurioSketchContext):
+            self._find_skt_lock = curio.Lock()
+
+        else:
+            raise RuntimeError("Unknown Type of SketchContext.")
 
     @abc.abstractmethod
     async def _load_sketch_content(
@@ -120,6 +133,72 @@ class BaseSketchFinder(abc.ABC):
         return await self._find(skt_path)
 
 
+class SyncSketchFinder(BaseSketchFinder):
+    """
+    An implementation of :class:`BaseSketchFinder` using the synchronous
+    file system operation api from the standard library.
+
+    :arg __root_path: The root path of the finder. Use :code:`/` in
+        including and inheritance to indicate this folder. This argument
+        must be passed positionally and must be the first argument.
+    :arg skt_ctx: The :class:`.BaseSketchContext` to be used by the
+        :class:`.AsyncSketchFinder` and :class:`.Sketch`.
+        Default: :code:`None` (Create a new :class:`.AsyncSketchContext`
+        upon initialization).
+    """
+    def __init__(
+        self, __root_path: str, *,
+        executor: Optional[concurrent.futures.ThreadPoolExecutor]=None,
+        skt_ctx: Optional[
+            "context.AsyncioSketchContext"]=None) -> None:
+        assert isinstance(__root_path, str)
+
+        super().__init__(skt_ctx=skt_ctx)
+
+        self._root_path = os.path.abspath(__root_path)
+        if not self._root_path.endswith("/"):
+            self._root_path += "/"
+
+    async def _find_abs_path(
+        self, skt_path: str,
+            origin_path: Optional[str]=None) -> str:
+        skt_path = skt_path.replace("\\", "/")
+        # Replace Windows Style Path to UNIX Style.
+
+        if origin_path is not None and (not os.path.isabs(skt_path)):
+            origin_dir = os.path.join(
+                self._root_path, os.path.dirname(origin_path))
+
+        else:
+            origin_dir = self._root_path
+
+        if os.path.isabs(skt_path):
+            _, skt_path = skt_path.split("/", 1)
+            # Take out the root identifier.
+
+        final_skt_path = os.path.abspath(
+            os.path.join(origin_dir, skt_path))
+        final_skt_dir = os.path.dirname(final_skt_path)
+
+        if not final_skt_dir.endswith("/"):
+            final_skt_dir += "/"
+
+        if not final_skt_path.startswith(self._root_path):
+            raise exceptions.SketchNotFoundError(
+                "To prevent potential directory traversal attack, "
+                "this path is not acceptable.")
+
+        if not os.path.exists(final_skt_path):
+            raise exceptions.SketchNotFoundError(
+                f"No such file {final_skt_path}.")
+
+        return final_skt_path
+
+    async def _load_sketch_content(self, skt_path: str) -> bytes:
+        with open(skt_path, mode="rb") as skt_fp:
+            return skt_fp.read()
+
+
 try:
     import aiofiles
 
@@ -142,9 +221,9 @@ else:
             must be passed positionally and must be the first argument.
         :arg executor: The executor used by :code:`aiofiles` to load files.
             Default: :code:`None` (Create a new executor upon initialization).
-        :arg skt_ctx: The :class:`.SketchContext` to be used by the
+        :arg skt_ctx: The :class:`.BaseSketchContext` to be used by the
             :class:`.AsyncSketchFinder` and :class:`.Sketch`.
-            Default: :code:`None` (Create a new :class:`.AsyncSketchContext`
+            Default: :code:`None` (Create a new :class:`.AsyncioSketchContext`
             upon initialization).
 
         """
