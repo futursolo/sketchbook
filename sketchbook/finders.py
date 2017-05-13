@@ -17,6 +17,8 @@
 
 from typing import Optional, Union, Dict, Any
 
+from .utils import deprecated_attr
+
 from . import context
 from . import sketch
 from . import exceptions
@@ -32,7 +34,10 @@ try:
 except ImportError:
     pass
 
-__all__ = ["BaseSketchFinder", "SketchFinder", "SyncSketchFinder"]
+__all__ = [
+    "BaseSketchFinder",
+    "SketchFinder",
+    "SyncSketchFinder"]
 
 
 class BaseSketchFinder(abc.ABC):
@@ -203,11 +208,15 @@ try:
     import aiofiles
 
 except ImportError:  # pragma: no cover
-    class SketchFinder:
+    class _SketchFinder:
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             raise RuntimeError(
                 "Aiofiles is not installed. "
                 "Please install aiofiles before using AsyncSketchFinder.")
+
+    SketchFinder = deprecated_attr(
+        _SketchFinder, __name__,
+        "`SketchFinder` is deprecated, use `AsyncSketchFinder` instead.")
 
 else:
     class AsyncSketchFinder(BaseSketchFinder):
@@ -295,6 +304,8 @@ else:
                     loop=self._loop) as skt_fp:
                 return await skt_fp.read()
 
-    SketchFinder = AsyncSketchFinder  # type: ignore
+    SketchFinder = deprecated_attr(
+        AsyncSketchFinder, __name__,
+        "`SketchFinder` is deprecated, use `AsyncSketchFinder` instead.")
 
     __all__.append("AsyncSketchFinder")

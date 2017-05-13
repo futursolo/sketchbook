@@ -12,7 +12,11 @@ Sketch
 
 Context
 =======
-.. autoclass:: sketchbook.SketchContext
+.. autoclass:: sketchbook.BaseSketchContext
+
+.. autoclass:: sketchbook.AsyncioSketchContext
+
+.. autoclass:: sketchbook.CurioSketchContext
 
 Finders
 =======
@@ -21,7 +25,11 @@ Finders
     :special-members:
     :private-members:
 
-.. autoclass:: sketchbook.SketchFinder
+.. autoclass:: sketchbook.AsyncSketchFinder
+    :members:
+    :undoc-members:
+
+.. autoclass:: sketchbook.SyncSketchFinder
     :members:
     :undoc-members:
 
