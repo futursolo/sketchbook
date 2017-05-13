@@ -151,7 +151,8 @@ else:
         def __init__(
             self, __root_path: str, *,
             executor: Optional[concurrent.futures.ThreadPoolExecutor]=None,
-                skt_ctx: Optional["context.BaseSketchContext"]=None) -> None:
+            skt_ctx: Optional[
+                "context.AsyncioSketchContext"]=None) -> None:
             assert isinstance(__root_path, str)
 
             super().__init__(skt_ctx=skt_ctx)

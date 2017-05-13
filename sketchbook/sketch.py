@@ -56,7 +56,7 @@ class Sketch:
             finder: Optional["finders.BaseSketchFinder"]=None) -> None:
         self._path = path
 
-        self._ctx = skt_ctx or context.SketchContext()
+        self._ctx = skt_ctx or context.AsyncioSketchContext()
 
         self._finder = finder
 

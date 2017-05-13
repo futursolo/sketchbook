@@ -16,11 +16,27 @@
 #   limitations under the License.
 
 from sketchbook import Sketch, SketchSyntaxError, UnknownStatementError
-from sketchbook.testutils import TestHelper
 
 import pytest
+import os
 
-helper = TestHelper(__file__)
+_TEST_CURIO = True if bool(os.environ.get("TEST_CURIO", False)) else False
+
+if _TEST_CURIO:
+    from sketchbook.testutils import CurioTestHelper
+    from sketchbook import CurioSketchContext
+
+    helper = CurioTestHelper(__file__)
+
+    default_skt_ctx = CurioSketchContext()
+
+else:
+    from sketchbook.testutils import AsyncioTestHelper
+
+    helper = AsyncioTestHelper(__file__)
+
+    default_skt_ctx = AsyncioSketchContext()
+
 
 class StatementEscapeTestCase:
     @helper.force_sync
@@ -28,7 +44,8 @@ class StatementEscapeTestCase:
         skt = Sketch(
             "<%% is the begin mark, and <%r= \"%%> is the end mark. \" %>"
             "<%r= \"<% and\" %> %> only need to be escaped whenever they "
-            "have ambiguity of the templating system.")
+            "have ambiguity of the templating system.",
+            skt_ctx=default_skt_ctx)
 
         assert await skt.draw() == (
             "<% is the begin mark, and %> is the end mark. "
@@ -37,14 +54,16 @@ class StatementEscapeTestCase:
 
     @helper.force_sync
     async def test_multiline_stmts(self) -> None:
-        skt = Sketch("""\
+        skt = Sketch(
+            """\
 <% if a == \
             True
 %>
 Hello, it's me!
 <% else %>
 No, it's not me!
-<% end %>""")
+<% end %>""",
+            skt_ctx=default_skt_ctx)
 
         assert await skt.draw(a=True) == "\nHello, it's me!\n"
         assert await skt.draw(a=False) == "\nNo, it's not me!\n"
@@ -53,20 +72,20 @@ No, it's not me!
 class MalformedSketchTestCase:
     def test_malformed_stmts(self) -> None:
         with pytest.raises(SketchSyntaxError):
-            Sketch("<% <%")
+            Sketch("<% <%", skt_ctx=default_skt_ctx)
 
     def test_missing_end_mark(self) -> None:
         with pytest.raises(SketchSyntaxError):
-            Sketch("<% while True %>")
+            Sketch("<% while True %>", skt_ctx=default_skt_ctx)
 
     def test_redundant_end_mark(self) -> None:
         with pytest.raises(SketchSyntaxError):
-            Sketch("<% if False %><% end %><% end %>")
+            Sketch("<% if False %><% end %><% end %>", skt_ctx=default_skt_ctx)
 
     def test_unknown_stmt(self) -> None:
         with pytest.raises(UnknownStatementError):
-            Sketch("<% if anyways %><% fi %>")
+            Sketch("<% if anyways %><% fi %>", skt_ctx=default_skt_ctx)
 
     def test_bad_assignment(self) -> None:
         with pytest.raises(SketchSyntaxError):
-            Sketch("<% let a = b = c = d %>")
+            Sketch("<% let a = b = c = d %>", skt_ctx=default_skt_ctx)
