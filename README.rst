@@ -6,7 +6,7 @@ Sketchbook
 .. image:: https://coveralls.io/repos/github/futursolo/sketchbook/badge.svg?branch=master
   :target: https://coveralls.io/github/futursolo/sketchbook?branch=master
 
-A template engine built for asyncio with async/await syntax support.
+A template engine built with async/await syntax support for asyncio and curio.
 
 Intallation
 -----------
@@ -23,7 +23,12 @@ source code is hosted on `GitHub <https://github.com/futursolo/sketchbook/>`_.
 Requirements
 ------------
 - Python 3.6+
-- aiofiles>=0.3.1,<1(For :code:`sketchbook.SketchFinder`)
+- aiofiles>=0.3.1,<1(Optional, used by :code:`sketchbook.AsyncSketchFinder`)
+
+Alternative Event Loop
+----------------------
+Beside the :code:`asyncio` module from the Python standard library, Sketchbook
+can also be used with `curio <https://curio.readthedocs.io/en/latest/>`_.
 
 Documentation
 -------------
