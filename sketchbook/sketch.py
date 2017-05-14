@@ -39,13 +39,14 @@ class Sketch:
     :arg __content: The content of this sketch. This can be a string or a
         bytestring. If a bytestring
         is passed, the content will be decoded with :code:`source_encoding`
-        option from :class:`.SketchContext`. This argument must be passed
-        positionally and must be the first argument.
+        option from the subclasses of :class:`.BaseSketchContext`.
+        This argument must be passed positionally and must be the first
+        argument.
     :arg path: The path of the sketch, used by :class:`.SketchFinder` to
         resolve the file relationship. Default: :code:`<string>`.
-    :arg skt_ctx: The :class:`.SketchContext` to be used by the
-        :class:`.Sketch` Default: :code:`None`
-        (Create a new :class:`.SketchContext` upon initialization).
+    :arg skt_ctx: The subclass of :class:`.BaseSketchContext` to be used by the
+        :class:`.Sketch` Default: :code:`None`.
+        (Create a new :class:`.AsyncioSketchContext` upon initialization).
     :arg finder: The finder used by the current sketch to include or inherit
         from other sketches. Default: :code:`None`.
     """

@@ -49,7 +49,7 @@ class BaseSketchFinder(abc.ABC):
 
     :arg skt_ctx: The :class:`.AsyncioSketchContext` to be used by the
         :class:`.BaseSketchFinder` and :class:`.Sketch`. Default: :code:`None`
-        (Create a new :class:`.SketchContext` upon initialization).
+        (Create a new :class:`.AsyncioSketchContext` upon initialization).
     """
     def __init__(
         self, *,
@@ -72,7 +72,7 @@ class BaseSketchFinder(abc.ABC):
         """
         This is an :func:`abc.abstractmethod`.
 
-        Override this class to customize sketch loading.
+        Override this method to customize sketch loading.
 
         Load the sketch content as string or bytestring.
 
@@ -90,7 +90,7 @@ class BaseSketchFinder(abc.ABC):
         """
         This is an :func:`abc.abstractmethod`.
 
-        Override this class to customize sketch discovery.
+        Override this method to customize sketch discovery.
 
         Solve the absolute path(starting with :code:`/`) of the sketch from
         the skt_path based on the origin_path(if applicable).
@@ -147,15 +147,15 @@ class SyncSketchFinder(BaseSketchFinder):
         including and inheritance to indicate this folder. This argument
         must be passed positionally and must be the first argument.
     :arg skt_ctx: The :class:`.BaseSketchContext` to be used by the
-        :class:`.AsyncSketchFinder` and :class:`.Sketch`.
-        Default: :code:`None` (Create a new :class:`.AsyncSketchContext`
+        :class:`.SyncSketchFinder` and :class:`.Sketch`.
+        Default: :code:`None` (Create a new :class:`.AsyncioSketchContext`
         upon initialization).
     """
     def __init__(
         self, __root_path: str, *,
         executor: Optional[concurrent.futures.ThreadPoolExecutor]=None,
         skt_ctx: Optional[
-            "context.AsyncioSketchContext"]=None) -> None:
+            "context.BaseSketchContext"]=None) -> None:
         assert isinstance(__root_path, str)
 
         super().__init__(skt_ctx=skt_ctx)
@@ -225,12 +225,16 @@ else:
         `aiofiles <https://github.com/Tinche/aiofiles>`_ to
         load sketches from the local file system asynchronously.
 
+        .. important::
+
+            This finder must be used with asyncio event loop.
+
         :arg __root_path: The root path of the finder. Use :code:`/` in
             including and inheritance to indicate this folder. This argument
             must be passed positionally and must be the first argument.
         :arg executor: The executor used by :code:`aiofiles` to load files.
             Default: :code:`None` (Create a new executor upon initialization).
-        :arg skt_ctx: The :class:`.BaseSketchContext` to be used by the
+        :arg skt_ctx: The :class:`.AsyncioSketchContext` to be used by the
             :class:`.AsyncSketchFinder` and :class:`.Sketch`.
             Default: :code:`None` (Create a new :class:`.AsyncioSketchContext`
             upon initialization).

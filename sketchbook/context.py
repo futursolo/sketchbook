@@ -39,7 +39,7 @@ class BaseSketchContext(abc.ABC):
     This is class should be immutable after initialization.
 
     :arg cache_sketches: If :code:`True`, :class:`.BaseSketchFinder` will
-        cache the sketches. Default: :code:`True`.
+        cache sketches. Default: :code:`True`.
     :arg source_encoding: The encoding of the source of the sketches if passed
         as bytestring. Default: :code:`utf-8`.
     :arg custom_escape_fns: Mapping of custom escape functions. Functions in

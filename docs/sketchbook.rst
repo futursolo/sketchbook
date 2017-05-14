@@ -10,13 +10,15 @@ Sketch
    :members:
    :undoc-members:
 
-Context
-=======
+Contexts
+========
 .. autoclass:: sketchbook.BaseSketchContext
 
 .. autoclass:: sketchbook.AsyncioSketchContext
+    :members:
 
 .. autoclass:: sketchbook.CurioSketchContext
+    :members:
 
 Finders
 =======

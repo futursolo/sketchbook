@@ -1,6 +1,11 @@
 0.2.0
 =====
 - Support concurrent I/O
+- Add SyncSketchFinder
+- Rename SketchFinder to AsyncSketchFinder
+- Rename SketchContext to AsyncioSketchContext
+- Deprecate SketchFinder and SketchContext
+- Expose sketch context in the runtime
 
 0.1.1
 =====
