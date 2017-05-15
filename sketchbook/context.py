@@ -17,8 +17,6 @@
 
 from typing import Optional, Mapping, Callable, Sequence, Type, Any
 
-from .utils import deprecated_attr
-
 from . import escaping
 from . import statements
 
@@ -27,7 +25,7 @@ import types
 import abc
 
 __all__ = [
-    "BaseSketchContext", "AsyncioSketchContext", "SketchContext"]
+    "BaseSketchContext", "AsyncioSketchContext"]
 
 
 class BaseSketchContext(abc.ABC):
@@ -129,11 +127,6 @@ class AsyncioSketchContext(BaseSketchContext):
         The event loop used by the sketch context.
         """
         return self._loop
-
-
-SketchContext = deprecated_attr(
-    AsyncioSketchContext, __name__,
-    "`SketchContext` is deprecated, use `AsyncioSketchContext` instead.")
 
 try:
     import curio

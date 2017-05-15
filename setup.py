@@ -34,7 +34,6 @@ else:
 
     import _load_version
 
-
 setup_requires = ["setuptools", "pytest-runner>=2.11.1,<3"]
 
 aiofiles_requires = ["aiofiles>=0.3.1,<1"]

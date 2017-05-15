@@ -20,6 +20,14 @@ Contexts
 .. autoclass:: sketchbook.CurioSketchContext
     :members:
 
+.. class:: sketchbook.SketchContext
+
+    .. deprecated:: 0.2.0
+
+        Use :class:`.AsyncioSketchContext` instead.
+
+    A Deprecated alias of :class:`.AsyncioSketchContext`
+
 Finders
 =======
 .. autoclass:: sketchbook.BaseSketchFinder
@@ -34,6 +42,14 @@ Finders
 .. autoclass:: sketchbook.SyncSketchFinder
     :members:
     :undoc-members:
+
+.. class:: sketchbook.SketchFinder
+
+    .. deprecated:: 0.2.0
+
+        Use :class:`.AsyncSketchFinder` instead.
+
+    A Deprecated alias of :class:`.AsyncSketchFinder`
 
 Runtime
 =======
