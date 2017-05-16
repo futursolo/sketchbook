@@ -92,7 +92,7 @@ statement instead of :code:`default`.
 
 For how to override the default escape function, define
 custom escape functions and view built-in escape functions, please see the
-documentation for :class:`.SketchContext`.
+documentation for :class:`.BaseSketchContext`.
 
 Indentation
 ===========
@@ -235,8 +235,8 @@ The result of the example above is:
 Inheritance
 ===========
 Inherit from other sketches. When a sketch with an :code:`inherit` statement is
-being drawn, the :class:`.SketchFinder` will find the parent sketch. The parent
-sketch will then being drawn with :code:`.SketchRuntime.body` set to the output
+being drawn, a subclass of :class:`.BaseSketchFinder` will find the parent sketch.
+The parent sketch will then being drawn with :code:`.SketchRuntime.body` set to the output
 of the original sketch. The blocks of the parent sketch will be replaced with the
 ones in the child sketch.
 
@@ -266,7 +266,7 @@ Example:
         <p>Thank you for visiting.</p>
     </main>
 
-When :code:`main.html` being drawn, it will ask the :class:`.SketchFinder` to find
+When :code:`main.html` being drawn, it will ask the sketch finder to find
 :code:`layout.html` and update all the blocks in :code:`layout.html` with the blocks in
 :code:`main.html`. The other content outside the blocks in :code:`main.html` can be
 accessed using :code:`self.body` in :code:`layout.html`.
