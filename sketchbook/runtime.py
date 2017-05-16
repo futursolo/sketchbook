@@ -115,7 +115,10 @@ class _AbstractRuntime(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def _ctx(self) -> "context.SketchContext":  # pragma: no cover
+    def ctx(self) -> "context.BaseSketchContext":  # pragma: no cover
+        """
+        The sketch context to be used in the runtime.
+        """
         raise NotImplementedError
 
     @property
@@ -173,7 +176,9 @@ class BlockRuntime(_AbstractRuntime):
     .. important::
 
         The content inside a block has a different local bound than the
-        other parts of the sketch.
+        other parts of the sketch. To share variables between blocks or the
+        sketch it belongs to, :code:`global` or :code:`nonlocal` the variable
+        first.
     """
     def __init__(
             self, __skt_rt: "SketchRuntime", _defined_here: bool) -> None:
@@ -200,8 +205,8 @@ class BlockRuntime(_AbstractRuntime):
         return self._skt_rt._get_globals()
 
     @property
-    def _ctx(self) -> "context.SketchContext":
-        return self._skt_rt._ctx
+    def ctx(self) -> "context.BaseSketchContext":
+        return self._skt_rt.ctx
 
     @property
     def _block_result(self) -> str:
@@ -220,7 +225,7 @@ class BlockRuntime(_AbstractRuntime):
             raise exceptions.SketchDrawingError(
                 "Drawing has been finished.")
 
-        self.__skt_result__ += self._ctx.escape_fns[escape](__content)
+        self.__skt_result__ += self.ctx.escape_fns[escape](__content)
 
     @property
     def body(self) -> str:
@@ -311,7 +316,10 @@ class SketchRuntime(_AbstractRuntime):
         return self.__skt_result__
 
     @property
-    def _ctx(self) -> "context.SketchContext":
+    def ctx(self) -> "context.BaseSketchContext":
+        """
+        The sketch context to be used in the runtime.
+        """
         return self._skt._ctx
 
     @property
@@ -336,7 +344,7 @@ class SketchRuntime(_AbstractRuntime):
             raise exceptions.SketchDrawingError(
                 "Drawing has been finished.")
 
-        self.__skt_result__ += self._ctx.escape_fns[escape](__content)
+        self.__skt_result__ += self.ctx.escape_fns[escape](__content)
 
     @property
     def body(self) -> str:

@@ -20,35 +20,59 @@ from typing import Optional, Callable, Any
 import os
 import asyncio
 import functools
+import abc
 
 
-class TestHelper:
+class BaseTestHelper(abc.ABC):
     def __init__(self, file: str) -> None:
         self._root_path = os.path.dirname(os.path.abspath(file))
-
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
-
-    @property
-    def loop(self) -> asyncio.AbstractEventLoop:
-        if self._loop is None:
-            self._loop = asyncio.get_event_loop()
-
-            self._loop.set_debug(True)
-
-        return self._loop
 
     def abspath(self, sub_path: str) -> str:
         return os.path.abspath(
             os.path.realpath(
                 os.path.join(self._root_path, sub_path)))
 
+    @abc.abstractmethod
+    def force_sync(self, fn: Callable[..., Any]) -> Callable[..., Any]:
+        raise NotImplementedError
+
+
+class AsyncioTestHelper(BaseTestHelper):
+    def __init__(self, file: str) -> None:
+        self._root_path = os.path.dirname(os.path.abspath(file))
+
+        self._loop = asyncio.get_event_loop()
+
+        self._loop.set_debug(True)
+
     def force_sync(self, fn: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(fn)
         def wrapper(_self: Any, *args: Any, **kwargs: Any) -> Any:
-            return self.loop.run_until_complete(
+            return self._loop.run_until_complete(
                 asyncio.wait_for(
                     fn(_self, *args, **kwargs), 10))
 
             # Wait 10 sec, or kill the task.
 
         return wrapper
+
+
+TestHelper = AsyncioTestHelper
+
+try:
+    import curio
+
+except ImportError:
+    pass
+
+else:
+    class CurioTestHelper(BaseTestHelper):
+        def force_sync(self, fn: Callable[..., Any]) -> Callable[..., Any]:
+            @functools.wraps(fn)
+            def wrapper(_self: Any, *args: Any, **kwargs: Any) -> Any:
+                return curio.run(curio.timeout_after(
+                        10, fn(_self, *args, **kwargs)))
+
+                # Wait 10 sec, or kill the task.
+
+            return wrapper

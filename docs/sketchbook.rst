@@ -10,9 +10,23 @@ Sketch
    :members:
    :undoc-members:
 
-Context
-=======
-.. autoclass:: sketchbook.SketchContext
+Contexts
+========
+.. autoclass:: sketchbook.BaseSketchContext
+
+.. autoclass:: sketchbook.AsyncioSketchContext
+    :members:
+
+.. autoclass:: sketchbook.CurioSketchContext
+    :members:
+
+.. class:: sketchbook.SketchContext
+
+    .. deprecated:: 0.2.0
+
+        Use :class:`.AsyncioSketchContext` instead.
+
+    A Deprecated alias of :class:`.AsyncioSketchContext`
 
 Finders
 =======
@@ -21,9 +35,21 @@ Finders
     :special-members:
     :private-members:
 
-.. autoclass:: sketchbook.SketchFinder
+.. autoclass:: sketchbook.AsyncSketchFinder
     :members:
     :undoc-members:
+
+.. autoclass:: sketchbook.SyncSketchFinder
+    :members:
+    :undoc-members:
+
+.. class:: sketchbook.SketchFinder
+
+    .. deprecated:: 0.2.0
+
+        Use :class:`.AsyncSketchFinder` instead.
+
+    A Deprecated alias of :class:`.AsyncSketchFinder`
 
 Runtime
 =======

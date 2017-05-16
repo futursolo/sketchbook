@@ -18,14 +18,34 @@
 from typing import AsyncIterator
 
 from sketchbook import Sketch
-from sketchbook.testutils import TestHelper
-
-helper = TestHelper(__file__)
 
 import time
 import random
-import asyncio
 import pytest
+
+import os
+
+_TEST_CURIO = True if bool(os.environ.get("TEST_CURIO", False)) else False
+
+if _TEST_CURIO:
+    from sketchbook import CurioSketchContext
+    from sketchbook.testutils import CurioTestHelper
+
+    import curio
+
+    helper = CurioTestHelper(__file__)
+
+    default_skt_ctx = CurioSketchContext()
+
+else:
+    from sketchbook import AsyncioSketchContext
+    from sketchbook.testutils import AsyncioTestHelper
+
+    import asyncio
+
+    helper = AsyncioTestHelper(__file__)
+
+    default_skt_ctx = AsyncioSketchContext()
 
 
 class _AsyncTimeIterator(AsyncIterator[float]):
@@ -40,7 +60,13 @@ class _AsyncTimeIterator(AsyncIterator[float]):
         return self
 
     async def __anext__(self) -> float:
-        await asyncio.sleep(random.choice(range(1, 5)) / 100)
+        wait_period = random.choice(range(1, 5)) / 100
+
+        if _TEST_CURIO:
+            await curio.sleep(wait_period)
+
+        else:
+            await asyncio.sleep(wait_period)
 
         if self._counter_left > 0:
             self._counter_left -= 1
@@ -59,7 +85,7 @@ class IfElifElseTestCase:
     async def test_if_elif_else(self) -> None:
         skt = Sketch(
             "<% if cond %>cond_str<% elif sub_cond %>sub_cond_str"
-            "<% else %>else_str<% end %>")
+            "<% else %>else_str<% end %>", skt_ctx=default_skt_ctx)
 
         assert await skt.draw(cond=True, sub_cond=True) == "cond_str"
 
@@ -73,7 +99,8 @@ class AsyncForTestCase:
     async def test_async_for(self) -> None:
         time_iter = _AsyncTimeIterator()
         skt = Sketch(
-            "<% async for i in time_iter %><%r= str(i) %>, <% end %>")
+            "<% async for i in time_iter %><%r= str(i) %>, <% end %>",
+            skt_ctx=default_skt_ctx)
 
         assert await skt.draw(time_iter=time_iter) == \
             str(time_iter._iterated_time)[1:-1] + ", "
@@ -82,13 +109,14 @@ class AsyncForTestCase:
 class RaiseErrorTestCase:
     @helper.force_sync
     async def test_raise_error(self):
-        skt = Sketch("<% raise RuntimeError %>")
+        skt = Sketch("<% raise RuntimeError %>", skt_ctx=default_skt_ctx)
         with pytest.raises(RuntimeError):
             await skt.draw()
+
 
 class VariableAssignmentTestCase:
     @helper.force_sync
     async def test_assign_var(self):
-        skt = Sketch("<% let a = b %><%= a %>")
+        skt = Sketch("<% let a = b %><%= a %>", skt_ctx=default_skt_ctx)
 
         assert await skt.draw(b="I am b!") == "I am b!"

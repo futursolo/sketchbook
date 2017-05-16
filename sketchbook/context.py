@@ -22,30 +22,27 @@ from . import statements
 
 import asyncio
 import types
+import abc
 
-__all__ = ["SketchContext"]
+__all__ = [
+    "BaseSketchContext", "AsyncioSketchContext"]
 
 
-class SketchContext:
+class BaseSketchContext(abc.ABC):
     """
-    :class:`.SketchContext` is used to hold options for :class:`.Sketch` and
-    :class:`.BaseSketchFinder`, in order to alter the default behaviours of
-    them.
+    :class:`.BaseSketchContext` and its subclasses are used to hold options
+    for :class:`.Sketch` and :class:`.BaseSketchFinder`, in order to modify the
+    default behaviours of them.
 
     This is class should be immutable after initialization.
 
     :arg cache_sketches: If :code:`True`, :class:`.BaseSketchFinder` will
-        cache the sketches. Default: :code:`True`.
+        cache sketches. Default: :code:`True`.
     :arg source_encoding: The encoding of the source of the sketches if passed
         as bytestring. Default: :code:`utf-8`.
     :arg custom_escape_fns: Mapping of custom escape functions. Functions in
         this mapping will override the one with the same name in the built-in
         escape functions. Default: :code:`{}`.
-    :arg loop: The event loop used by :class:`.Sketch` and
-        :class:`.BaseSketchFinder`, must be a subclass of
-        :class:`asyncio.AbstractEventLoop` or :code:`None`.
-        Default: :code:`None`
-        (Use the value of :func:`asyncio.get_event_loop`).
 
     Built-in Escape Functions:
 
@@ -63,10 +60,7 @@ class SketchContext:
     def __init__(
         self, *, cache_sketches: bool=True,
         source_encoding: str="utf-8",
-        custom_escape_fns: Mapping[str, Callable[[Any], str]]={},
-            loop: Optional[asyncio.AbstractEventLoop]=None) -> None:
-
-        self._loop = loop or asyncio.get_event_loop()
+            custom_escape_fns: Mapping[str, Callable[[Any], str]]={}) -> None:
 
         self._source_encoding = source_encoding
 
@@ -85,10 +79,6 @@ class SketchContext:
         self._cache_sketches = cache_sketches
 
     @property
-    def loop(self) -> asyncio.AbstractEventLoop:
-        return self._loop
-
-    @property
     def source_encoding(self) -> str:
         return self._source_encoding
 
@@ -103,3 +93,55 @@ class SketchContext:
     @property
     def cache_sketches(self) -> bool:
         return self._cache_sketches
+
+
+class AsyncioSketchContext(BaseSketchContext):
+    """
+    This is a subclass of :class:`.BaseSketchContext` intended to be used with
+    the `asyncio <https://docs.python.org/3/library/asyncio.html>`_ module
+    in the standard library.
+
+    :arg loop: The event loop used by :class:`.Sketch` and
+        :class:`.BaseSketchFinder`, must be a subclass of
+        :class:`asyncio.AbstractEventLoop` or :code:`None`.
+        Default: :code:`None`
+        (Use the value of :func:`asyncio.get_event_loop`).
+    :arg \*\*kwargs: This class also takes all the arguments from
+        :class:`.BaseSketchContext`.
+    """
+    def __init__(
+        self, *, cache_sketches: bool=True,
+        source_encoding: str="utf-8",
+        custom_escape_fns: Mapping[str, Callable[[Any], str]]={},
+            loop: Optional[asyncio.AbstractEventLoop]=None) -> None:
+        super().__init__(
+            cache_sketches=cache_sketches,
+            source_encoding=source_encoding,
+            custom_escape_fns=custom_escape_fns)
+
+        self._loop = loop or asyncio.get_event_loop()
+
+    @property
+    def loop(self) -> asyncio.AbstractEventLoop:
+        """
+        The event loop used by the sketch context.
+        """
+        return self._loop
+
+
+try:
+    import curio
+
+except ImportError:
+    pass
+
+else:
+    class CurioSketchContext(BaseSketchContext):
+        """
+        This is a subclass of :class:`.BaseSketchContext` intended to be used
+        with the `concurrent I/O <https://curio.readthedocs.io/en/latest/>`_
+        library.
+        """
+        pass
+
+    __all__.append("CurioSketchContext")

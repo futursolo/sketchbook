@@ -15,6 +15,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from typing import Any
+
+from .utils import deprecated_attr
+
 from ._version import *
 from . import _version
 
@@ -33,5 +37,25 @@ from . import runtime
 from .sketch import *
 from . import sketch
 
+SketchContext = deprecated_attr(
+    AsyncioSketchContext, __name__,
+    "`SketchContext` is deprecated, use `AsyncioSketchContext` instead.")
+
+try:
+    from .finders import AsyncSketchFinder as _SketchFinder  # type: ignore
+
+except ImportError:
+    class _SketchFinder:  # type: ignore
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            raise RuntimeError(
+                "Aiofiles is not installed. "
+                "Please install aiofiles before using AsyncSketchFinder.")
+
+
+SketchFinder = deprecated_attr(
+        _SketchFinder, __name__,
+        "`SketchFinder` is deprecated, use `AsyncSketchFinder` instead.")
+
 __all__ = _version.__all__ + context.__all__ + exceptions.__all__ + \
-    finders.__all__ + runtime.__all__ + sketch.__all__
+    finders.__all__ + runtime.__all__ + sketch.__all__ + \
+    ["SketchFinder", "SketchContext"]
