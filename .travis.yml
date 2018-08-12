@@ -74,7 +74,7 @@ deploy:
 
   - provider: pypi
     distributions: sdist bdist_wheel
-    server: https://testpypi.python.org/pypi
+    server: https://test.pypi.org/legacy/
     user: "futursolo"
     password:
       secure: "ePs6694cNLF5WMlMsiJjK4/P4DkiFJspmcpaNE+yQflrQEw15XKN1UJUc0VOyBFz7w7aFvyd4urOfalVYkB+VLfNRuXSg2D7A+DoHw8TeX0ZHtUdG+X7mNdBC3lKMXl1E8r2OizMO9g6Ac+3/Iz9GaTyYuIiZUEjA6fNdaCaOnKVJrybU3IGFrqfvC3NvrfXGiMrrV1+xlHFxku5Wypcv8Pv0eVH/6qbpoXoqxMaibq4Oeg64jIbr7fOhHS/wNgVb81gH1rHd7lCpj6pTwbObrO3J/GALH6W6D5BtXwcKnTIp9HH7QBm9XRC1aQRlJmpdoy4FR9PuSa9HZUrRjO2pZ6FmxgjEFzo0LtHj0Bdqmxvfn4HNrSqaWtwID1QzCNbkTrmGwEK4vhiAjRWeUdC38ysSIXc2rVSFyduefKpb5iAO5mXeq/bnCE5+yprbY0xn36EfGvrRDp5qmIMUmM7nhcv5vj6ftJmVz7+vzGbcOhUP8UnUJ+VDdFe6Waxk0PqKZ0Ho+221Fp2fo94JDvDCwlxsfN61jOQ2dvTfgEZ7jVAaLzdRKRiV+Cl+flMEdJYiYmLdtSu1T3ioodim5FoQlFzEZyFuXNtCyFDalWFv9t9Cgohk6xk4l6AoAlooi4944owryic+gGmxj9/r0umFbxYm6Y1xMgeCGK8nhoJVUg="
