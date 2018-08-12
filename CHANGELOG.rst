@@ -6,6 +6,7 @@
 - Rename SketchContext to AsyncioSketchContext
 - Deprecate SketchFinder and SketchContext
 - Expose sketch context in the runtime
+- Fix a code generation problem when the sketch is empty
 
 0.1.1
 =====

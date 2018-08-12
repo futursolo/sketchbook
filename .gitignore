@@ -90,3 +90,6 @@ ENV/
 
 # Ingore mypy cache
 .mypy_cache/
+
+# Ignore pytest cache
+.pytest_cache/

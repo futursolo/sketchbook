@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#   Copyright 2017 Kaede Hoshikawa
+#   Copyright 2018 Kaede Hoshikawa
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -120,3 +120,9 @@ class VariableAssignmentTestCase:
         skt = Sketch("<% let a = b %><%= a %>", skt_ctx=default_skt_ctx)
 
         assert await skt.draw(b="I am b!") == "I am b!"
+
+
+class NothingTestCase:
+    @helper.force_sync
+    async def test_empty_sketch(self) -> None:
+        await Sketch("", skt_ctx=default_skt_ctx).draw()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#   Copyright 2017 Kaede Hoshikawa
+#   Copyright 2018 Kaede Hoshikawa
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -76,6 +76,7 @@ class PythonPrinter:
 
     def _dec_indent_num(self) -> None:
         assert not self._finished, "Code Generation has already been finished."
+        self.writeline("pass")
         self._indent_num -= 1
 
     def __enter__(self) -> None:
