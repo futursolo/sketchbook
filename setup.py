@@ -47,7 +47,6 @@ tests_require.extend(full_requires)
 
 dev_requires = [
     "sphinx>=1.5.5,<2",
-    "sphinxcontrib-versioning>=2.2.1,<3",
     "sphinxcontrib-asyncio>=0.2.0,<1",
     "sphinx_rtd_theme>=0.2.4,<3",
     "mypy>=0.620,<1",
