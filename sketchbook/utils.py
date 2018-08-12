@@ -59,6 +59,6 @@ def deprecated_attr(
     mod = sys.modules[mod_name]
 
     if not isinstance(mod, _ModWithDeprecatedAttrs):
-        sys.modules[mod_name] = _ModWithDeprecatedAttrs(mod)
+        sys.modules[mod_name] = _ModWithDeprecatedAttrs(mod)  # type: ignore
 
     return _DeprecatedAttr(attr, message)

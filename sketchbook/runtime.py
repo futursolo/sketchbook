@@ -55,8 +55,7 @@ class BlockStorage:
         self.__dict__["_skt_rt"] = skt_rt
         self.__dict__["_blocks"] = {}
 
-        self._blocks.update(  # type: ignore
-            **self._skt_rt._BLOCK_RUNTIMES)
+        self._blocks.update(**self._skt_rt._BLOCK_RUNTIMES)
 
     def __getitem__(
         self, name: Union[str, Tuple[str, bool]]) -> Callable[
