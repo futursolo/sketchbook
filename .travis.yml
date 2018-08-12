@@ -43,14 +43,13 @@ language: python
 install:
   - pip install pip setuptools --upgrade
   - pip install .[dev]
-  - pip install -U pycodestyle mypy
   - pip install coveralls
 
 script:
   - mypy --python-version 3.6 --disallow-untyped-calls --disallow-untyped-defs
     --warn-unused-ignores --show-traceback --strict-optional --ignore-missing-imports
     --follow-imports=skip --show-error-context --show-traceback -p sketchbook
-  - pycodestyle --show-source sketchbook
+  - flake8 .
   - coverage run --source=sketchbook setup.py test
   - sphinx-versioning build -r master docs docs/_build/html
 
