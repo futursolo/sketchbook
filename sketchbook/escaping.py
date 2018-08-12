@@ -15,11 +15,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Any, Callable
+from typing import Any, Dict, Callable
 
 import html
 import urllib.parse
-import functools
 import json
 import collections
 
@@ -57,7 +56,7 @@ def _escape_json(unsafe_var: Any) -> str:
     return json.dumps(unsafe_var)
 
 
-builtin_escape_fns: "collections.OrderedDict[str, Callable[[Any], str]]" = \
+builtin_escape_fns: Dict[str, Callable[[Any], str]] = \
     collections.OrderedDict([
         ("default", _escape_html),
         ("html", _escape_html),

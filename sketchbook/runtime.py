@@ -16,13 +16,16 @@
 #   limitations under the License.
 
 from typing import Dict, Any, Optional, Awaitable, Callable, Type, Union, Tuple
-
-from . import sketch
 from . import exceptions
-from . import finders
-from . import context
 
 import abc
+import typing
+
+if typing.TYPE_CHECKING:
+    from . import sketch  # noqa: F401
+    from . import finders  # noqa: F401
+    from . import context  # noqa: F401
+
 
 __all__ = ["BlockStorage", "BlockRuntime", "SketchRuntime"]
 

@@ -19,12 +19,15 @@ from typing import Union, Optional, Mapping, Any
 from types import CodeType
 
 from . import context
-from . import finders
-from . import statements
 from . import parser
 from . import runtime
 from . import printer
 
+import typing
+
+if typing.TYPE_CHECKING:
+    from . import finders  # noqa: F401
+    from . import statements  # noqa: F401
 
 __all__ = ["Sketch"]
 

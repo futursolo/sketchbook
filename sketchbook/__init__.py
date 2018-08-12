@@ -19,26 +19,26 @@ from typing import Any
 
 from .utils import deprecated_attr
 
-from ._version import *
+from ._version import *  # noqa: F403
 from . import _version
 
-from .context import *
+from .context import *  # noqa: F403
 from . import context
 
-from .exceptions import *
+from .exceptions import *  # noqa: F403
 from . import exceptions
 
-from .finders import *
+from .finders import *  # noqa: F403
 from . import finders
 
-from .runtime import *
+from .runtime import *  # noqa: F403
 from . import runtime
 
-from .sketch import *
+from .sketch import *  # noqa: F403
 from . import sketch
 
 SketchContext = deprecated_attr(
-    AsyncioSketchContext, __name__,
+    AsyncioSketchContext, __name__,  # noqa: F405
     "`SketchContext` is deprecated, use `AsyncioSketchContext` instead.")
 
 try:

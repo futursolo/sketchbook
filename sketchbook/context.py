@@ -130,7 +130,7 @@ class AsyncioSketchContext(BaseSketchContext):
 
 
 try:
-    import curio
+    import curio  # noqa: F401
 
 except ImportError:
     pass

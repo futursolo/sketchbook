@@ -18,8 +18,11 @@
 from typing import Any, Optional
 from types import CodeType
 
-from . import sketch
-from . import statements
+import typing
+
+if typing.TYPE_CHECKING:
+    from . import sketch  # noqa: F401
+    from . import statements  # noqa: F401
 
 __all__ = ["PythonPrinter"]
 

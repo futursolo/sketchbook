@@ -15,9 +15,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sketchbook import AsyncioSketchContext, \
-    SketchNotFoundError
-from sketchbook.testutils import AsyncioTestHelper
+from sketchbook import SketchNotFoundError
 
 import pytest
 import os
@@ -70,7 +68,8 @@ if not _TEST_CURIO:
         @helper.force_sync
         async def test_find_no_cache(self) -> None:
             skt_ctx = AsyncioSketchContext(cache_sketches=False)
-            loader = AsyncSketchFinder(helper.abspath("sketches"), skt_ctx=skt_ctx)
+            loader = AsyncSketchFinder(
+                helper.abspath("sketches"), skt_ctx=skt_ctx)
 
             loaded_skt = await loader.find("index.html")
             sec_loaded_skt = await loader.find("index.html")

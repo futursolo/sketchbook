@@ -24,10 +24,10 @@ import sys
 sys.path.insert(0, os.path.abspath('../sketchbook'))
 sys.path.append(os.path.abspath('..'))
 
-import sphinx_rtd_theme
+import sphinx_rtd_theme  # noqa: F402
 
-import _load_version
-import _modify_version
+import _load_version  # noqa: F402
+import _modify_version  # noqa: F402
 
 
 # -- General configuration ------------------------------------------------
@@ -39,11 +39,12 @@ import _modify_version
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
+extensions = [
+    'sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
-    'sphinxcontrib.asyncio',]
+    'sphinxcontrib.asyncio']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -120,8 +121,10 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_context = dict(
     conf_py_path='/docs/',
     display_github=True,
-    github_repo=os.environ.get('TRAVIS_REPO_SLUG', '/' + project).split('/', 1)[1],
-    github_user=os.environ.get('TRAVIS_REPO_SLUG', 'futursolo/').split('/', 1)[0],
+    github_repo=os.environ.get(
+        'TRAVIS_REPO_SLUG', '/' + project).split('/', 1)[1],
+    github_user=os.environ.get(
+        'TRAVIS_REPO_SLUG', 'futursolo/').split('/', 1)[0],
     github_version=os.environ.get('TRAVIS_BRANCH', 'master'),
     source_suffix='.rst',
 )
