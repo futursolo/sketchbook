@@ -121,6 +121,13 @@ class VariableAssignmentTestCase:
 
         assert await skt.draw(b="I am b!") == "I am b!"
 
+    @helper.force_sync
+    async def test_assign_var_with_extra_equal(self):
+        skt = Sketch("<% let a = \"--=--\" %><%= a %>",
+                     skt_ctx=default_skt_ctx)
+
+        assert await skt.draw() == "--=--"
+
 
 class NothingTestCase:
     @helper.force_sync

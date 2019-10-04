@@ -58,9 +58,10 @@ class BaseSketchContext(abc.ABC):
         Short hand for :func:`urllib.parse.quote`.
     """
     def __init__(
-        self, *, cache_sketches: bool=True,
-        source_encoding: str="utf-8",
-            custom_escape_fns: Mapping[str, Callable[[Any], str]]={}) -> None:
+        self, *, cache_sketches: bool = True,
+        source_encoding: str = "utf-8",
+        custom_escape_fns: Mapping[str, Callable[[Any], str]] = {}
+            ) -> None:
 
         self._source_encoding = source_encoding
 
@@ -106,14 +107,14 @@ class AsyncioSketchContext(BaseSketchContext):
         :class:`asyncio.AbstractEventLoop` or :code:`None`.
         Default: :code:`None`
         (Use the value of :func:`asyncio.get_event_loop`).
-    :arg \*\*kwargs: This class also takes all the arguments from
+    :arg \\*\\*kwargs: This class also takes all the arguments from
         :class:`.BaseSketchContext`.
     """
     def __init__(
-        self, *, cache_sketches: bool=True,
-        source_encoding: str="utf-8",
-        custom_escape_fns: Mapping[str, Callable[[Any], str]]={},
-            loop: Optional[asyncio.AbstractEventLoop]=None) -> None:
+        self, *, cache_sketches: bool = True,
+        source_encoding: str = "utf-8",
+        custom_escape_fns: Mapping[str, Callable[[Any], str]] = {},
+            loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
         super().__init__(
             cache_sketches=cache_sketches,
             source_encoding=source_encoding,

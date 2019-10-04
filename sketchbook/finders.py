@@ -48,7 +48,7 @@ class BaseSketchFinder(abc.ABC):
     """
     def __init__(
         self, *,
-            skt_ctx: Optional["context.BaseSketchContext"]=None) -> None:
+            skt_ctx: Optional["context.BaseSketchContext"] = None) -> None:
         self._ctx = skt_ctx or context.AsyncioSketchContext()
         self._skt_cache: Dict[str, sketch.Sketch] = {}
 
@@ -81,7 +81,7 @@ class BaseSketchFinder(abc.ABC):
     @abc.abstractmethod
     async def _find_abs_path(
         self, skt_path: str,
-            origin_path: Optional[str]=None) -> str:  # pragma: no cover
+            origin_path: Optional[str] = None) -> str:  # pragma: no cover
         """
         This is an :func:`abc.abstractmethod`.
 
@@ -99,7 +99,7 @@ class BaseSketchFinder(abc.ABC):
 
     async def _find(
         self, skt_path: str,
-            origin_path: Optional[str]=None) -> "sketch.Sketch":
+            origin_path: Optional[str] = None) -> "sketch.Sketch":
         async with self._find_skt_lock:  # Find one sketch at a time.
             if skt_path in self._skt_cache.keys():
                 # Try to read from the cache.
@@ -148,9 +148,9 @@ class SyncSketchFinder(BaseSketchFinder):
     """
     def __init__(
         self, __root_path: str, *,
-        executor: Optional[concurrent.futures.ThreadPoolExecutor]=None,
+        executor: Optional[concurrent.futures.ThreadPoolExecutor] = None,
         skt_ctx: Optional[
-            "context.BaseSketchContext"]=None) -> None:
+            "context.BaseSketchContext"] = None) -> None:
         assert isinstance(__root_path, str)
 
         super().__init__(skt_ctx=skt_ctx)
@@ -161,7 +161,7 @@ class SyncSketchFinder(BaseSketchFinder):
 
     async def _find_abs_path(
         self, skt_path: str,
-            origin_path: Optional[str]=None) -> str:
+            origin_path: Optional[str] = None) -> str:
         skt_path = skt_path.replace("\\", "/")
         # Replace Windows Style Path to UNIX Style.
 
@@ -229,9 +229,9 @@ else:
         """
         def __init__(
             self, __root_path: str, *,
-            executor: Optional[concurrent.futures.ThreadPoolExecutor]=None,
+            executor: Optional[concurrent.futures.ThreadPoolExecutor] = None,
             skt_ctx: Optional[
-                "context.AsyncioSketchContext"]=None) -> None:
+                "context.AsyncioSketchContext"] = None) -> None:
             assert isinstance(__root_path, str)
 
             super().__init__(skt_ctx=skt_ctx)
@@ -256,7 +256,7 @@ else:
 
         async def _find_abs_path(
             self, skt_path: str,
-                origin_path: Optional[str]=None) -> str:
+                origin_path: Optional[str] = None) -> str:
             skt_path = skt_path.replace("\\", "/")
             # Replace Windows Style Path to UNIX Style.
 

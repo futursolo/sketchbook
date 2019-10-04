@@ -86,7 +86,3 @@ class MalformedSketchTestCase:
     def test_unknown_stmt(self) -> None:
         with pytest.raises(UnknownStatementError):
             Sketch("<% if anyways %><% fi %>", skt_ctx=default_skt_ctx)
-
-    def test_bad_assignment(self) -> None:
-        with pytest.raises(SketchSyntaxError):
-            Sketch("<% let a = b = c = d %>", skt_ctx=default_skt_ctx)

@@ -55,9 +55,9 @@ class Sketch:
     """
     def __init__(
         self, __content: Union[str, bytes], *,
-        path: str="<string>",
-        skt_ctx: Optional["context.BaseSketchContext"]=None,
-            finder: Optional["finders.BaseSketchFinder"]=None) -> None:
+        path: str = "<string>",
+        skt_ctx: Optional["context.BaseSketchContext"] = None,
+            finder: Optional["finders.BaseSketchFinder"] = None) -> None:
         self._path = path
 
         self._ctx = skt_ctx or context.AsyncioSketchContext()
@@ -92,8 +92,8 @@ class Sketch:
         """
         Draw the sketch to :code:`str`.
 
-        :arg \*\*kwargs: All the keyword arguments will become global variables
-            in the runtime.
+        :arg \\*\\*kwargs: All the keyword arguments will become global
+            variables in the runtime.
 
         .. warning::
 

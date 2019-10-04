@@ -32,8 +32,8 @@ class PythonPrinter:
     Print Python code with indentation gracefully.
     """
     def __init__(
-        self, path: str="<string>", end: str="\n",
-            indent_mark: str=" " * 4) -> None:
+        self, path: str = "<string>", end: str = "\n",
+            indent_mark: str = " " * 4) -> None:
         self._path = path
         self._indent_num = 0
         self._committed_code = ""
@@ -45,7 +45,7 @@ class PythonPrinter:
 
     def writeline(
         self, line: str,
-            stmt: Optional["statements.AppendMixIn"]=None) -> None:
+            stmt: Optional["statements.AppendMixIn"] = None) -> None:
         """
         Write a line with indent.
         """

@@ -42,7 +42,7 @@ SketchContext = deprecated_attr(
     "`SketchContext` is deprecated, use `AsyncioSketchContext` instead.")
 
 try:
-    from .finders import AsyncSketchFinder as _SketchFinder  # type: ignore
+    from .finders import AsyncSketchFinder as _SketchFinder
 
 except ImportError:
     class _SketchFinder:  # type: ignore

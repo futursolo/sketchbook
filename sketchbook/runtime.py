@@ -150,7 +150,7 @@ class _AbstractRuntime(abc.ABC):
     @abc.abstractmethod
     def write(
         self, __content: Any,
-            escape: str="default") -> None:  # pragma: no cover
+            escape: str = "default") -> None:  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -222,7 +222,7 @@ class BlockRuntime(_AbstractRuntime):
     def blocks(self) -> BlockStorage:
         return self._skt_rt.blocks
 
-    def write(self, __content: Any, escape: str="default") -> None:
+    def write(self, __content: Any, escape: str = "default") -> None:
         if self._finished:
             raise exceptions.SketchDrawingError(
                 "Drawing has been finished.")
@@ -331,7 +331,7 @@ class SketchRuntime(_AbstractRuntime):
         """
         return self._block_store
 
-    def write(self, __content: Any, escape: str="default") -> None:
+    def write(self, __content: Any, escape: str = "default") -> None:
         """
         Write the content to the buffer.
 

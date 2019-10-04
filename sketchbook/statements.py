@@ -500,12 +500,12 @@ class _Assign(Statement, AppendMixIn):
         assign_stmt = stmt_str[4:]
 
         try:
-            target_lst, exp = assign_stmt.split("=")
+            target_lst, exp = assign_stmt.split("=", 1)
 
-        except (ValueError, TypeError):
+        except (ValueError, TypeError) as e:
             raise exceptions.SketchSyntaxError(
                 f"Invaild assignment statment at line {line_no} "
-                f"in file {skt._path}.")
+                f"in file {skt._path}.") from e
 
         return Cls(
             target_lst=target_lst.strip(),
