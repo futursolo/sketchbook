@@ -91,7 +91,7 @@ Sketch contexts also works in :class:`.BaseSketchFinder`::
     skt_finder = AsyncSketchFinder("sketches", skt_ctx=skt_ctx)
 
 Use concurrent I/O as the asynchronous library
-============================================
+==============================================
 If you want to use `concurrent I/O <https://curio.readthedocs.io/>`_ as the
 asynchronous library in your project, you need to create your sketches or finders
 with :class:`.CurioSketchContext` or it will still use :code:`asyncio` internally.

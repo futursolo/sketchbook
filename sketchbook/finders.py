@@ -87,8 +87,8 @@ class BaseSketchFinder(abc.ABC):
 
         Override this method to customize sketch discovery.
 
-        Solve the absolute path(starting with :code:`/`) of the sketch from
-        the :code:`skt_path` based on the :code:`origin_path`(if applicable).
+        Solve the absolute path(starting with :code:`//`) of the sketch from
+        :code:`skt_path` based on the :code:`origin_path`(if applicable).
 
         .. important::
 
