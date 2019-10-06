@@ -200,7 +200,7 @@ class BlockRuntime(_AbstractRuntime):
         if self._skt._finder is None:
             raise exceptions.SketchDrawingError(
                 "The finder is not set. "
-                "The inheritance and including is not available.")
+                "The inheritance and inclusion is not available.")
         return self._skt._finder
 
     def _get_globals(self) -> Dict[str, Any]:
@@ -269,10 +269,10 @@ class BlockRuntime(_AbstractRuntime):
 
 class SketchRuntime(_AbstractRuntime):
     """
-    The Sketch Runtime -- the :code:`self` inside sketches.
+    Sketch Runtime -- the :code:`self` inside sketches.
 
-    The runtime provides a series of methods and properties and to help
-    developers when drawing the sketch.
+    The runtime provides a series of methods and properties that can be used
+    when drawing sketches.
     """
     _BLOCK_RUNTIMES: Dict[str, Type[BlockRuntime]] = {}
 
@@ -295,8 +295,8 @@ class SketchRuntime(_AbstractRuntime):
     def _finder(self) -> "finders.BaseSketchFinder":
         if self._skt._finder is None:
             raise exceptions.SketchDrawingError(
-                "The finder is not set. "
-                "The inheritance and including is not available.")
+                "finder is not set. "
+                "Inheritance and inclusion is not available.")
         return self._skt._finder
 
     def _get_globals(self) -> Dict[str, Any]:

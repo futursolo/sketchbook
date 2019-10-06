@@ -103,7 +103,7 @@ class PythonPrinter:
     @property
     def compiled_code(self) -> CodeType:
         """
-        Return the compiled code.
+        Return compiled code.
         """
         if not hasattr(self, "_compiled_code"):
             self._compiled_code = compile(

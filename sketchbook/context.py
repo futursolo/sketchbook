@@ -30,19 +30,18 @@ __all__ = [
 
 class BaseSketchContext(abc.ABC):
     """
-    :class:`.BaseSketchContext` and its subclasses are used to hold options
-    for :class:`.Sketch` and :class:`.BaseSketchFinder`, in order to modify the
-    default behaviours of them.
+    :class:`.BaseSketchContext` and its subclasses are used to configure
+    :class:`.Sketch` and :class:`.BaseSketchFinder`.
 
-    This is class should be immutable after initialization.
+    This class should be immutable after initialization.
 
     :arg cache_sketches: If :code:`True`, :class:`.BaseSketchFinder` will
         cache sketches. Default: :code:`True`.
-    :arg source_encoding: The encoding of the source of the sketches if passed
+    :arg source_encoding: The encoding of the source of sketches if passed
         as bytestring. Default: :code:`utf-8`.
-    :arg custom_escape_fns: Mapping of custom escape functions. Functions in
-        this mapping will override the one with the same name in the built-in
-        escape functions. Default: :code:`{}`.
+    :arg custom_escape_fns: Dictionary containing custom escape functions.
+        Functions in this dictionary will override the ones with the same name
+        in the built-in escape functions. Default: :code:`{}`.
 
     Built-in Escape Functions:
 
@@ -98,7 +97,7 @@ class BaseSketchContext(abc.ABC):
 
 class AsyncioSketchContext(BaseSketchContext):
     """
-    This is a subclass of :class:`.BaseSketchContext` intended to be used with
+    This is a subclass of :class:`.BaseSketchContext` designed to be used with
     the `asyncio <https://docs.python.org/3/library/asyncio.html>`_ module
     in the standard library.
 
@@ -125,7 +124,7 @@ class AsyncioSketchContext(BaseSketchContext):
     @property
     def loop(self) -> asyncio.AbstractEventLoop:
         """
-        The event loop used by the sketch context.
+        Event loop used by the sketch context.
         """
         return self._loop
 
@@ -139,7 +138,7 @@ except ImportError:
 else:
     class CurioSketchContext(BaseSketchContext):
         """
-        This is a subclass of :class:`.BaseSketchContext` intended to be used
+        This is a subclass of :class:`.BaseSketchContext` designed to be used
         with the `concurrent I/O <https://curio.readthedocs.io/en/latest/>`_
         library.
         """

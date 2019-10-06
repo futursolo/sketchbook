@@ -121,7 +121,7 @@ class IncludeTestCase:
 
     <body>
 
-        \n<nav>This will be included into other files.</nav>
+        \n<nav>This will be included in other files.</nav>
 
     </body>
 </html>

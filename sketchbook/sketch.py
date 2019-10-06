@@ -36,17 +36,17 @@ class Sketch:
     """
     A compiled, reusable template object.
 
-    :class:`.Sketch` can be initialized directly with arguments, or initialized
+    :class:`.Sketch` can be initialized directly with arguments, or
     by a subclass of :class:`.BaseSketchFinder`.
 
     :arg __content: The content of this sketch. This can be a string or a
         bytestring. If a bytestring
         is passed, the content will be decoded with :code:`source_encoding`
-        option from the subclasses of :class:`.BaseSketchContext`.
+        from :code:`skt_ctx`.
         This argument must be passed positionally and must be the first
         argument.
     :arg path: The path of the sketch, used by :class:`.SketchFinder` to
-        resolve the file relationship. Default: :code:`<string>`.
+        resolve file relationship. Default: :code:`<string>`.
     :arg skt_ctx: The subclass of :class:`.BaseSketchContext` to be used by the
         :class:`.Sketch` Default: :code:`None`.
         (Create a new :class:`.AsyncioSketchContext` upon initialization).

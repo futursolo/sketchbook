@@ -5,8 +5,7 @@ The Sketch Templating Language
 ==============================
 The sketch templating language is aiming to generate flexible output for arbitrary
 text file. It is designed for Pythonistas with statement marks inspired by ERB
-and a Python like grammar. You should feel familiar with Sketch if you are
-familiar with Python.
+and a Python like syntax.
 
 Example
 =======
@@ -30,16 +29,17 @@ Example
         </body>
     </html>
 
-The contents between :code:`<%` and :code:`%>` look quite similar to the Python
-syntax. Actually, Sketchbook rewrites sketches into Python code and asks the
-Python interpreter to "compile" the plain Python code into Python byte code.
+Contents between :code:`<%` and :code:`%>` may look quite similar to Python
+syntax. As a matter of fact, Sketchbook rewrites sketches into Python code and
+asks the Python interpreter to "compile" the plain Python code into Python byte
+code.
 
-Hence, You can use (almost) any Python syntax in your sketches but with some
+Hence, You can use (almost) all Python syntax in your sketches but with some
 modifications:
 
-1. All the python style syntax is wrapped between :code:`<%` and :code:`%>`.
-2. Indent Is not indicated by :code:`:` any more, but controlled by a special
-   :code:`<% end %>` statement.
+1. All python style syntax is wrapped between :code:`<%` and :code:`%>`.
+2. Indentation is not indicated by :code:`:` any more, but controlled by a
+   special :code:`<% end %>` statement.
 
 Also, :func:`print` function still prints to :code:`sys.stdout` by default.
 To print to the template, use :meth:`.SketchRuntime.write` or output
@@ -47,7 +47,7 @@ statements.
 
 Statement Mark
 ==============
-All the statements of sketches are wrapped under statement marks -
+All the statements are wrapped under statement marks -
 :code:`<%` and :code:`%>`.
 
 Statement Mark Escape
@@ -57,7 +57,7 @@ e.g.: The following sketch::
 
     <%% is the begin mark, and <%r= "%%> is the end mark. " %>
     <%r= "<% and" %> %> only need to be escaped whenever they
-    have ambiguity of the templating system.
+    are ambiguous to the templating system.
 
 will be drawn like::
 
@@ -67,20 +67,19 @@ will be drawn like::
 
 Output
 ======
-The simplest and the most common-used(perhaps) statement in the whole
-Templating System.
+The most commonly-used(perhaps) statement in the Templating System.
 
 .. code-block: python3
     Hello, <%= user.name %>.
 
 :code:`=` is the statement keyword, and the expression following the keyword
-will be evaluated by the interpreter. You can also :code:`await` an
+will be evaluated by the interpreter. You can also :code:`await` a
 :class:`collections.abc.Awaitable`::
 
     Hello, <%= await user.get_user_name() %>.
 
 The result will be passed to :meth:`.SketchRuntime.write()` and escaped by the
-default escape function.
+:code:`default` escape function.
 
 .. _raw-output:
 
@@ -96,8 +95,8 @@ documentation for :class:`.BaseSketchContext`.
 
 Indentation
 ===========
-Indentation is used to control the flow how the sketch is drawn. There're three
-types of keywords to control the indentation:
+Indentation is used to control the flow on how the sketch is drawn. There're
+three types of keywords to control the indentation:
 
 - Indent keywords: :code:`if`, :code:`with`, :code:`for`, :code:`while`, :code:`try` and :code:`async`.
 - Unident keyword: :code:`end`.
@@ -123,12 +122,12 @@ Example:
 
 The :code:`if` statement creates an indenation as discussed above, and the
 :code:`else` statement will automatically unident the :code:`if` statement, and
-establish an new indentation until another unindent statement or
+create a new indentation until another unindent statement or
 half-indent statement is reached.
 
 .. warning::
 
-  Redundant unindent statements will raise a :class:`.SketchSyntaxError`.
+  Redundant or missing unindent statements will raise a :class:`.SketchSyntaxError`.
 
 Inline
 ======
@@ -148,16 +147,17 @@ Example:
         <% end %>
     <% end %>
 
-This example will output time stamps until a positive value is selected by random function.
+This example will output timestamps until a positive value is selected by
+:func:`random.random()`.
 
 .. note::
 
-    The keywords of inline statements are :code:`break`, :code:`continue`,
+    Keywords of inline statements are :code:`break`, :code:`continue`,
     :code:`import`, :code:`from`, :code:`raise`, :code:`assert`,
     :code:`nonlocal`, and :code:`global`.
 
-Assignment
-==========
+Variable Assignment
+===================
 In Python language, keyword :code:`=` is used to assign values to variables.
 However, in order to set a variable in sketches, you have to use an additional
 keyword :code:`let`:
@@ -180,8 +180,8 @@ This should output
     Variable a is not set.
     Variable a is set to whatever.
 
-Include
-=======
+Inclusion
+=========
 Include another sketch into the current sketch.
 
 Example:
@@ -210,7 +210,7 @@ Example:
         </body>
     </html>
 
-When :code:`main.html` being drawn, it will ask the finder to find
+When :code:`main.html` is being drawn, it will ask the finder to find
 :code:`header.html` and draw :code:`header.html` at the runtime,
 then append it to the result of :code:`main.html`.
 
@@ -266,14 +266,14 @@ Example:
         <p>Thank you for visiting.</p>
     </main>
 
-When :code:`main.html` being drawn, it will ask the sketch finder to find
-:code:`layout.html` and update all the blocks in :code:`layout.html` with the blocks in
-:code:`main.html`. The other content outside the blocks in :code:`main.html` can be
+When :code:`main.html` is being drawn, it will ask the sketch finder to find
+:code:`layout.html` and update all the blocks in :code:`layout.html` with blocks in
+:code:`main.html`. Other content outside blocks in :code:`main.html` can be
 accessed using :code:`self.body` in :code:`layout.html`.
 
 .. hint::
 
-    If the inheritance is not enabled, the :code:`block` statement has no effect.
+    If Inheritance is not enabled, the :code:`block` statement has no effect.
 
 .. important::
 
@@ -307,7 +307,7 @@ Strings that will be removed from the result.
 .. code-block:: text
 
     This is the content.
-    <%# This is the comment. %>
+    <%# This is a comment. %>
 
 When the sketch is being drawn, the comment will be excluded.
 

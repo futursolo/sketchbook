@@ -93,10 +93,10 @@ class Root(Statement, AppendMixIn):
         if block_stmt.block_name in self._block_stmts.keys():
             raise exceptions.BlockNameConflictError(
                 f"The name of the block at {block_stmt.line_no}"
-                "is conflict with the block at "
+                "conflicts with the block at "
                 f"{self._block_stmts[block_stmt.block_name].line_no} "
-                f"in file {self._skt._path}. You cannot define two block with "
-                "the same name in the one file.")
+                f"in file {self._skt._path}. You cannot define two blocks "
+                "with the same name in the one file.")
 
         self._block_stmts[block_stmt.block_name] = block_stmt
 
@@ -243,7 +243,7 @@ class BaseOutput(Statement, AppendMixIn):
 
         if len(splitted_stmt) != 2:
             raise exceptions.SketchSyntaxError(
-                ("The expression to be output is empty "
+                ("Output content is empty "
                  f"in file {skt._path} at line {line_no}."))
 
         stmt_output_exp = splitted_stmt[1].strip()
@@ -286,8 +286,8 @@ class _Include(Statement, AppendMixIn):
 
         if len(splitted_stmt) < 2:
             raise exceptions.SketchSyntaxError(
-                f"In file {skt._path} at line {line_no}, "
-                "invalid syntax, you must provide the path to be included.")
+                f"Invalid syntax in file {skt._path} at line {line_no}, "
+                "you must provide the path to be included.")
 
         return Cls(
             target_path=splitted_stmt[1],
@@ -321,8 +321,8 @@ class _Inherit(Statement, AppendMixIn):
 
         if len(splitted_stmt) < 2:
             raise exceptions.SketchSyntaxError(
-                f"In file {skt._path} at line {line_no}, "
-                "invalid syntax, you must provide the path to be inherited.")
+                f"Invalid syntax in file {skt._path} at line {line_no}, "
+                "you must provide the path to be inherited.")
 
         return Cls(
             target_path=splitted_stmt[1],

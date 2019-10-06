@@ -59,7 +59,7 @@ class BaseSketchFinder(abc.ABC):
             self._find_skt_lock = curio.Lock()
 
         else:
-            raise RuntimeError("Unknown Type of SketchContext.")
+            raise RuntimeError("Unknown sketch context.")
 
     @abc.abstractmethod
     async def _load_sketch_content(
@@ -73,7 +73,7 @@ class BaseSketchFinder(abc.ABC):
 
         .. important::
 
-            If no matched file is found, it should raise a
+            If no matched sketch can be found, it should raise a
             :class:`.SketchNotFoundError`.
         """
         raise NotImplementedError
@@ -88,7 +88,7 @@ class BaseSketchFinder(abc.ABC):
         Override this method to customize sketch discovery.
 
         Solve the absolute path(starting with :code:`/`) of the sketch from
-        the skt_path based on the origin_path(if applicable).
+        the :code:`skt_path` based on the :code:`origin_path`(if applicable).
 
         .. important::
 
@@ -123,7 +123,7 @@ class BaseSketchFinder(abc.ABC):
     async def find(self, skt_path: str) -> "sketch.Sketch":
         """
         Find the sketch corresponding to the given :code:`skt_path` and
-        initialize them with the given :code:`skt_ctx`.
+        initialize them with :code:`skt_ctx`.
 
         .. warning::
 
@@ -136,10 +136,10 @@ class BaseSketchFinder(abc.ABC):
 class SyncSketchFinder(BaseSketchFinder):
     """
     An implementation of :class:`BaseSketchFinder` using the synchronous
-    file system operation api from the standard library.
+    file system operations from standard library.
 
     :arg __root_path: The root path of the finder. Use :code:`/` in
-        including and inheritance to indicate this folder. This argument
+        inclusion and inheritance to indicate the root path. This argument
         must be passed positionally and must be the first argument.
     :arg skt_ctx: The :class:`.BaseSketchContext` to be used by the
         :class:`.SyncSketchFinder` and :class:`.Sketch`.
@@ -214,10 +214,10 @@ else:
 
         .. important::
 
-            This finder must be used with asyncio event loop.
+            This finder must be used with an asyncio event loop.
 
         :arg __root_path: The root path of the finder. Use :code:`/` in
-            including and inheritance to indicate this folder. This argument
+            inclusion and inheritance to indicate the root path. This argument
             must be passed positionally and must be the first argument.
         :arg executor: The executor used by :code:`aiofiles` to load files.
             Default: :code:`None` (Create a new executor upon initialization).

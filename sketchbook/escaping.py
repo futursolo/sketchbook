@@ -28,27 +28,27 @@ __all__ = ["builtin_escape_fns"]
 def _escape_html(unsafe_str: str) -> str:
     assert isinstance(unsafe_str, str), \
             (f"The content({unsafe_str!r}) subject for html "
-             f"escaping is not string.")
+             f"escaping is not a string.")
     return html.escape(unsafe_str)
 
 
 def _no_escape(unsafe_str: str) -> str:
     assert isinstance(unsafe_str, str), \
-            f"The variable({unsafe_str!r}) subject for output is not string."
+            f"The variable({unsafe_str!r}) subject for output is not a string."
     return unsafe_str
 
 
 def _escape_url_with_plus(unsafe_str: str) -> str:
     assert isinstance(unsafe_str, str), \
             (f"The content({unsafe_str!r}) subject for url "
-             f"escaping is not string.")
+             f"escaping is not a string.")
     return urllib.parse.quote_plus(unsafe_str)
 
 
 def _escape_url_without_plus(unsafe_str: str) -> str:
     assert isinstance(unsafe_str, str), \
             (f"The content({unsafe_str!r}) subject for url "
-             f"escaping is not string.")
+             f"escaping is not a string.")
     return urllib.parse.quote(unsafe_str)
 
 

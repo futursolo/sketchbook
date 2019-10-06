@@ -43,7 +43,7 @@ class SketchSyntaxError(SyntaxError, SketchbookException):
 
 class UnknownStatementError(SketchSyntaxError):
     """
-    The statement string is not matched by any known Statement Classes.
+    The statement string is not a valid statement.
     """
     pass
 
