@@ -4,6 +4,7 @@ matrix:
   allow_failures:
     - python: nightly
 
+  include:
     - os: linux
       python: 3.6.1
 
