@@ -22,7 +22,7 @@ source code is hosted on `GitHub <https://github.com/futursolo/sketchbook/>`_.
 
 Requirements
 ------------
-- Python 3.6+
+- Python 3.6.1+
 - aiofiles>=0.3.1,<1(Optional, used by :code:`sketchbook.AsyncSketchFinder`)
 
 Alternative Event Loop
@@ -36,7 +36,7 @@ The Documentation is hosted `here <https://sketchbook.futures.moe/>`_.
 
 License
 -------
-Copyright 2018 Kaede Hoshikawa
+Copyright 2019 Kaede Hoshikawa
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

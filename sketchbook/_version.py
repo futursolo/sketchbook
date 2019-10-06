@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#   Copyright 2018 Kaede Hoshikawa
+#   Copyright 2019 Kaede Hoshikawa
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@
 
 __all__ = ["__version__"]
 
-_tag_version = (0, 2, 0)
+_tag_version = "0.0.0"
 
 _dev = 0
 
-_version_fragments = [str(i) for i in _tag_version[:3]]
+if _dev is not None:  # pragma: no cover
+    __version__ = _tag_version + f".dev{_dev}"
 
-if _dev is not None:
-    _version_fragments.append(f"dev{_dev}")
-
-__version__ = ".".join(_version_fragments)
+else:  # pragma: no cover
+    __version__ = _tag_version

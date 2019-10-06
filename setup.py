@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#   Copyright 2017 Kaede Hoshikawa
+#   Copyright 2019 Kaede Hoshikawa
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ from setuptools import setup, find_packages
 
 import sys
 
-if not sys.version_info[:3] >= (3, 6, 0):
-    raise RuntimeError("Sketchbook requires Python 3.6.0 or higher.")
+if not sys.version_info[:3] >= (3, 6, 1):
+    raise RuntimeError("Sketchbook requires Python 3.6.1 or higher.")
 
 else:
     try:
