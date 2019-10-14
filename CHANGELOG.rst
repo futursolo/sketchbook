@@ -1,3 +1,9 @@
+0.2.1
+=====
+- Update Automated version system
+- Fix a bug in variable assignment statement when right hand contains `=`
+- Update Documentation
+
 0.2.0
 =====
 - Support concurrent I/O
