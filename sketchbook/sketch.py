@@ -53,11 +53,15 @@ class Sketch:
     :arg finder: The finder used by the current sketch to include or inherit
         from other sketches. Default: :code:`None`.
     """
+
     def __init__(
-        self, __content: Union[str, bytes], *,
+        self,
+        __content: Union[str, bytes],
+        *,
         path: str = "<string>",
         skt_ctx: Optional["context.BaseSketchContext"] = None,
-            finder: Optional["finders.BaseSketchFinder"] = None) -> None:
+        finder: Optional["finders.BaseSketchFinder"] = None,
+    ) -> None:
         self._path = path
 
         self._ctx = skt_ctx or context.AsyncioSketchContext()
@@ -80,13 +84,15 @@ class Sketch:
         return self._printed_skt
 
     def _get_runtime(
-            self, skt_globals: Mapping[str, Any]) -> runtime.SketchRuntime:
+        self, skt_globals: Mapping[str, Any]
+    ) -> runtime.SketchRuntime:
         skt_globals = skt_globals
 
         exec(self._compiled_code, skt_globals)  # type: ignore
 
-        return skt_globals["_SktCurrentRuntime"](
-            self, skt_globals=skt_globals)
+        return skt_globals["_SktCurrentRuntime"](  # type: ignore
+            self, skt_globals=skt_globals
+        )
 
     async def draw(self, **kwargs: Any) -> str:
         """

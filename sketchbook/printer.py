@@ -31,9 +31,13 @@ class PythonPrinter:
     """
     Print Python code with indentation gracefully.
     """
+
     def __init__(
-        self, path: str = "<string>", end: str = "\n",
-            indent_mark: str = " " * 4) -> None:
+        self,
+        path: str = "<string>",
+        end: str = "\n",
+        indent_mark: str = " " * 4,
+    ) -> None:
         self._path = path
         self._indent_num = 0
         self._committed_code = ""
@@ -44,8 +48,8 @@ class PythonPrinter:
         self._finished = False
 
     def writeline(
-        self, line: str,
-            stmt: Optional["statements.AppendMixIn"] = None) -> None:
+        self, line: str, stmt: Optional["statements.AppendMixIn"] = None
+    ) -> None:
         """
         Write a line with indent.
         """
@@ -107,9 +111,10 @@ class PythonPrinter:
         """
         if not hasattr(self, "_compiled_code"):
             self._compiled_code = compile(
-                self.plain_code, self._path, "exec", dont_inherit=True)
+                self.plain_code, self._path, "exec", dont_inherit=True
+            )
 
-        return self._compiled_code
+        return self._compiled_code  # type: ignore
 
     @classmethod
     def print_sketch(Cls, skt: "sketch.Sketch") -> CodeType:
