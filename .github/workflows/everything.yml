@@ -28,7 +28,7 @@ jobs:
           pip install wheel
           pip install --upgrade pip setuptools
           pip install .[dev]
-          pip install --editable
+          pip install --editable .
           pip install coveralls
 
       - name: Mypy
