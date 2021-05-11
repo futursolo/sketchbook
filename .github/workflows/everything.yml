@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   testing:
-    name: Testing on ${{ matrix.os }} with Python ${{ matrix.python-version }}
+    name: Testing on ${{ matrix.os }} with Python ${{ matrix.python-version }} & ${{ matrix.event-loop }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
@@ -39,6 +39,10 @@ jobs:
         run: |
           flake8 .
 
+      - name: Set Environment Variable
+        if: ${{ matrix.event-loop == "curio" }}
+        run: echo "TEST_CURIO=1" >> $GITHUB_ENV
+
       - name: Pytest
         run: |
           coverage run --source=sketchbook setup.py test
@@ -47,7 +51,7 @@ jobs:
         run: coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_FLAG_NAME: Testing on ${{ matrix.os }} with Python ${{ matrix.python-version }}
+          COVERALLS_FLAG_NAME: Testing on ${{ matrix.os }} with Python ${{ matrix.python-version }} & ${{ matrix.event-loop }}
           COVERALLS_PARALLEL: true
           COVERALLS_SERVICE_NAME: github
 
