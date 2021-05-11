@@ -40,7 +40,7 @@ jobs:
           flake8 .
 
       - name: Set Environment Variable
-        if: ${{ matrix.event-loop == "curio" }}
+        if: ${{ matrix.event-loop == 'curio' }}
         run: echo "TEST_CURIO=1" >> $GITHUB_ENV
 
       - name: Pytest
