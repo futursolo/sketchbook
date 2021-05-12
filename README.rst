@@ -1,10 +1,13 @@
 Sketchbook
 ==========
-.. image:: https://travis-ci.org/futursolo/sketchbook.svg?branch=master
-  :target: https://travis-ci.org/futursolo/sketchbook
+.. image:: https://github.com/futursolo/sketchbook/actions/workflows/everything.yml/badge.svg
+  :target: https://github.com/futursolo/sketchbook/actions/workflows/everything.yml
 
 .. image:: https://coveralls.io/repos/github/futursolo/sketchbook/badge.svg?branch=master
   :target: https://coveralls.io/github/futursolo/sketchbook?branch=master
+
+.. image:: https://img.shields.io/pypi/v/sketchbook
+  :target: https://pypi.org/project/sketchbook/
 
 A template engine built with async/await syntax support for asyncio and curio.
 
