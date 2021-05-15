@@ -47,7 +47,7 @@ class AsyncioTestHelper(BaseTestHelper):
     def force_sync(self, fn: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(fn)
         def wrapper(_self: Any, *args: Any, **kwargs: Any) -> Any:
-            return self._loop.run_until_complete(
+            return asyncio.run(
                 asyncio.wait_for(fn(_self, *args, **kwargs), 10)
             )
 

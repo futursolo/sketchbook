@@ -19,6 +19,7 @@ from typing import Any, Callable, Mapping, Optional, Sequence, Type
 import abc
 import asyncio
 import types
+import warnings
 
 from . import escaping, statements
 
@@ -124,14 +125,17 @@ class AsyncioSketchContext(BaseSketchContext):
             custom_escape_fns=custom_escape_fns,
         )
 
-        self._loop = loop or asyncio.get_event_loop()
+        if loop is not None:
+            warnings.warn(
+                "loop parameter has no effect now.", DeprecationWarning
+            )
 
     @property
     def loop(self) -> asyncio.AbstractEventLoop:
         """
         Event loop used by the sketch context.
         """
-        return self._loop
+        return asyncio.get_running_loop()
 
 
 try:

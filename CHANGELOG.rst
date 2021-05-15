@@ -4,6 +4,7 @@ master
 - Update Dependencies
 - Switch from Travis CI to GitHub Actions
 - Update minimum Python version to be 3.8
+- :code:`loop` parameter in :code:`AsyncioSketchContext` has no effect now.
 
 v0.2.1
 ======

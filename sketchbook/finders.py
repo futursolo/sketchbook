@@ -257,12 +257,6 @@ else:
                 executor or concurrent.futures.ThreadPoolExecutor()
             )
 
-        @property
-        def _loop(self) -> asyncio.AbstractEventLoop:
-            assert isinstance(self._ctx, context.AsyncioSketchContext)
-
-            return self._ctx.loop
-
         async def _find_abs_path(
             self, skt_path: str, origin_path: Optional[str] = None
         ) -> str:
@@ -304,7 +298,7 @@ else:
 
         async def _load_sketch_content(self, skt_path: str) -> bytes:
             async with aiofiles.open(
-                skt_path, mode="rb", executor=self._executor, loop=self._loop
+                skt_path, mode="rb", executor=self._executor
             ) as skt_fp:
                 return await skt_fp.read()
 

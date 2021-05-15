@@ -25,8 +25,8 @@ source code is hosted on `GitHub <https://github.com/futursolo/sketchbook/>`_.
 
 Requirements
 ------------
-- Python 3.6.1+
-- aiofiles>=0.3.1,<1(Optional, used by :code:`sketchbook.AsyncSketchFinder`)
+- Python 3.8.0+
+- aiofiles>=0.6,<1(Optional, used by :code:`sketchbook.AsyncSketchFinder`)
 
 Alternative Event Loop
 ----------------------
