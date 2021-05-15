@@ -16,32 +16,31 @@
 #   limitations under the License.
 
 from typing import AsyncIterator
+import os
+import random
+import time
+
+import pytest
 
 from sketchbook import Sketch
 
-import time
-import random
-import pytest
-
-import os
-
-_TEST_CURIO = True if bool(os.environ.get("TEST_CURIO", False)) else False
+_TEST_CURIO = bool(os.environ.get("TEST_CURIO", False))
 
 if _TEST_CURIO:
+    import curio
+
     from sketchbook import CurioSketchContext
     from sketchbook.testutils import CurioTestHelper
-
-    import curio
 
     helper = CurioTestHelper(__file__)
 
     default_skt_ctx = CurioSketchContext()
 
 else:
+    import asyncio
+
     from sketchbook import AsyncioSketchContext
     from sketchbook.testutils import AsyncioTestHelper
-
-    import asyncio
 
     helper = AsyncioTestHelper(__file__)
 
@@ -76,8 +75,7 @@ class _AsyncTimeIterator(AsyncIterator[float]):
 
             return current_time
 
-        else:
-            raise StopAsyncIteration
+        raise StopAsyncIteration
 
 
 class IfElifElseTestCase:
@@ -85,7 +83,9 @@ class IfElifElseTestCase:
     async def test_if_elif_else(self) -> None:
         skt = Sketch(
             "<% if cond %>cond_str<% elif sub_cond %>sub_cond_str"
-            "<% else %>else_str<% end %>", skt_ctx=default_skt_ctx)
+            "<% else %>else_str<% end %>",
+            skt_ctx=default_skt_ctx,
+        )
 
         assert await skt.draw(cond=True, sub_cond=True) == "cond_str"
 
@@ -100,10 +100,13 @@ class AsyncForTestCase:
         time_iter = _AsyncTimeIterator()
         skt = Sketch(
             "<% async for i in time_iter %><%r= str(i) %>, <% end %>",
-            skt_ctx=default_skt_ctx)
+            skt_ctx=default_skt_ctx,
+        )
 
-        assert await skt.draw(time_iter=time_iter) == \
-            str(time_iter._iterated_time)[1:-1] + ", "
+        assert (
+            await skt.draw(time_iter=time_iter)
+            == str(time_iter._iterated_time)[1:-1] + ", "
+        )
 
 
 class RaiseErrorTestCase:
@@ -123,8 +126,7 @@ class VariableAssignmentTestCase:
 
     @helper.force_sync
     async def test_assign_var_with_extra_equal(self):
-        skt = Sketch("<% let a = \"--=--\" %><%= a %>",
-                     skt_ctx=default_skt_ctx)
+        skt = Sketch('<% let a = "--=--" %><%= a %>', skt_ctx=default_skt_ctx)
 
         assert await skt.draw() == "--=--"
 

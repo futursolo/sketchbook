@@ -18,17 +18,16 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 
+from typing import Dict
 import os
 import sys
+
+import sketchbook
 
 sys.path.insert(0, os.path.abspath("../sketchbook"))
 sys.path.append(os.path.abspath(".."))
 
 import sphinx_rtd_theme  # noqa: E402
-
-import _load_version  # noqa: E402
-import _modify_version  # noqa: E402
-
 
 # -- General configuration ------------------------------------------------
 
@@ -61,7 +60,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "sketchbook"
-copyright = "2019, Kaede Hoshikawa"
+copyright = "2021, Kaede Hoshikawa"  # noqa: A001
 author = "Kaede Hoshikawa"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -69,10 +68,8 @@ author = "Kaede Hoshikawa"
 # built documents.
 #
 
-_modify_version.modify(os.path.abspath("../sketchbook"))
-
 # The full version, including alpha/beta/rc tags.
-release = _load_version.load(os.path.abspath("../sketchbook"))
+release = sketchbook.__version__
 
 # The short X.Y version.
 if release.count(".") > 2:
@@ -141,7 +138,7 @@ htmlhelp_basename = "sketchbookdoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
-latex_elements = {
+latex_elements: Dict[str, str] = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',

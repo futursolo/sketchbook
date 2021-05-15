@@ -15,25 +15,29 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sketchbook import SketchNotFoundError
-
-import pytest
 import os
 
-_TEST_CURIO = True if bool(os.environ.get("TEST_CURIO", False)) else False
+import pytest
+
+from sketchbook import SketchNotFoundError
+
+_TEST_CURIO = bool(os.environ.get("TEST_CURIO", False))
 
 if _TEST_CURIO:
-    from sketchbook.testutils import CurioTestHelper
     from sketchbook import CurioSketchContext, SyncSketchFinder
+    from sketchbook.testutils import CurioTestHelper
 
     helper = CurioTestHelper(__file__)
 
     default_skt_ctx = CurioSketchContext()
 
 else:
+    from sketchbook import (
+        AsyncioSketchContext,
+        AsyncSketchFinder,
+        SyncSketchFinder,
+    )
     from sketchbook.testutils import AsyncioTestHelper
-    from sketchbook import AsyncioSketchContext, AsyncSketchFinder, \
-        SyncSketchFinder
 
     helper = AsyncioTestHelper(__file__)
 
@@ -41,6 +45,7 @@ else:
 
 
 if not _TEST_CURIO:
+
     class AsyncSketchFinderTestCase:
         def test_init(self) -> None:
             finder = AsyncSketchFinder(helper.abspath("sketches"))
@@ -69,7 +74,8 @@ if not _TEST_CURIO:
         async def test_find_no_cache(self) -> None:
             skt_ctx = AsyncioSketchContext(cache_sketches=False)
             loader = AsyncSketchFinder(
-                helper.abspath("sketches"), skt_ctx=skt_ctx)
+                helper.abspath("sketches"), skt_ctx=skt_ctx
+            )
 
             loaded_skt = await loader.find("index.html")
             sec_loaded_skt = await loader.find("index.html")
@@ -85,11 +91,14 @@ class InheritanceTestCase:
     @helper.force_sync
     async def test_inherit(self) -> None:
         finder = SyncSketchFinder(
-            helper.abspath("sketches"), skt_ctx=default_skt_ctx)
+            helper.abspath("sketches"), skt_ctx=default_skt_ctx
+        )
 
         skt = await finder.find("index.html")
 
-        assert await skt.draw() == """\
+        assert (
+            await skt.draw()
+            == """\
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -102,17 +111,21 @@ This is body. The old title is Old Title.
     </body>
 </html>
 """
+        )
 
 
 class IncludeTestCase:
     @helper.force_sync
     async def test_include(self) -> None:
         finder = SyncSketchFinder(
-            helper.abspath("sketches"), skt_ctx=default_skt_ctx)
+            helper.abspath("sketches"), skt_ctx=default_skt_ctx
+        )
 
         skt = await finder.find("main.html")
 
-        assert await skt.draw() == """\
+        assert (
+            await skt.draw()
+            == """\
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -126,24 +139,30 @@ class IncludeTestCase:
     </body>
 </html>
 """
+        )
 
 
 class SketchDiscoveryTestCase:
     @helper.force_sync
     async def test_traversal_prevention_for_sync_finder(self) -> None:
         finder = SyncSketchFinder(
-            helper.abspath("sketches"), skt_ctx=default_skt_ctx)
+            helper.abspath("sketches"), skt_ctx=default_skt_ctx
+        )
 
         with pytest.raises(SketchNotFoundError):
             await finder._find_abs_path(
-                "../hijack.html", helper.abspath("sketches/main.html"))
+                "../hijack.html", helper.abspath("sketches/main.html")
+            )
 
     if not _TEST_CURIO:
+
         @helper.force_sync
         async def test_traversal_prevention_for_async_finder(self) -> None:
             finder = AsyncSketchFinder(
-                helper.abspath("sketches"), skt_ctx=default_skt_ctx)
+                helper.abspath("sketches"), skt_ctx=default_skt_ctx
+            )
 
             with pytest.raises(SketchNotFoundError):
                 await finder._find_abs_path(
-                    "../hijack.html", helper.abspath("sketches/main.html"))
+                    "../hijack.html", helper.abspath("sketches/main.html")
+                )

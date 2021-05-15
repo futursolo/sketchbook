@@ -15,12 +15,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Callable, Any
-
-import os
+from typing import Any, Callable
+import abc
 import asyncio
 import functools
-import abc
+import os
 
 
 class BaseTestHelper(abc.ABC):
@@ -29,8 +28,8 @@ class BaseTestHelper(abc.ABC):
 
     def abspath(self, sub_path: str) -> str:
         return os.path.abspath(
-            os.path.realpath(
-                os.path.join(self._root_path, sub_path)))
+            os.path.realpath(os.path.join(self._root_path, sub_path))
+        )
 
     @abc.abstractmethod
     def force_sync(self, fn: Callable[..., Any]) -> Callable[..., Any]:
@@ -49,8 +48,8 @@ class AsyncioTestHelper(BaseTestHelper):
         @functools.wraps(fn)
         def wrapper(_self: Any, *args: Any, **kwargs: Any) -> Any:
             return self._loop.run_until_complete(
-                asyncio.wait_for(
-                    fn(_self, *args, **kwargs), 10))
+                asyncio.wait_for(fn(_self, *args, **kwargs), 10)
+            )
 
             # Wait 10 sec, or kill the task.
 
@@ -66,12 +65,14 @@ except ImportError:
     pass
 
 else:
+
     class CurioTestHelper(BaseTestHelper):
         def force_sync(self, fn: Callable[..., Any]) -> Callable[..., Any]:
             @functools.wraps(fn)
             def wrapper(_self: Any, *args: Any, **kwargs: Any) -> Any:
-                return curio.run(curio.timeout_after(
-                        10, fn(_self, *args, **kwargs)))
+                return curio.run(
+                    curio.timeout_after(10, fn(_self, *args, **kwargs))
+                )
 
                 # Wait 10 sec, or kill the task.
 

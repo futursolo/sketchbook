@@ -15,9 +15,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Any, Optional
 from types import CodeType
-
+from typing import Any, Optional
 import typing
 
 if typing.TYPE_CHECKING:
@@ -117,7 +116,7 @@ class PythonPrinter:
         return self._compiled_code  # type: ignore
 
     @classmethod
-    def print_sketch(Cls, skt: "sketch.Sketch") -> CodeType:
-        py_printer = Cls(path=skt._path)
+    def print_sketch(cls, skt: "sketch.Sketch") -> CodeType:
+        py_printer = cls(path=skt._path)
         skt._root.print_code(py_printer)
         return py_printer.compiled_code

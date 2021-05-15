@@ -15,9 +15,8 @@
 #   see the license for the specific language governing permissions and
 #   limitations under the license.
 
-from typing import List, Any
 from types import ModuleType
-
+from typing import Any, List
 import sys
 import warnings
 
@@ -51,8 +50,7 @@ class _ModWithDeprecatedAttrs:
         return dir(self.__module__)
 
 
-def deprecated_attr(
-        attr: Any, mod_name: str, message: str) -> _DeprecatedAttr:
+def deprecated_attr(attr: Any, mod_name: str, message: str) -> _DeprecatedAttr:
     """
     Mark an attribute as deprecated in a module.
     """

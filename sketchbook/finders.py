@@ -15,22 +15,17 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional, Union, Dict
-
-from . import context
-from . import sketch
-from . import exceptions
-
-import asyncio
+from typing import Dict, Optional, Union
 import abc
-import os
+import asyncio
 import concurrent.futures
+import contextlib
+import os
 
-try:
+from . import context, exceptions, sketch
+
+with contextlib.suppress(ImportError):
     import curio
-
-except ImportError:
-    pass
 
 __all__ = ["BaseSketchFinder", "SyncSketchFinder"]
 
@@ -46,16 +41,17 @@ class BaseSketchFinder(abc.ABC):
         :class:`.BaseSketchFinder` and :class:`.Sketch`. Default: :code:`None`
         (Create a new :class:`.AsyncioSketchContext` upon initialization).
     """
+
     def __init__(
-        self, *,
-            skt_ctx: Optional["context.BaseSketchContext"] = None) -> None:
+        self, *, skt_ctx: Optional["context.BaseSketchContext"] = None
+    ) -> None:
         self._ctx = skt_ctx or context.AsyncioSketchContext()
         self._skt_cache: Dict[str, sketch.Sketch] = {}
 
         if isinstance(self._ctx, context.AsyncioSketchContext):
             self._find_skt_lock = asyncio.Lock()
 
-        elif isinstance(self._ctx, context.CurioSketchContext):
+        elif isinstance(self._ctx, context.CurioSketchContext):  # noqa: SIM106
             self._find_skt_lock = curio.Lock()
 
         else:
@@ -63,7 +59,8 @@ class BaseSketchFinder(abc.ABC):
 
     @abc.abstractmethod
     async def _load_sketch_content(
-            self, skt_path: str) -> Union[str, bytes]:  # pragma: no cover
+        self, skt_path: str
+    ) -> Union[str, bytes]:  # pragma: no cover
         """
         This is an :func:`abc.abstractmethod`.
 
@@ -80,8 +77,8 @@ class BaseSketchFinder(abc.ABC):
 
     @abc.abstractmethod
     async def _find_abs_path(
-        self, skt_path: str,
-            origin_path: Optional[str] = None) -> str:  # pragma: no cover
+        self, skt_path: str, origin_path: Optional[str] = None
+    ) -> str:  # pragma: no cover
         """
         This is an :func:`abc.abstractmethod`.
 
@@ -98,22 +95,23 @@ class BaseSketchFinder(abc.ABC):
         raise NotImplementedError
 
     async def _find(
-        self, skt_path: str,
-            origin_path: Optional[str] = None) -> "sketch.Sketch":
+        self, skt_path: str, origin_path: Optional[str] = None
+    ) -> "sketch.Sketch":
         async with self._find_skt_lock:  # Find one sketch at a time.
-            if skt_path in self._skt_cache.keys():
+            if skt_path in self._skt_cache:
                 # Try to read from the cache.
                 return self._skt_cache[skt_path]
 
             # Resolve the path.
             abs_skt_path = await self._find_abs_path(
-                skt_path, origin_path=origin_path)
+                skt_path, origin_path=origin_path
+            )
 
             skt_content = await self._load_sketch_content(abs_skt_path)
 
             skt = sketch.Sketch(
-                skt_content, path=skt_path, skt_ctx=self._ctx,
-                finder=self)
+                skt_content, path=skt_path, skt_ctx=self._ctx, finder=self
+            )
 
             if self._ctx.cache_sketches:
                 self._skt_cache[skt_path] = skt
@@ -146,11 +144,14 @@ class SyncSketchFinder(BaseSketchFinder):
         Default: :code:`None` (Create a new :class:`.AsyncioSketchContext`
         upon initialization).
     """
+
     def __init__(
-        self, __root_path: str, *,
+        self,
+        __root_path: str,
+        *,
         executor: Optional[concurrent.futures.ThreadPoolExecutor] = None,
-        skt_ctx: Optional[
-            "context.BaseSketchContext"] = None) -> None:
+        skt_ctx: Optional["context.BaseSketchContext"] = None,
+    ) -> None:
         assert isinstance(__root_path, str)
 
         super().__init__(skt_ctx=skt_ctx)
@@ -160,14 +161,15 @@ class SyncSketchFinder(BaseSketchFinder):
             self._root_path += "/"
 
     async def _find_abs_path(
-        self, skt_path: str,
-            origin_path: Optional[str] = None) -> str:
+        self, skt_path: str, origin_path: Optional[str] = None
+    ) -> str:
         skt_path = skt_path.replace("\\", "/")
         # Replace Windows Style Path to UNIX Style.
 
         if origin_path is not None and (not os.path.isabs(skt_path)):
             origin_dir = os.path.join(
-                self._root_path, os.path.dirname(origin_path))
+                self._root_path, os.path.dirname(origin_path)
+            )
 
         else:
             origin_dir = self._root_path
@@ -176,8 +178,7 @@ class SyncSketchFinder(BaseSketchFinder):
             _, skt_path = skt_path.split("/", 1)
             # Take out the root identifier.
 
-        final_skt_path = os.path.abspath(
-            os.path.join(origin_dir, skt_path))
+        final_skt_path = os.path.abspath(os.path.join(origin_dir, skt_path))
         final_skt_dir = os.path.dirname(final_skt_path)
 
         if not final_skt_dir.endswith("/"):
@@ -186,11 +187,13 @@ class SyncSketchFinder(BaseSketchFinder):
         if not final_skt_path.startswith(self._root_path):
             raise exceptions.SketchNotFoundError(
                 "To prevent potential directory traversal attack, "
-                "this path is not acceptable.")
+                "this path is not acceptable."
+            )
 
         if not os.path.exists(final_skt_path):
             raise exceptions.SketchNotFoundError(
-                f"No such file {final_skt_path}.")
+                f"No such file {final_skt_path}."
+            )
 
         return final_skt_path
 
@@ -206,6 +209,7 @@ except ImportError:  # pragma: no cover
     pass
 
 else:
+
     class AsyncSketchFinder(BaseSketchFinder):
         """
         An implementation of :class:`.BaseSketchFinder` using
@@ -227,11 +231,14 @@ else:
             upon initialization).
 
         """
+
         def __init__(
-            self, __root_path: str, *,
+            self,
+            __root_path: str,
+            *,
             executor: Optional[concurrent.futures.ThreadPoolExecutor] = None,
-            skt_ctx: Optional[
-                "context.AsyncioSketchContext"] = None) -> None:
+            skt_ctx: Optional["context.AsyncioSketchContext"] = None,
+        ) -> None:
             assert isinstance(__root_path, str)
 
             super().__init__(skt_ctx=skt_ctx)
@@ -239,14 +246,16 @@ else:
             if not isinstance(self._ctx, context.AsyncioSketchContext):
                 raise RuntimeError(
                     "AsyncSketchFinder can only be used with "
-                    "AsyncioSketchContext.")
+                    "AsyncioSketchContext."
+                )
 
             self._root_path = os.path.abspath(__root_path)
             if not self._root_path.endswith("/"):
                 self._root_path += "/"
 
-            self._executor = \
+            self._executor = (
                 executor or concurrent.futures.ThreadPoolExecutor()
+            )
 
         @property
         def _loop(self) -> asyncio.AbstractEventLoop:
@@ -255,14 +264,15 @@ else:
             return self._ctx.loop
 
         async def _find_abs_path(
-            self, skt_path: str,
-                origin_path: Optional[str] = None) -> str:
+            self, skt_path: str, origin_path: Optional[str] = None
+        ) -> str:
             skt_path = skt_path.replace("\\", "/")
             # Replace Windows Style Path to UNIX Style.
 
             if origin_path is not None and (not os.path.isabs(skt_path)):
                 origin_dir = os.path.join(
-                    self._root_path, os.path.dirname(origin_path))
+                    self._root_path, os.path.dirname(origin_path)
+                )
 
             else:
                 origin_dir = self._root_path
@@ -272,7 +282,8 @@ else:
                 # Take out the root identifier.
 
             final_skt_path = os.path.abspath(
-                os.path.join(origin_dir, skt_path))
+                os.path.join(origin_dir, skt_path)
+            )
             final_skt_dir = os.path.dirname(final_skt_path)
 
             if not final_skt_dir.endswith("/"):
@@ -281,18 +292,20 @@ else:
             if not final_skt_path.startswith(self._root_path):
                 raise exceptions.SketchNotFoundError(
                     "To prevent potential directory traversal attack, "
-                    "this path is not acceptable.")
+                    "this path is not acceptable."
+                )
 
             if not os.path.exists(final_skt_path):
                 raise exceptions.SketchNotFoundError(
-                    f"No such file {final_skt_path}.")
+                    f"No such file {final_skt_path}."
+                )
 
             return final_skt_path
 
         async def _load_sketch_content(self, skt_path: str) -> bytes:
             async with aiofiles.open(
-                skt_path, mode="rb", executor=self._executor,
-                    loop=self._loop) as skt_fp:
+                skt_path, mode="rb", executor=self._executor, loop=self._loop
+            ) as skt_fp:
                 return await skt_fp.read()
 
     __all__.append("AsyncSketchFinder")

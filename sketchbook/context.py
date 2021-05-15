@@ -15,17 +15,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Optional, Mapping, Callable, Sequence, Type, Any
-
-from . import escaping
-from . import statements
-
+from typing import Any, Callable, Mapping, Optional, Sequence, Type
+import abc
 import asyncio
 import types
-import abc
 
-__all__ = [
-    "BaseSketchContext", "AsyncioSketchContext"]
+from . import escaping, statements
+
+__all__ = ["BaseSketchContext", "AsyncioSketchContext"]
 
 
 class BaseSketchContext(abc.ABC):
@@ -56,11 +53,14 @@ class BaseSketchContext(abc.ABC):
     - :code:`url_without_plus`:
         Short hand for :func:`urllib.parse.quote`.
     """
+
     def __init__(
-        self, *, cache_sketches: bool = True,
+        self,
+        *,
+        cache_sketches: bool = True,
         source_encoding: str = "utf-8",
-        custom_escape_fns: Mapping[str, Callable[[Any], str]] = {}
-            ) -> None:
+        custom_escape_fns: Optional[Mapping[str, Callable[[Any], str]]] = None,
+    ) -> None:
 
         self._source_encoding = source_encoding
 
@@ -109,15 +109,20 @@ class AsyncioSketchContext(BaseSketchContext):
     :arg \\*\\*kwargs: This class also takes all the arguments from
         :class:`.BaseSketchContext`.
     """
+
     def __init__(
-        self, *, cache_sketches: bool = True,
+        self,
+        *,
+        cache_sketches: bool = True,
         source_encoding: str = "utf-8",
-        custom_escape_fns: Mapping[str, Callable[[Any], str]] = {},
-            loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
+        custom_escape_fns: Optional[Mapping[str, Callable[[Any], str]]] = None,
+        loop: Optional[asyncio.AbstractEventLoop] = None,
+    ) -> None:
         super().__init__(
             cache_sketches=cache_sketches,
             source_encoding=source_encoding,
-            custom_escape_fns=custom_escape_fns)
+            custom_escape_fns=custom_escape_fns,
+        )
 
         self._loop = loop or asyncio.get_event_loop()
 
@@ -136,12 +141,14 @@ except ImportError:
     pass
 
 else:
+
     class CurioSketchContext(BaseSketchContext):
         """
         This is a subclass of :class:`.BaseSketchContext` designed to be used
         with the `concurrent I/O <https://curio.readthedocs.io/en/latest/>`_
         library.
         """
+
         pass
 
     __all__.append("CurioSketchContext")

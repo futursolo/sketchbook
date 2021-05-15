@@ -15,15 +15,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Union, Optional, Mapping, Any
 from types import CodeType
-
-from . import context
-from . import parser
-from . import runtime
-from . import printer
-
+from typing import Any, Mapping, Optional, Union
 import typing
+
+from . import context, parser, printer, runtime
 
 if typing.TYPE_CHECKING:
     from . import finders  # noqa: F401

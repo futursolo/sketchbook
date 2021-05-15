@@ -15,16 +15,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from typing import Dict, Any, Optional, Awaitable, Callable, Type, Union, Tuple
-from . import exceptions
-
+from typing import Any, Awaitable, Callable, Dict, Optional, Tuple, Type, Union
 import abc
 import typing
 
+from . import exceptions
+
 if typing.TYPE_CHECKING:
-    from . import sketch  # noqa: F401
-    from . import finders  # noqa: F401
     from . import context  # noqa: F401
+    from . import finders  # noqa: F401
+    from . import sketch  # noqa: F401
 
 
 __all__ = ["BlockStorage", "BlockRuntime", "SketchRuntime"]
@@ -52,6 +52,7 @@ class BlockStorage:
         <%r= await self.blocks["b"]() %> <%# raises KeyError %>
 
     """
+
     def __init__(self, skt_rt: "SketchRuntime") -> None:
         self._skt_rt: SketchRuntime
         self._blocks: Dict[str, Type[BlockRuntime]]
@@ -61,8 +62,8 @@ class BlockStorage:
         self._blocks.update(**self._skt_rt._BLOCK_RUNTIMES)
 
     def __getitem__(
-        self, name: Union[str, Tuple[str, bool]]) -> Callable[
-            ..., Awaitable[str]]:
+        self, name: Union[str, Tuple[str, bool]]
+    ) -> Callable[..., Awaitable[str]]:
         if isinstance(name, tuple):
             block_name, defined_here = name
 
@@ -73,11 +74,10 @@ class BlockStorage:
         if block_name not in self._blocks.keys():
             raise KeyError(f"Unknown Block Name {block_name}.")
 
-        SelectedBlockRuntime = self._blocks[block_name]
+        block_rt_cls = self._blocks[block_name]
 
         async def wrapper() -> str:
-            block_rt = SelectedBlockRuntime(
-                self._skt_rt, _defined_here=defined_here)
+            block_rt = block_rt_cls(self._skt_rt, _defined_here=defined_here)
 
             await block_rt._draw()
 
@@ -149,8 +149,8 @@ class _AbstractRuntime(abc.ABC):
 
     @abc.abstractmethod
     def write(
-        self, __content: Any,
-            escape: str = "default") -> None:  # pragma: no cover
+        self, __content: Any, escape: str = "default"
+    ) -> None:  # pragma: no cover
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -182,8 +182,8 @@ class BlockRuntime(_AbstractRuntime):
         sketch it belongs to, :code:`global` or :code:`nonlocal` the variable
         first.
     """
-    def __init__(
-            self, __skt_rt: "SketchRuntime", _defined_here: bool) -> None:
+
+    def __init__(self, __skt_rt: "SketchRuntime", _defined_here: bool) -> None:
         self._skt_rt = __skt_rt
         self._defined_here = _defined_here
 
@@ -200,7 +200,8 @@ class BlockRuntime(_AbstractRuntime):
         if self._skt._finder is None:
             raise exceptions.SketchDrawingError(
                 "The finder is not set. "
-                "The inheritance and inclusion is not available.")
+                "The inheritance and inclusion is not available."
+            )
         return self._skt._finder
 
     def _get_globals(self) -> Dict[str, Any]:
@@ -214,7 +215,8 @@ class BlockRuntime(_AbstractRuntime):
     def _block_result(self) -> str:
         if not self._finished:
             raise exceptions.SketchDrawingError(
-                "Drawing has not been finished yet.")
+                "Drawing has not been finished yet."
+            )
 
         return self.__skt_result__
 
@@ -224,8 +226,7 @@ class BlockRuntime(_AbstractRuntime):
 
     def write(self, __content: Any, escape: str = "default") -> None:
         if self._finished:
-            raise exceptions.SketchDrawingError(
-                "Drawing has been finished.")
+            raise exceptions.SketchDrawingError("Drawing has been finished.")
 
         self.__skt_result__ += self.ctx.escape_fns[escape](__content)
 
@@ -239,11 +240,13 @@ class BlockRuntime(_AbstractRuntime):
 
     async def _inherit_sketch(self) -> None:  # pragma: no cover
         raise exceptions.SketchDrawingError(
-            "Cannot inherit sketch(es) inside the block.")
+            "Cannot inherit sketch(es) inside the block."
+        )
 
     async def _add_parent(self, path: str) -> None:  # pragma: no cover
         raise exceptions.SketchDrawingError(
-            "Cannot Set Inheritance inside the block.")
+            "Cannot Set Inheritance inside the block."
+        )
 
     async def _include_sketch(self, path: str) -> str:
         return await self._skt_rt._include_sketch(path)
@@ -251,7 +254,8 @@ class BlockRuntime(_AbstractRuntime):
     async def _draw(self) -> None:
         if self._finished:
             raise exceptions.SketchDrawingError(
-                "Drawing has already been finished.")
+                "Drawing has already been finished."
+            )
 
         if self._defined_here and self._skt_rt._parent is not None:
             self._finished = True
@@ -274,11 +278,12 @@ class SketchRuntime(_AbstractRuntime):
     The runtime provides a series of methods and properties that can be used
     when drawing sketches.
     """
+
     _BLOCK_RUNTIMES: Dict[str, Type[BlockRuntime]] = {}
 
     def __init__(
-        self, skt: "sketch.Sketch",
-            skt_globals: Dict[str, Any]) -> None:
+        self, skt: "sketch.Sketch", skt_globals: Dict[str, Any]
+    ) -> None:
         self._skt = skt
         self._skt_globals = skt_globals
 
@@ -296,7 +301,8 @@ class SketchRuntime(_AbstractRuntime):
         if self._skt._finder is None:
             raise exceptions.SketchDrawingError(
                 "finder is not set. "
-                "Inheritance and inclusion is not available.")
+                "Inheritance and inclusion is not available."
+            )
         return self._skt._finder
 
     def _get_globals(self) -> Dict[str, Any]:
@@ -304,7 +310,7 @@ class SketchRuntime(_AbstractRuntime):
 
         new_globals.update(self._skt_globals)
 
-        if "_SktCurrentRuntime" in new_globals.keys():
+        if "_SktCurrentRuntime" in new_globals:
             del new_globals["_SktCurrentRuntime"]
 
         return new_globals
@@ -313,7 +319,8 @@ class SketchRuntime(_AbstractRuntime):
     def _skt_result(self) -> str:
         if not self._finished:
             raise exceptions.SketchDrawingError(
-                "Drawing has not been finished yet.")
+                "Drawing has not been finished yet."
+            )
 
         return self.__skt_result__
 
@@ -343,8 +350,7 @@ class SketchRuntime(_AbstractRuntime):
             Default: :code:`default`.
         """
         if self._finished:
-            raise exceptions.SketchDrawingError(
-                "Drawing has been finished.")
+            raise exceptions.SketchDrawingError("Drawing has been finished.")
 
         self.__skt_result__ += self.ctx.escape_fns[escape](__content)
 
@@ -397,14 +403,15 @@ class SketchRuntime(_AbstractRuntime):
         self.__skt_result__ = self._parent._skt_result
 
     async def _add_parent(self, path: str) -> None:
-        assert self._parent is None, \
-            "A sketch can only set the inheritance once."
+        assert (
+            self._parent is None
+        ), "A sketch can only set the inheritance once."
 
         parent_skt = await self._finder._find(
-            path, origin_path=self._skt._path)
+            path, origin_path=self._skt._path
+        )
 
-        self._parent = parent_skt._get_runtime(
-            skt_globals=self._get_globals())
+        self._parent = parent_skt._get_runtime(skt_globals=self._get_globals())
 
     async def _include_sketch(self, path: str) -> str:
         skt = await self._finder._find(path, origin_path=self._skt._path)
@@ -417,7 +424,8 @@ class SketchRuntime(_AbstractRuntime):
     async def _draw(self) -> None:
         if self._finished:
             raise exceptions.SketchDrawingError(
-                "Drawing has already been finished.")
+                "Drawing has already been finished."
+            )
 
         await self._draw_body()
 

@@ -24,14 +24,14 @@ classifiers=[
 include=["sketchbook/py.typed"]
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.8.0"
 importlib-metadata = { version = "^4.0.1", python = "<=3.7" }
 
 # Alternative I/O
-curio = { version = "^0.7", optional = true }
+curio = { version = "^1.5", optional = true }
 
 # Async File I/O
-aiofiles = { version = "^0.3.1", optional = true }
+aiofiles = { version = "^0.6", optional = true }
 
 [tool.poetry.dev-dependencies]
 # Testing

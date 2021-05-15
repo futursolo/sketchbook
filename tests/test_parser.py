@@ -15,24 +15,25 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sketchbook import Sketch, SketchSyntaxError, UnknownStatementError
-
-import pytest
 import os
 
-_TEST_CURIO = True if bool(os.environ.get("TEST_CURIO", False)) else False
+import pytest
+
+from sketchbook import Sketch, SketchSyntaxError, UnknownStatementError
+
+_TEST_CURIO = bool(os.environ.get("TEST_CURIO", False))
 
 if _TEST_CURIO:
-    from sketchbook.testutils import CurioTestHelper
     from sketchbook import CurioSketchContext
+    from sketchbook.testutils import CurioTestHelper
 
     helper = CurioTestHelper(__file__)
 
     default_skt_ctx = CurioSketchContext()
 
 else:
-    from sketchbook.testutils import AsyncioTestHelper
     from sketchbook import AsyncioSketchContext
+    from sketchbook.testutils import AsyncioTestHelper
 
     helper = AsyncioTestHelper(__file__)
 
@@ -43,15 +44,17 @@ class StatementEscapeTestCase:
     @helper.force_sync
     async def test_stmts_escape(self) -> None:
         skt = Sketch(
-            "<%% is the begin mark, and <%r= \"%%> is the end mark. \" %>"
-            "<%r= \"<% and\" %> %> only need to be escaped whenever they "
+            '<%% is the begin mark, and <%r= "%%> is the end mark. " %>'
+            '<%r= "<% and" %> %> only need to be escaped whenever they '
             "have ambiguity of the templating system.",
-            skt_ctx=default_skt_ctx)
+            skt_ctx=default_skt_ctx,
+        )
 
         assert await skt.draw() == (
             "<% is the begin mark, and %> is the end mark. "
             "<% and %> only need to be escaped whenever they "
-            "have ambiguity of the templating system.")
+            "have ambiguity of the templating system."
+        )
 
     @helper.force_sync
     async def test_multiline_stmts(self) -> None:
@@ -64,7 +67,8 @@ Hello, it's me!
 <% else %>
 No, it's not me!
 <% end %>""",
-            skt_ctx=default_skt_ctx)
+            skt_ctx=default_skt_ctx,
+        )
 
         assert await skt.draw(a=True) == "\nHello, it's me!\n"
         assert await skt.draw(a=False) == "\nNo, it's not me!\n"

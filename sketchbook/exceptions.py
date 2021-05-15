@@ -16,14 +16,20 @@
 #   limitations under the License.
 
 __all__ = [
-    "SketchbookException", "SketchNotFoundError", "SketchSyntaxError",
-    "UnknownStatementError", "BlockNameConflictError", "SketchDrawingError"]
+    "SketchbookException",
+    "SketchNotFoundError",
+    "SketchSyntaxError",
+    "UnknownStatementError",
+    "BlockNameConflictError",
+    "SketchDrawingError",
+]
 
 
 class SketchbookException(Exception):
     """
     Base class of exceptions from Sketchbook.
     """
+
     pass
 
 
@@ -31,6 +37,7 @@ class SketchNotFoundError(FileNotFoundError, SketchbookException):
     """
     Error when trying to load a sketch but the finder cannot find it.
     """
+
     pass
 
 
@@ -38,6 +45,7 @@ class SketchSyntaxError(SyntaxError, SketchbookException):
     """
     Syntax error in the current sketch.
     """
+
     pass
 
 
@@ -45,6 +53,7 @@ class UnknownStatementError(SketchSyntaxError):
     """
     The statement string is not a valid statement.
     """
+
     pass
 
 
@@ -52,6 +61,7 @@ class BlockNameConflictError(SketchbookException):
     """
     There's more than one block with the same name in one sketch.
     """
+
     pass
 
 
@@ -59,4 +69,5 @@ class SketchDrawingError(SketchbookException):
     """
     Error when drawing the sketch.
     """
+
     pass
