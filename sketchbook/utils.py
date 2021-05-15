@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#   copyright 2019 kaede hoshikawa
+#   copyright 2021 kaede hoshikawa
 #
 #   licensed under the apache license, version 2.0 (the "license");
 #   you may not use this file except in compliance with the license.
