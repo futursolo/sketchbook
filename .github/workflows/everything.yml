@@ -3,12 +3,12 @@ on: [push, pull_request]
 
 jobs:
   testing:
-    name: Testing on ${{ matrix.os }} with Python ${{ matrix.python-version }} & ${{ matrix.event-loop }}
+    name: Testing on ${{ matrix.os }} with Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.8, 3.9]
         os: [macOS, Ubuntu]
         event-loop: ["asyncio", "curio"]
 
@@ -26,32 +26,33 @@ jobs:
       - name: Install dependencies
         run: |
           pip install wheel
-          pip install --upgrade pip setuptools
-          pip install .[dev]
-          pip install --editable .
-          pip install coveralls
+          pip install --upgrade pip
+          pip install --upgrade poetry coveralls poetry-dynamic-versioning
+          poetry install --extras full
 
       - name: Mypy
         run: |
-          mypy --python-version 3.6 --strict --show-traceback --ignore-missing-imports --show-error-context --implicit-reexport --pretty -p sketchbook
+          poetry run mypy -p sketchbook
 
       - name: Lint with flake8
         run: |
-          flake8 .
+          poetry run flake8 .
 
-      - name: Set Environment Variable
-        if: ${{ matrix.event-loop == 'curio' }}
-        run: echo "TEST_CURIO=1" >> $GITHUB_ENV
-
-      - name: Pytest
+      - name: Pytest with asyncio
         run: |
-          coverage run --source=sketchbook setup.py test
+          poetry run pytest --cov=sketchbook
+
+      - name: Pytest with curio
+        run: |
+          poetry run pytest --cov=sketchbook --cov-append
+        env:
+          TEST_CURIO: 1
 
       - name: Upload Coverage
         run: coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_FLAG_NAME: Testing on ${{ matrix.os }} with Python ${{ matrix.python-version }} & ${{ matrix.event-loop }}
+          COVERALLS_FLAG_NAME: Testing on ${{ matrix.os }} with Python ${{ matrix.python-version }}
           COVERALLS_PARALLEL: true
           COVERALLS_SERVICE_NAME: github
 
@@ -73,96 +74,44 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_SERVICE_NAME: github
 
-#  upload_docs:
-#    name: Upload Docs
-#    needs: testing
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Install dependencies
-#        run: |
-#          pip install wheel
-#          pip install --upgrade pip setuptools
-#          pip install .[dev]
-#          pip install --editable
-#          pip install coveralls
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: 3.6
-#
-#      - name: Build Docs
-#        run: |
-#          sphinx-build -b html docs docs/_build/html
-#
-#  upload_pypi:
-#    name: Upload to PyPI
-#    needs: testing
-#    runs-on: ubuntu-latest
-#    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: 3.6
-#
-#      - name: Install dependencies
-#        run: |
-#          pip install wheel
-#          pip install --upgrade pip
-#          pip install --upgrade poetry poetry-dynamic-versioning
-#          poetry install
-#
-#      - name: Package Project
-#        run: poetry build
-#
-#      - name: Publish to PyPI
-#        run: |
-#          poetry publish
-#        env:
-#          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-#
-#  upload_test_pypi:
-#    name: Upload to Test PyPI
-#    needs: testing
-#    runs-on: ubuntu-latest
-#    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-#    steps:
-#      - name: Checkout Repository
-#        uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Set up Python
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: 3.6
-#
-#      - name: Install dependencies
-#        run: |
-#          pip install wheel
-#          pip install --upgrade pip
-#          pip install --upgrade poetry poetry-dynamic-versioning
-#          poetry install
-#
-#      - name: Package Project
-#        run: |
-#          poetry version
-#          poetry build
-#
-#      - name: Publish to Test PyPI
-#        run: |
-#          poetry config repositories.test https://test.pypi.org/legacy/
-#          poetry publish -r test
-#        env:
-#          POETRY_PYPI_TOKEN_TEST: ${{ secrets.TEST_PYPI_TOKEN }}
+  upload_pypi:
+    name: Upload to PyPI
+    needs: testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+
+      - name: Install dependencies
+        run: |
+          pip install wheel
+          pip install --upgrade pip
+          pip install --upgrade poetry poetry-dynamic-versioning
+          poetry install
+
+      - name: Package Project
+        run: |
+          poetry version
+          poetry build
+
+      - name: Publish to Test PyPI
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          poetry config repositories.test https://test.pypi.org/legacy/
+          poetry publish -r test
+        env:
+          POETRY_PYPI_TOKEN_TEST: ${{ secrets.TEST_PYPI_TOKEN }}
+
+      - name: Publish to PyPI
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          poetry publish
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
