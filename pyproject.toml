@@ -39,9 +39,9 @@ pytest = "^6.2.4"
 pytest-cov = "^2.11.1"
 
 # Docs
-sphinx = "^1.5.5"
-sphinxcontrib-asyncio = "^0.2.0"
-sphinx_rtd_theme = "^0.2.4"
+sphinx = "^4.0"
+sphinxcontrib-asyncio = "^0.3.0"
+sphinx_rtd_theme = "^0.5.2"
 
 # Sort imports
 isort = { extras = ["pyproject"], version = "^5.8.0" }
