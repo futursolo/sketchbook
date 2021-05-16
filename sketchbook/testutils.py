@@ -40,15 +40,11 @@ class AsyncioTestHelper(BaseTestHelper):
     def __init__(self, file: str) -> None:
         self._root_path = os.path.dirname(os.path.abspath(file))
 
-        self._loop = asyncio.get_event_loop()
-
-        self._loop.set_debug(True)
-
     def force_sync(self, fn: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(fn)
         def wrapper(_self: Any, *args: Any, **kwargs: Any) -> Any:
             return asyncio.run(
-                asyncio.wait_for(fn(_self, *args, **kwargs), 10)
+                asyncio.wait_for(fn(_self, *args, **kwargs), 10), debug=True
             )
 
             # Wait 10 sec, or kill the task.
