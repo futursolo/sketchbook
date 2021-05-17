@@ -1,10 +1,10 @@
 [[package]]
 name = "aiofiles"
-version = "0.6.0"
+version = "0.7.0"
 description = "File support for asyncio."
 category = "main"
 optional = true
-python-versions = "*"
+python-versions = ">=3.6,<4.0"
 
 [[package]]
 name = "alabaster"
@@ -736,12 +736,12 @@ full = ["curio", "aiofiles"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.0"
-content-hash = "0515f40aefef80c1f903258da304ff131a9e3944c1a365049fb330d4105ff122"
+content-hash = "639923b7fbc2ebf6468e7dd0cecbc80f3fee01ffe922798f358f7d8aa703fa81"
 
 [metadata.files]
 aiofiles = [
-    {file = "aiofiles-0.6.0-py3-none-any.whl", hash = "sha256:bd3019af67f83b739f8e4053c6c0512a7f545b9a8d91aaeab55e6e0f9d123c27"},
-    {file = "aiofiles-0.6.0.tar.gz", hash = "sha256:e0281b157d3d5d59d803e3f4557dcc9a3dff28a4dd4829a9ff478adae50ca092"},
+    {file = "aiofiles-0.7.0-py3-none-any.whl", hash = "sha256:c67a6823b5f23fcab0a2595a289cec7d8c863ffcb4322fb8cd6b90400aedfdbc"},
+    {file = "aiofiles-0.7.0.tar.gz", hash = "sha256:a1c4fc9b2ff81568c83e21392a82f344ea9d23da906e4f6a52662764545e19d4"},
 ]
 alabaster = [
     {file = "alabaster-0.7.12-py2.py3-none-any.whl", hash = "sha256:446438bdcca0e05bd45ea2de1668c1d9b032e1a9154c2c259092d77031ddd359"},
