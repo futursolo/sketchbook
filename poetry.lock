@@ -412,7 +412,7 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 name = "poetry-dynamic-versioning"
-version = "0.12.6"
+version = "0.12.7"
 description = "Plugin for Poetry to enable dynamic versioning based on VCS tags"
 category = "dev"
 optional = false
@@ -736,7 +736,7 @@ full = ["curio", "aiofiles"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.0"
-content-hash = "639923b7fbc2ebf6468e7dd0cecbc80f3fee01ffe922798f358f7d8aa703fa81"
+content-hash = "76e30ca0103ada73349c7d52c18d3c71a3be25e681e9709f8466b2de68c3dcab"
 
 [metadata.files]
 aiofiles = [
@@ -1011,8 +1011,8 @@ pluggy = [
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 poetry-dynamic-versioning = [
-    {file = "poetry-dynamic-versioning-0.12.6.tar.gz", hash = "sha256:95e015d58bb490e138480fde131a2a9ab7ee287e467d3006378c4e217f067a6d"},
-    {file = "poetry_dynamic_versioning-0.12.6-py3-none-any.whl", hash = "sha256:8f83d298a35c9ae428d98bbb6f19ed702a7e12c7a0a923c1c07d37e5a610044e"},
+    {file = "poetry-dynamic-versioning-0.12.7.tar.gz", hash = "sha256:99953c3f3403a8946a61ac3bd3d12e987c52b7f8d72bcd52c5aab471d91159fa"},
+    {file = "poetry_dynamic_versioning-0.12.7-py3-none-any.whl", hash = "sha256:bc7212f05c4b9ea398d616ea0d3f0aa433710edeb474770886e69bec7ddf3226"},
 ]
 py = [
     {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
