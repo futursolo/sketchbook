@@ -44,7 +44,7 @@ sphinxcontrib-asyncio = "^0.3.0"
 sphinx_rtd_theme = "^0.5.2"
 
 # Sort imports
-isort = { extras = ["pyproject"], version = "^5.8.0" }
+isort = { extras = ["pyproject"], version = "^5.9.1" }
 flake8-isort = "^4.0.0"
 
 # Auto formatting
