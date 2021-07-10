@@ -61,7 +61,7 @@ flake8 = "^3.9.2"
 #flake8-docstrings = "^1.6.0"
 
 # Enforce snake_case
-pep8-naming = "^0.11.1"
+pep8-naming = "^0.12.0"
 
 # Version check
 flake8-2020 = "^1.6.0"
