@@ -49,7 +49,7 @@ flake8-isort = "^4.0.0"
 
 # Auto formatting
 black = "^21.6b0"
-flake8-black = "^0.2.1"
+flake8-black = "^0.2.3"
 
 # Typing
 mypy = "^0.910"
