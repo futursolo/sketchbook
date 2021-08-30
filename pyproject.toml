@@ -48,7 +48,7 @@ isort = { extras = ["pyproject"], version = "^5.9.2" }
 flake8-isort = "^4.0.0"
 
 # Auto formatting
-black = "^21.6b0"
+black = "^21.8b0"
 flake8-black = "^0.2.1"
 
 # Typing
