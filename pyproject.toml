@@ -39,7 +39,7 @@ pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
 
 # Docs
-sphinx = "^4.1"
+sphinx = "^4.2"
 sphinxcontrib-asyncio = "^0.3.0"
 sphinx_rtd_theme = "^0.5.2"
 
