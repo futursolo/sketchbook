@@ -37,6 +37,7 @@ aiofiles = { version = ">=0.6,<0.8", optional = true }
 sphinx = { version = "^4.1", optional = true }
 sphinxcontrib-asyncio = { version = "^0.3.0", optional = true }
 sphinx_rtd_theme = { version = "^1.0", optional = true }
+sphinx-rtd-dark-mode = { version = "^1.2.4", optional = true }
 
 [tool.poetry.dev-dependencies]
 # Testing
@@ -47,6 +48,7 @@ pytest-cov = "^2.12.1"
 sphinx = "^4.1"
 sphinxcontrib-asyncio = "^0.3.0"
 sphinx_rtd_theme = "^1.0"
+sphinx-rtd-dark-mode = "^1.2.4"
 
 # Sort imports
 isort = { extras = ["pyproject"], version = "^5.9.2" }
@@ -96,7 +98,7 @@ types-aiofiles = "^0.1.9"
 aiofiles = ["aiofiles"]
 curio = ["curio"]
 full = ["curio", "aiofiles"]
-docs = ["curio", "aiofiles", "sphinx", "sphinxcontrib-asyncio", "sphinx_rtd_theme"]
+docs = ["curio", "aiofiles", "sphinx", "sphinxcontrib-asyncio", "sphinx_rtd_theme", "sphinx-rtd-dark-mode"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning<1"]

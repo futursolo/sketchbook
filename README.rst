@@ -9,6 +9,10 @@ Sketchbook
 .. image:: https://img.shields.io/pypi/v/sketchbook
   :target: https://pypi.org/project/sketchbook/
 
+.. image:: https://readthedocs.org/projects/sketchbook/badge/?version=latest
+  :target: https://sketchbook.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
+
 A template engine built with async/await syntax support for asyncio and curio.
 
 Intallation
@@ -35,7 +39,7 @@ can also be used with `curio <https://curio.readthedocs.io/en/latest/>`_.
 
 Documentation
 -------------
-The Documentation is hosted `here <https://sketchbook.futures.moe/>`_.
+The Documentation is hosted on `Read the Docs <https://sketchbook.readthedocs.io/en/latest/index.html>`_.
 
 License
 -------
