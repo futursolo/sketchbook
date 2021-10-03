@@ -1,4 +1,4 @@
-master
+v0.3.0
 ======
 - Switch from setuptools to Poetry
 - Update Dependencies
