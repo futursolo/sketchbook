@@ -91,6 +91,7 @@ types-aiofiles = "^0.1.9"
 aiofiles = ["aiofiles"]
 curio = ["curio"]
 full = ["curio", "aiofiles"]
+docs = ["curio", "aiofiles", "sphinx", "sphinxcontrib-asyncio", "sphinx_rtd_theme"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning<1"]
