@@ -102,11 +102,6 @@ class AsyncioSketchContext(BaseSketchContext):
     the `asyncio <https://docs.python.org/3/library/asyncio.html>`_ module
     in the standard library.
 
-    :arg loop: The event loop used by :class:`.Sketch` and
-        :class:`.BaseSketchFinder`, must be a subclass of
-        :class:`asyncio.AbstractEventLoop` or :code:`None`.
-        Default: :code:`None`
-        (Use the value of :func:`asyncio.get_event_loop`).
     :arg \\*\\*kwargs: This class also takes all the arguments from
         :class:`.BaseSketchContext`.
     """
