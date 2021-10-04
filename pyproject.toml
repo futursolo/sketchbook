@@ -42,7 +42,7 @@ sphinx-rtd-dark-mode = { version = "^1.2.4", optional = true }
 [tool.poetry.dev-dependencies]
 # Testing
 pytest = "^6.2.4"
-pytest-cov = "^2.12.1"
+pytest-cov = "^3.0.0"
 
 # Docs
 sphinx = "^4.1"
