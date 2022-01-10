@@ -176,7 +176,7 @@ pyflakes = ">=2.4.0,<2.5.0"
 
 [[package]]
 name = "flake8-2020"
-version = "1.6.0"
+version = "1.6.1"
 description = "flake8 plugin which checks for misuse of `sys.version` or `sys.version_info`"
 category = "dev"
 optional = false
@@ -773,7 +773,7 @@ full = ["curio", "aiofiles"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.0"
-content-hash = "77c45fc1847518075f94e6b1a1b5fa1052d8355de130bc44514323ff3869028e"
+content-hash = "6c4f5edce0d3040d3674687b3dfe64a61242e34da88cf055704776248fcfbba1"
 
 [metadata.files]
 aiofiles = [
@@ -885,8 +885,8 @@ flake8 = [
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
 ]
 flake8-2020 = [
-    {file = "flake8_2020-1.6.0-py2.py3-none-any.whl", hash = "sha256:e464cef7889117e7ae7253e35fcb8272bd8ae68fc10bb3399ef85b036c092528"},
-    {file = "flake8_2020-1.6.0.tar.gz", hash = "sha256:3e438d9d531577fbb9332bbd0bf394eca890f3b7a5311e2278fb3582381a2f13"},
+    {file = "flake8_2020-1.6.1-py2.py3-none-any.whl", hash = "sha256:efcc056fb723e1ea5307e3b663c7c328f1c23a5ff0a0fd3be695a918d8245c3a"},
+    {file = "flake8_2020-1.6.1.tar.gz", hash = "sha256:db523e3383befc17c895219551ff6c9b2f6e0a5cae4c7739ea65a2238bdc6f74"},
 ]
 flake8-black = [
     {file = "flake8-black-0.2.3.tar.gz", hash = "sha256:c199844bc1b559d91195ebe8620216f21ed67f2cc1ff6884294c91a0d2492684"},
