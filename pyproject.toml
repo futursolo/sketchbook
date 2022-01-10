@@ -31,7 +31,7 @@ importlib-metadata = { version = "^4.0.1", python = "<=3.7" }
 curio = { version = "^1.5", optional = true }
 
 # Async File I/O
-aiofiles = { version = ">=0.6,<0.8", optional = true }
+aiofiles = { version = ">=0.6,<0.9", optional = true }
 
 # Docs
 sphinx = { version = "^4.1", optional = true }
