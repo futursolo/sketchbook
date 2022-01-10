@@ -92,7 +92,7 @@ flake8-simplify = "^0.14.0"
 poetry-dynamic-versioning = "^0.13.0"
 
 # Types
-types-aiofiles = "^0.1.9"
+types-aiofiles = "^0.8.2"
 
 [tool.poetry.extras]
 aiofiles = ["aiofiles"]
