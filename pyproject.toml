@@ -52,7 +52,7 @@ sphinx-rtd-dark-mode = "^1.2.4"
 
 # Sort imports
 isort = { extras = ["pyproject"], version = "^5.9.2" }
-flake8-isort = "^4.0.0"
+flake8-isort = "^4.1.1"
 
 # Auto formatting
 black = "^21.6b0"
