@@ -150,11 +150,14 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "dunamai"
-version = "1.6.0"
+version = "1.11.0"
 description = "Dynamic version generation"
 category = "dev"
 optional = false
 python-versions = ">=3.5,<4.0"
+
+[package.dependencies]
+packaging = ">=20.9"
 
 [[package]]
 name = "flake8"
@@ -425,14 +428,14 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "poetry-dynamic-versioning"
-version = "0.13.1"
+version = "0.14.0"
 description = "Plugin for Poetry to enable dynamic versioning based on VCS tags"
 category = "dev"
 optional = false
 python-versions = ">=3.5,<4.0"
 
 [package.dependencies]
-dunamai = ">=1.5,<2.0"
+dunamai = ">=1.10,<2.0"
 jinja2 = {version = ">=2.11.1,<4", markers = "python_version >= \"3.6\" and python_version < \"4.0\""}
 tomlkit = ">=0.4"
 
@@ -760,7 +763,7 @@ full = ["curio", "aiofiles"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.0"
-content-hash = "489fff8c307b8907fb03d66dde9e49bca41036d418f9977c73a05e104c5e8cdf"
+content-hash = "80a871c638ee65e9f6da3ba580fe67959d9b2a01e385f045f4c57e60d0389784"
 
 [metadata.files]
 aiofiles = [
@@ -879,8 +882,8 @@ docutils = [
     {file = "docutils-0.17.1.tar.gz", hash = "sha256:686577d2e4c32380bb50cbb22f575ed742d58168cee37e99117a854bcd88f125"},
 ]
 dunamai = [
-    {file = "dunamai-1.6.0-py3-none-any.whl", hash = "sha256:44a94a4edebb145bb6198a2f26de957b12b77d43b7c9c0646be814c60cf5d8df"},
-    {file = "dunamai-1.6.0.tar.gz", hash = "sha256:6f1111f47e869ed58d44a7d37f112e3e7c761dce3c71f2c5464526928d7e9896"},
+    {file = "dunamai-1.11.0-py3-none-any.whl", hash = "sha256:356308618710b4e32d5b614571c850e7b19f57217ecf311f600f4638ccda5e2c"},
+    {file = "dunamai-1.11.0.tar.gz", hash = "sha256:338f9be40c9aa974c4bdc4fb6d49a630692315593c45b23b5941c5298c075567"},
 ]
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
@@ -1060,8 +1063,8 @@ pluggy = [
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
 poetry-dynamic-versioning = [
-    {file = "poetry-dynamic-versioning-0.13.1.tar.gz", hash = "sha256:5c0e7b22560db76812057ef95dadad662ecc63eb270145787eabe73da7c222f9"},
-    {file = "poetry_dynamic_versioning-0.13.1-py3-none-any.whl", hash = "sha256:6d79f76436c624653fc06eb9bb54fb4f39b1d54362bc366ad2496855711d3a78"},
+    {file = "poetry-dynamic-versioning-0.14.0.tar.gz", hash = "sha256:be5f66a866becb1d5e642ba51e01587a825fae0983022d9304927b709abd9cae"},
+    {file = "poetry_dynamic_versioning-0.14.0-py3-none-any.whl", hash = "sha256:5138810f15aec0a72219119e28ea829a889a1e173d8bb7c59309b24c3ac79724"},
 ]
 py = [
     {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
