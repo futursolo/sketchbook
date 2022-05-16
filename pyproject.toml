@@ -89,7 +89,7 @@ flake8-simplify = "^0.19.2"
 #flake8-spellcheck = "^0.24.0"
 
 # Dynamic Versioning
-poetry-dynamic-versioning = "^0.14.0"
+poetry-dynamic-versioning = "^0.17.0"
 
 # Types
 types-aiofiles = "^0.8.6"
